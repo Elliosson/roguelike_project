@@ -280,7 +280,7 @@ impl State {
             self.ecs.delete_entity(target).expect("Unable to delete entity");
         }
 
-        // Build a new map and place the player
+        // Interactable a new map and place the player
         let worldmap;
         let current_depth;
         {
@@ -334,7 +334,7 @@ impl State {
             self.ecs.delete_entity(*del).expect("Deletion failed");
         }
 
-        // Build a new map and place the player
+        // Interactable a new map and place the player
         let worldmap;
         {
             let mut worldmap_resource = self.ecs.write_resource::<Map>();
@@ -404,8 +404,8 @@ fn main() {
     gs.ecs.register::<MeleePowerBonus>();
     gs.ecs.register::<DefenseBonus>();
     gs.ecs.register::<WantsToRemoveItem>();
-    gs.ecs.register::<Build>();
-    gs.ecs.register::<WantsToInteractBuild>();
+    gs.ecs.register::<Interactable>();
+    gs.ecs.register::<WantsToInteract>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

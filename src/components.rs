@@ -64,7 +64,7 @@ pub struct SufferDamage {
 pub struct Item {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Build {}
+pub struct Interactable {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Consumable {}
@@ -106,9 +106,9 @@ pub struct WantsToPickupItem {
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
-pub struct WantsToInteractBuild {
+pub struct WantsToInteract {
     pub interacted_by : Entity,
-    pub build : Entity
+    pub interacted : Entity
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]

@@ -2,14 +2,14 @@ extern crate rltk;
 use rltk::{RandomNumberGenerator, RGB};
 extern crate specs;
 use super::{
-    map::MAPWIDTH, random_table::RandomTable, AreaOfEffect, BlocksTile, Build, CombatStats,
+    map::MAPWIDTH, random_table::RandomTable, AreaOfEffect, BlocksTile, Interactable, CombatStats,
     Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage, Item,
     MeleePowerBonus, Monster, Name, Player, Position, ProvidesHealing, Ranged, Rect, Renderable,
     SerializeMe, Viewshed,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
-    use std::collections::HashMap;
+use std::collections::HashMap;
 
 /// Spawns the player and returns his/her entity object.
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
@@ -359,7 +359,7 @@ fn tree(ecs: &mut World, x: i32, y: i32) {
         .with(Name {
             name: "Tree".to_string(),
         })
-        .with(Build {})
+        .with(Interactable {})
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }

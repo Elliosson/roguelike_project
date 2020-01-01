@@ -4,7 +4,7 @@ extern crate specs;
 use specs::prelude::*;
 use std::cmp::{max, min};
 use super::{Position, Player, Viewshed, State, Map, RunState, CombatStats, WantsToMelee, Item,
-    gamelog::GameLog, WantsToPickupItem, TileType, Monster, Build, WantsToInteractBuild};
+    gamelog::GameLog, WantsToPickupItem, TileType, Monster, Interactable, WantsToInteract};
 
 pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut positions = ecs.write_storage::<Position>();
@@ -76,26 +76,26 @@ fn get_item(ecs: &mut World) {
     }
 }
 
-fn build_interact(ecs: &mut World) {
+fn interact(ecs: &mut World) {
     let player_pos = ecs.fetch::<Point>();
     let player_entity = ecs.fetch::<Entity>();
     let entities = ecs.entities();
-    let builds = ecs.read_storage::<Build>();
+    let interactables = ecs.read_storage::<Interactable>();
     let positions = ecs.read_storage::<Position>();
     let mut gamelog = ecs.fetch_mut::<GameLog>();
 
-    let mut target_build : Option<Entity> = None;
-    for (build_entity, _build, position) in (&entities, &builds, &positions).join() {
+    let mut target : Option<Entity> = None;
+    for (interactable_entity, _interactable, position) in (&entities, &interactables, &positions).join() {
         if position.x == player_pos.x && position.y == player_pos.y {
-            target_build = Some(build_entity);
+            target = Some(interactable_entity);
         }
     }
 
-    match target_build {
+    match target {
         None => gamelog.entries.insert(0, "There is nothing here to interact with.".to_string()),
-        Some(build) => {
-            let mut interact = ecs.write_storage::<WantsToInteractBuild>();
-            interact.insert(*player_entity, WantsToInteractBuild{ interacted_by: *player_entity, build }).expect("Unable to insert want to interact");
+        Some(interacted) => {
+            let mut interact = ecs.write_storage::<WantsToInteract>();
+            interact.insert(*player_entity, WantsToInteract{ interacted_by: *player_entity, interacted }).expect("Unable to insert want to interact");
         }
     }
 }
@@ -181,7 +181,7 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             VirtualKeyCode::R => return RunState::ShowRemoveItem,
 
             // Environement interaction
-            VirtualKeyCode::F => build_interact(&mut gs.ecs),
+            VirtualKeyCode::F => interact(&mut gs.ecs),
 
             // Save and Quit
             VirtualKeyCode::Escape => return RunState::SaveGame,
