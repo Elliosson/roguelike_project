@@ -161,3 +161,4 @@ pub struct SerializeMe;
 pub struct SerializationHelper {
     pub map : super::map::Map
 }
+

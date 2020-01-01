@@ -363,3 +363,20 @@ fn tree(ecs: &mut World, x: i32, y: i32) {
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
+
+pub fn wood(ecs: &mut World,  x: i32, y: i32){
+    ecs.create_entity()
+        .with(Position { x, y })
+        .with(Renderable {
+            glyph: rltk::to_cp437('*'),
+            fg: RGB::named(rltk::BURLYWOOD1),
+            bg: RGB::named(rltk::BLACK),
+            render_order: 2,
+        })
+        .with(Name {
+            name: "Tree".to_string(),
+        })
+        .with(Item {})
+        .marked::<SimpleMarker<SerializeMe>>()
+        .build();
+}

@@ -29,6 +29,8 @@ mod gamelog;
 mod spawner;
 mod inventory_system;
 use inventory_system::{ ItemCollectionSystem, ItemUseSystem, ItemDropSystem, ItemRemoveSystem };
+mod interaction_system;
+use interaction_system::{ InteractionSystem, WoodSpawnSystem};
 pub mod saveload_system;
 pub mod random_table;
 
@@ -73,6 +75,10 @@ impl State {
         drop_items.run_now(&self.ecs);
         let mut item_remove = ItemRemoveSystem{};
         item_remove.run_now(&self.ecs);
+        let mut wood = interaction_system::WoodSpawnSystem{};
+        wood.run_now(&self.ecs);
+        let mut interaction = interaction_system::InteractionSystem{};
+        interaction.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -424,6 +430,7 @@ fn main() {
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MainMenu{ menu_selection: gui::MainMenuSelection::NewGame });
     gs.ecs.insert(gamelog::GameLog{ entries : vec!["Welcome to Rusty Roguelike".to_string()] });
+    gs.ecs.insert(interaction_system::ObjectBuilder::new());
 
     rltk::main_loop(context, gs);
 }
