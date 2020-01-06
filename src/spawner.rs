@@ -5,7 +5,7 @@ use super::{
     map::MAPWIDTH, random_table::RandomTable, AreaOfEffect, BlocksTile, Interactable, CombatStats,
     Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage, Item,
     MeleePowerBonus, Monster, Name, Player, Position, ProvidesHealing, Ranged, Rect, Renderable,
-    SerializeMe, Viewshed,
+    SerializeMe, Viewshed, InteractableObject,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
@@ -360,6 +360,7 @@ fn tree(ecs: &mut World, x: i32, y: i32) {
             name: "Tree".to_string(),
         })
         .with(Interactable {})
+        .with(InteractableObject{interactions: vec!["Wood".to_string(), "Apple".to_string()]})
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }

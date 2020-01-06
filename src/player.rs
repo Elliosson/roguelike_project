@@ -181,7 +181,9 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             VirtualKeyCode::R => return RunState::ShowRemoveItem,
 
             // Environement interaction
-            VirtualKeyCode::F => interact(&mut gs.ecs),
+            VirtualKeyCode::F => {//interact(&mut gs.ecs); //TODO suppresse when we have a true systeme
+                return RunState::ObjectInteraction;
+            }
 
             // Save and Quit
             VirtualKeyCode::Escape => return RunState::SaveGame,

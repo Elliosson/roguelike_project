@@ -3,7 +3,7 @@ use rltk::{ RGB, Rltk, Console, Point, VirtualKeyCode };
 extern crate specs;
 use specs::prelude::*;
 use super::{CombatStats, Player, gamelog::GameLog, Map, Name, Position, State, InBackpack,
-    Viewshed, RunState, Equipped};
+    Viewshed, RunState, Equipped, InteractableObject};
 
 pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
@@ -348,5 +348,70 @@ pub fn game_over(ctx : &mut Rltk) -> GameOverResult {
     match ctx.key {
         None => GameOverResult::NoSelection,
         Some(_) => GameOverResult::QuitToMenu
+    }
+}
+
+
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum InteractionMenuResult { Cancel, NoResponse, Selected }
+//get all interaction on player position, print them, and get the choice
+pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (InteractionMenuResult, Option<(i32, i32, String)>) {
+
+    //get storage
+    let player_entity = gs.ecs.fetch::<Entity>();
+    let names = gs.ecs.read_storage::<Name>();
+    let interactables = gs.ecs.read_storage::<InteractableObject>();
+    let positions = gs.ecs.read_storage::<Position>();
+    let entities = gs.ecs.entities();
+    let player_pos = gs.ecs.fetch::<Point>();
+
+    //TODO for know just 10 interactions
+    let count = 10;
+
+    //Draw the box to print the possible interaction
+    let mut y = (25 - (count / 2)) as i32;
+    ctx.draw_box(15, y-2, 31, (count+3) as i32, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
+    ctx.print_color(18, y-2, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "Inventory");
+    ctx.print_color(18, y+count as i32+1, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "ESCAPE to cancel");
+
+    let mut j = 0;
+    let mut possible_interactions : Vec<String> = Vec::new();
+    // get of interactable object
+    for (entity, interactable, position, name) in (&entities, &interactables, &positions, &names).join(){
+        //only take object on player position
+        if position.x == player_pos.x && position.y == player_pos.y{
+            //get all possible interaction
+            for interaction in &interactable.interactions{
+                //print name of interaction
+                ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
+                ctx.set(18, y, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), 97+j as u8);
+                ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
+        
+                ctx.print(21, y, &format!("{}: {}", name.name, interaction)); //TODO for know interaction are just names
+                y += 1;
+                j += 1;
+
+                possible_interactions.push(interaction.to_string());
+            }
+        }
+    }
+
+
+    match ctx.key {
+        None => (InteractionMenuResult::NoResponse, None),
+        Some(key) => {
+            match key {
+                VirtualKeyCode::Escape => { (InteractionMenuResult::Cancel, None) }
+                _ => {
+                    let mut selection = rltk::letter_to_option(key);
+                    if selection > -1 && selection < count as i32 { //TODO transmettre une entieté d'interaction au lieu de transmettre un nom
+                        return (InteractionMenuResult::Selected, Some((player_pos.x, player_pos.y,
+                             possible_interactions[selection as usize].clone()))); 
+                    }
+                    (InteractionMenuResult::NoResponse, None)
+                }
+            }
+        }
     }
 }

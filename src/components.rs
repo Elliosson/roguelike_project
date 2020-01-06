@@ -66,6 +66,11 @@ pub struct Item {}
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Interactable {}
 
+#[derive(Component, Debug, Clone)]
+pub struct InteractableObject {
+    pub interactions: Vec<String>
+}
+
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Consumable {}
 

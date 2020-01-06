@@ -30,7 +30,7 @@ mod spawner;
 mod inventory_system;
 use inventory_system::{ ItemCollectionSystem, ItemUseSystem, ItemDropSystem, ItemRemoveSystem };
 mod interaction_system;
-use interaction_system::{ InteractionSystem, WoodSpawnSystem};
+use interaction_system::{ InteractionSystem, WoodSpawnSystem, ObjectBuilder};
 pub mod saveload_system;
 pub mod random_table;
 
@@ -48,7 +48,8 @@ pub enum RunState { AwaitingInput,
     SaveGame,
     NextLevel,
     ShowRemoveItem,
-    GameOver
+    GameOver,
+    ObjectInteraction
 }
 
 pub struct State {
@@ -152,6 +153,25 @@ impl GameState for State {
                             intent.insert(*self.ecs.fetch::<Entity>(), WantsToUseItem{ item: item_entity, target: None }).expect("Unable to insert intent");
                             newrunstate = RunState::PlayerTurn;
                         }
+                    }
+                }
+            }
+
+            RunState::ObjectInteraction => {
+                let result = gui::show_object_interaction_choice(self, ctx);
+                match result.0 {
+                    gui::InteractionMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
+                    gui::InteractionMenuResult::NoResponse => {}
+                    gui::InteractionMenuResult::Selected => {
+                        // TODO provisory just ask for the creation of an object of the name
+                        let interaction_tuple = result.1.unwrap();
+                        let (x, y, name) = interaction_tuple;
+
+                        let mut object_builder = self.ecs.write_resource::<ObjectBuilder>();
+                        object_builder.request(x, y, name);
+
+                        newrunstate = RunState::PlayerTurn;
+
                     }
                 }
             }
@@ -411,6 +431,7 @@ fn main() {
     gs.ecs.register::<DefenseBonus>();
     gs.ecs.register::<WantsToRemoveItem>();
     gs.ecs.register::<Interactable>();
+    gs.ecs.register::<InteractableObject>();
     gs.ecs.register::<WantsToInteract>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
