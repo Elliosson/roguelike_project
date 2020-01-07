@@ -30,7 +30,7 @@ mod spawner;
 mod inventory_system;
 use inventory_system::{ ItemCollectionSystem, ItemUseSystem, ItemDropSystem, ItemRemoveSystem };
 mod interaction_system;
-use interaction_system::{ InteractionSystem, WoodSpawnSystem, ObjectBuilder};
+use interaction_system::{ InteractionSystem, WoodSpawnSystem, ObjectBuilder, InteractionResquest};
 pub mod saveload_system;
 pub mod random_table;
 
@@ -165,10 +165,11 @@ impl GameState for State {
                     gui::InteractionMenuResult::Selected => {
                         // TODO provisory just ask for the creation of an object of the name
                         let interaction_tuple = result.1.unwrap();
-                        let (x, y, name) = interaction_tuple;
+                        let (x, y, interaction) = interaction_tuple;
 
-                        let mut object_builder = self.ecs.write_resource::<ObjectBuilder>();
-                        object_builder.request(x, y, name);
+
+                        let mut interaction_requests = self.ecs.write_resource::<InteractionResquest>();
+                        interaction_requests.request(x, y,interaction.clone());
 
                         newrunstate = RunState::PlayerTurn;
 
@@ -433,6 +434,7 @@ fn main() {
     gs.ecs.register::<Interactable>();
     gs.ecs.register::<InteractableObject>();
     gs.ecs.register::<WantsToInteract>();
+    gs.ecs.register::<Interaction>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
@@ -452,6 +454,7 @@ fn main() {
     gs.ecs.insert(RunState::MainMenu{ menu_selection: gui::MainMenuSelection::NewGame });
     gs.ecs.insert(gamelog::GameLog{ entries : vec!["Welcome to Rusty Roguelike".to_string()] });
     gs.ecs.insert(interaction_system::ObjectBuilder::new());
+    gs.ecs.insert(interaction_system::InteractionResquest::new());
 
     rltk::main_loop(context, gs);
 }

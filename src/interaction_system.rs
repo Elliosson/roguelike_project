@@ -3,7 +3,7 @@ use super::{
     gamelog::GameLog, AreaOfEffect, CombatStats, Confusion, Consumable, Equippable, Equipped,
     InBackpack, InflictsDamage, Item, Map, Name, Position, ProvidesHealing, Renderable,
     SufferDamage, WantsToDropItem, WantsToInteract, WantsToRemoveItem, WantsToUseItem, SerializeMe,
-    InteractableObject
+    InteractableObject, Interaction
 };
 use crate::spawner::wood;
 use rltk::RGB;
@@ -25,6 +25,8 @@ impl<'a> System<'a> for InteractionSystem {
         ReadStorage<'a, Name>,
         WriteExpect<'a, ObjectBuilder>,
         ReadStorage<'a, InteractableObject>,
+        WriteExpect<'a, InteractionResquest>,
+        WriteStorage<'a, Interaction>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -37,8 +39,25 @@ impl<'a> System<'a> for InteractionSystem {
             names,
             mut object_builder,
             interactable_object,
+            mut interaction_request,
+            interaction_temp,
         ) = data;
 
+
+        //parcours all interaction request
+        for (x, y, interaction) in &interaction_request.requests{
+            //build object
+            for to_build in &interaction.objectToBuild{
+                //ask for building the object
+                object_builder.request(*x, *y, to_build.clone());
+            }
+
+            //eventualy destroy the entiety
+        }
+
+        interaction_request.requests.clear();
+
+/*
         let mut to_remove: Vec<Entity> = Vec::new();
 
         for (entity, want_interact, position) in (&entities, &wants_interacts, &positions).join() {
@@ -59,7 +78,7 @@ impl<'a> System<'a> for InteractionSystem {
 
                         //provisoir
                         for interaction in &possibles_interactions.interactions{
-                            let name = interaction.clone();
+                            let name = interaction.name.clone();
                             object_builder.request(x, y, name);
 
                         }
@@ -87,8 +106,8 @@ impl<'a> System<'a> for InteractionSystem {
         for entity in to_remove {
             positions.remove(entity);
         }
-
-        wants_interacts.clear();
+*/
+        
     }
 }
 
@@ -214,6 +233,25 @@ impl ObjectBuilder {
 
     pub fn request(&mut self, x: i32, y: i32, name: String) {
         self.requests.push(ObjectRequest { x, y, name});
+    }
+}
+
+
+
+pub struct InteractionResquest{
+    requests: Vec<(i32, i32, Interaction)>,
+}
+
+impl InteractionResquest {
+    #[allow(clippy::new_without_default)]
+    pub fn new() -> InteractionResquest {
+        InteractionResquest {
+            requests: Vec::new(),
+        }
+    }
+
+    pub fn request(&mut self, x:i32, y: i32, interaction: Interaction) {
+        self.requests.push((x, y, interaction));
     }
 }
 

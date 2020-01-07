@@ -68,7 +68,24 @@ pub struct Interactable {}
 
 #[derive(Component, Debug, Clone)]
 pub struct InteractableObject {
-    pub interactions: Vec<String>
+    pub interactions: Vec<Interaction>
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct Interaction {
+    pub name: String,
+    pub objectToBuild: Vec<String>,
+    pub entityToDestroy: Vec<Entity>
+}
+
+impl Interaction{
+    pub fn new(name: String) -> Interaction{
+        Interaction{
+            name: name,
+            objectToBuild: Vec::new() ,
+            entityToDestroy: Vec::new(),
+        }
+    }
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]

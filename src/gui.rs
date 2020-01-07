@@ -3,7 +3,7 @@ use rltk::{ RGB, Rltk, Console, Point, VirtualKeyCode };
 extern crate specs;
 use specs::prelude::*;
 use super::{CombatStats, Player, gamelog::GameLog, Map, Name, Position, State, InBackpack,
-    Viewshed, RunState, Equipped, InteractableObject};
+    Viewshed, RunState, Equipped, InteractableObject, Interaction};
 
 pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
@@ -356,7 +356,7 @@ pub fn game_over(ctx : &mut Rltk) -> GameOverResult {
 #[derive(PartialEq, Copy, Clone)]
 pub enum InteractionMenuResult { Cancel, NoResponse, Selected }
 //get all interaction on player position, print them, and get the choice
-pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (InteractionMenuResult, Option<(i32, i32, String)>) {
+pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (InteractionMenuResult, Option<(i32, i32, Interaction)>) {
 
     //get storage
     let player_entity = gs.ecs.fetch::<Entity>();
@@ -376,7 +376,7 @@ pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (Inte
     ctx.print_color(18, y+count as i32+1, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "ESCAPE to cancel");
 
     let mut j = 0;
-    let mut possible_interactions : Vec<String> = Vec::new();
+    let mut possible_interactions : Vec<Interaction> = Vec::new();
     // get of interactable object
     for (entity, interactable, position, name) in (&entities, &interactables, &positions, &names).join(){
         //only take object on player position
@@ -388,11 +388,11 @@ pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (Inte
                 ctx.set(18, y, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), 97+j as u8);
                 ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
         
-                ctx.print(21, y, &format!("{}: {}", name.name, interaction)); //TODO for know interaction are just names
+                ctx.print(21, y, &format!("{}: {}", name.name, interaction.name)); //TODO for know interaction are just names
                 y += 1;
                 j += 1;
 
-                possible_interactions.push(interaction.to_string());
+                possible_interactions.push(interaction.clone());
             }
         }
     }

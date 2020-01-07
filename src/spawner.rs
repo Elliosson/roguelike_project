@@ -5,7 +5,7 @@ use super::{
     map::MAPWIDTH, random_table::RandomTable, AreaOfEffect, BlocksTile, Interactable, CombatStats,
     Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage, Item,
     MeleePowerBonus, Monster, Name, Player, Position, ProvidesHealing, Ranged, Rect, Renderable,
-    SerializeMe, Viewshed, InteractableObject,
+    SerializeMe, Viewshed, InteractableObject, Interaction
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
@@ -360,7 +360,19 @@ fn tree(ecs: &mut World, x: i32, y: i32) {
             name: "Tree".to_string(),
         })
         .with(Interactable {})
-        .with(InteractableObject{interactions: vec!["Wood".to_string(), "Apple".to_string()]})
+        //TODO mettre directement une liste d'interaction plutot que d'avoir la surcouche interactable object qui me fait chier
+        .with(InteractableObject{interactions: vec![
+            Interaction{
+                name: "Pick Apple".to_string(),
+                objectToBuild: vec!["Apple".to_string()] ,
+                entityToDestroy: Vec::new(),
+            },
+            Interaction{
+                name: "Chop Wood".to_string(),
+                objectToBuild: vec!["Wood".to_string()] ,
+                entityToDestroy: Vec::new(),
+            }
+            ]})
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
@@ -375,7 +387,7 @@ pub fn wood(ecs: &mut World,  x: i32, y: i32){
             render_order: 2,
         })
         .with(Name {
-            name: "Tree".to_string(),
+            name: "Wood".to_string(),
         })
         .with(Item {})
         .marked::<SimpleMarker<SerializeMe>>()
