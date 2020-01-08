@@ -359,10 +359,8 @@ pub enum InteractionMenuResult { Cancel, NoResponse, Selected }
 pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (InteractionMenuResult, Option<(i32, i32, Interaction, Entity)>) {
 
     //get storage
-    let player_entity = gs.ecs.fetch::<Entity>();
     let names = gs.ecs.read_storage::<Name>();
     let interactables = gs.ecs.read_storage::<InteractableObject>();
-    let interactions = gs.ecs.read_storage::<Interaction>();
     let positions = gs.ecs.read_storage::<Position>();
     let entities = gs.ecs.entities();
     let player_pos = gs.ecs.fetch::<Point>();
@@ -409,7 +407,7 @@ pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (Inte
             match key {
                 VirtualKeyCode::Escape => { (InteractionMenuResult::Cancel, None) }
                 _ => {
-                    let mut selection = rltk::letter_to_option(key);
+                    let selection = rltk::letter_to_option(key);
                     if selection > -1 && selection < count as i32 { //TODO transmettre une entieté d'interaction au lieu de transmettre un nom
                         return (InteractionMenuResult::Selected, Some((player_pos.x, player_pos.y,
                              possible_interactions[selection as usize].clone(),

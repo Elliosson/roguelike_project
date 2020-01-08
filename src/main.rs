@@ -30,7 +30,7 @@ mod spawner;
 mod inventory_system;
 use inventory_system::{ ItemCollectionSystem, ItemUseSystem, ItemDropSystem, ItemRemoveSystem };
 mod interaction_system;
-use interaction_system::{ InteractionSystem, WoodSpawnSystem, ObjectBuilder, InteractionResquest};
+use interaction_system::{ InteractionResquest};
 pub mod saveload_system;
 pub mod random_table;
 mod object_deleter;
