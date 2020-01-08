@@ -20,3 +20,36 @@ pub fn delete_entity_to_delete(ecs : &mut World) {
         ecs.delete_entity(victim).expect("Unable to delete");
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn object_deleter_test(){
+
+        //create a new world
+        let mut ecs :World = World::new();
+        ecs.register::<ToDelete>();
+
+        ecs.create_entity()
+            .with(ToDelete {})
+            .build();
+
+        {
+            let to_deletes = ecs.read_storage::<ToDelete>();
+            let composant_count = to_deletes.join().count();
+
+            assert_eq!(composant_count, 1);
+        }
+
+
+        delete_entity_to_delete(&mut ecs);
+
+        let to_deletes = ecs.read_storage::<ToDelete>();
+        let composant_count = to_deletes.join().count();
+
+        assert_eq!(composant_count, 0);
+
+    }
+}
