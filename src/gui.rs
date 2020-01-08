@@ -356,12 +356,13 @@ pub fn game_over(ctx : &mut Rltk) -> GameOverResult {
 #[derive(PartialEq, Copy, Clone)]
 pub enum InteractionMenuResult { Cancel, NoResponse, Selected }
 //get all interaction on player position, print them, and get the choice
-pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (InteractionMenuResult, Option<(i32, i32, Interaction)>) {
+pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (InteractionMenuResult, Option<(i32, i32, Interaction, Entity)>) {
 
     //get storage
     let player_entity = gs.ecs.fetch::<Entity>();
     let names = gs.ecs.read_storage::<Name>();
     let interactables = gs.ecs.read_storage::<InteractableObject>();
+    let interactions = gs.ecs.read_storage::<Interaction>();
     let positions = gs.ecs.read_storage::<Position>();
     let entities = gs.ecs.entities();
     let player_pos = gs.ecs.fetch::<Point>();
@@ -377,6 +378,8 @@ pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (Inte
 
     let mut j = 0;
     let mut possible_interactions : Vec<Interaction> = Vec::new();
+    let mut interacted_entity: Vec<Entity> = Vec::new();
+    
     // get of interactable object
     for (entity, interactable, position, name) in (&entities, &interactables, &positions, &names).join(){
         //only take object on player position
@@ -393,10 +396,12 @@ pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (Inte
                 j += 1;
 
                 possible_interactions.push(interaction.clone());
+                interacted_entity.push(entity);
             }
         }
     }
 
+    
 
     match ctx.key {
         None => (InteractionMenuResult::NoResponse, None),
@@ -407,7 +412,8 @@ pub fn show_object_interaction_choice(gs : &mut State, ctx : &mut Rltk) -> (Inte
                     let mut selection = rltk::letter_to_option(key);
                     if selection > -1 && selection < count as i32 { //TODO transmettre une entieté d'interaction au lieu de transmettre un nom
                         return (InteractionMenuResult::Selected, Some((player_pos.x, player_pos.y,
-                             possible_interactions[selection as usize].clone()))); 
+                             possible_interactions[selection as usize].clone(),
+                             interacted_entity[selection as usize]))); 
                     }
                     (InteractionMenuResult::NoResponse, None)
                 }

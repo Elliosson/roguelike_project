@@ -3,7 +3,7 @@ use super::{
     gamelog::GameLog, AreaOfEffect, CombatStats, Confusion, Consumable, Equippable, Equipped,
     InBackpack, InflictsDamage, Item, Map, Name, Position, ProvidesHealing, Renderable,
     SufferDamage, WantsToDropItem, WantsToInteract, WantsToRemoveItem, WantsToUseItem, SerializeMe,
-    InteractableObject, Interaction
+    InteractableObject, Interaction, ToDelete
 };
 use crate::spawner::wood;
 use rltk::RGB;
@@ -27,6 +27,7 @@ impl<'a> System<'a> for InteractionSystem {
         ReadStorage<'a, InteractableObject>,
         WriteExpect<'a, InteractionResquest>,
         WriteStorage<'a, Interaction>,
+        WriteStorage<'a, ToDelete>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -41,18 +42,22 @@ impl<'a> System<'a> for InteractionSystem {
             interactable_object,
             mut interaction_request,
             interaction_temp,
+            mut to_deletes
         ) = data;
 
 
         //parcours all interaction request
-        for (x, y, interaction) in &interaction_request.requests{
+        for (x, y, interaction, interacted_entity) in &interaction_request.requests{
             //build object
-            for to_build in &interaction.objectToBuild{
+            for to_build in &interaction.object_to_build{
                 //ask for building the object
                 object_builder.request(*x, *y, to_build.clone());
             }
 
             //eventualy destroy the entiety
+            if interaction.destructif == true {
+                to_deletes.insert(*interacted_entity, ToDelete{}).expect("Unable to insert delete entity");
+            }
         }
 
         interaction_request.requests.clear();
@@ -239,7 +244,7 @@ impl ObjectBuilder {
 
 
 pub struct InteractionResquest{
-    requests: Vec<(i32, i32, Interaction)>,
+    requests: Vec<(i32, i32, Interaction, Entity)>,
 }
 
 impl InteractionResquest {
@@ -250,8 +255,8 @@ impl InteractionResquest {
         }
     }
 
-    pub fn request(&mut self, x:i32, y: i32, interaction: Interaction) {
-        self.requests.push((x, y, interaction));
+    pub fn request(&mut self, x:i32, y: i32, interaction: Interaction, interacted_entity: Entity) {
+        self.requests.push((x, y, interaction, interacted_entity));
     }
 }
 

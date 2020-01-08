@@ -33,6 +33,7 @@ mod interaction_system;
 use interaction_system::{ InteractionSystem, WoodSpawnSystem, ObjectBuilder, InteractionResquest};
 pub mod saveload_system;
 pub mod random_table;
+mod object_deleter;
 
 rltk::add_wasm_support!();
 
@@ -165,11 +166,11 @@ impl GameState for State {
                     gui::InteractionMenuResult::Selected => {
                         // TODO provisory just ask for the creation of an object of the name
                         let interaction_tuple = result.1.unwrap();
-                        let (x, y, interaction) = interaction_tuple;
+                        let (x, y, interaction, interacted_entity) = interaction_tuple;
 
 
                         let mut interaction_requests = self.ecs.write_resource::<InteractionResquest>();
-                        interaction_requests.request(x, y,interaction.clone());
+                        interaction_requests.request(x, y,interaction.clone(), interacted_entity);
 
                         newrunstate = RunState::PlayerTurn;
 
@@ -256,6 +257,7 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
         damage_system::delete_the_dead(&mut self.ecs);
+        object_deleter::delete_entity_to_delete(&mut self.ecs);
     }
 }
 
@@ -435,6 +437,7 @@ fn main() {
     gs.ecs.register::<InteractableObject>();
     gs.ecs.register::<WantsToInteract>();
     gs.ecs.register::<Interaction>();
+    gs.ecs.register::<ToDelete>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

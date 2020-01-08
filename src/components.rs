@@ -74,16 +74,16 @@ pub struct InteractableObject {
 #[derive(Component, Debug, Clone)]
 pub struct Interaction {
     pub name: String,
-    pub objectToBuild: Vec<String>,
-    pub entityToDestroy: Vec<Entity>
+    pub object_to_build: Vec<String>,
+    pub destructif: bool
 }
 
 impl Interaction{
     pub fn new(name: String) -> Interaction{
         Interaction{
             name: name,
-            objectToBuild: Vec::new() ,
-            entityToDestroy: Vec::new(),
+            object_to_build: Vec::new() ,
+            destructif: false,
         }
     }
 }
@@ -172,6 +172,9 @@ pub struct MeleePowerBonus {
 pub struct DefenseBonus {
     pub defense : i32
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct ToDelete {}
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.

@@ -364,13 +364,13 @@ fn tree(ecs: &mut World, x: i32, y: i32) {
         .with(InteractableObject{interactions: vec![
             Interaction{
                 name: "Pick Apple".to_string(),
-                objectToBuild: vec!["Apple".to_string()] ,
-                entityToDestroy: Vec::new(),
+                object_to_build: vec!["Apple".to_string()] ,
+                destructif: false,
             },
             Interaction{
-                name: "Chop Wood".to_string(),
-                objectToBuild: vec!["Wood".to_string()] ,
-                entityToDestroy: Vec::new(),
+                name: "Chop Tree".to_string(),
+                object_to_build: vec!["Wood".to_string()] ,
+                destructif: true,
             }
             ]})
         .marked::<SimpleMarker<SerializeMe>>()
