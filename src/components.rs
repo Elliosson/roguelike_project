@@ -66,12 +66,12 @@ pub struct Item {}
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Interactable {}
 
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct InteractableObject {
     pub interactions: Vec<Interaction>
 }
 
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Interaction {
     pub name: String,
     pub object_to_build: Vec<String>,

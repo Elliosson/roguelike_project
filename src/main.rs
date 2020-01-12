@@ -34,6 +34,10 @@ use interaction_system::{ InteractionResquest};
 pub mod saveload_system;
 pub mod random_table;
 mod object_deleter;
+pub mod raws;
+#[macro_use]
+extern crate lazy_static;
+
 
 rltk::add_wasm_support!();
 
@@ -441,6 +445,8 @@ fn main() {
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
+    raws::load_raws();
+
     let map : Map = Map::new_map();
     let (player_x, player_y) = map.rooms[0].center();
 
@@ -450,6 +456,8 @@ fn main() {
     for room in map.rooms.iter(){
         spawner::spawn_trees(&mut gs.ecs, room);
     }
+
+    
 
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));

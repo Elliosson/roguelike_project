@@ -5,7 +5,7 @@ use super::{
     map::MAPWIDTH, random_table::RandomTable, AreaOfEffect, BlocksTile, Interactable, CombatStats,
     Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage, Item,
     MeleePowerBonus, Monster, Name, Player, Position, ProvidesHealing, Ranged, Rect, Renderable,
-    SerializeMe, Viewshed, InteractableObject, Interaction
+    SerializeMe, Viewshed, InteractableObject, Interaction, raws::*
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
@@ -92,7 +92,22 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
         let y = (*spawn.0 / MAPWIDTH) as i32;
 
         match spawn.1.as_ref() {
-            "Tree" => tree(ecs, x, y),
+            "Tree" => {
+                let raws: &RawMaster = &RAWS.lock().unwrap();
+                let key = "Tree";
+                if raws.prop_index.contains_key(key) {
+                    let spawn_result = spawn_named_prop(raws, ecs.create_entity(), key,  SpawnType::AtPosition{ x, y});
+                    if spawn_result.is_some() {
+                    
+                    }
+                    else{
+                        println!("WARNING: We don't know how to spawn [{}]!", spawn.1);
+                    }
+                }
+                else{
+                    println!("WARNING: No keys !");
+                }
+            },
             _ => {}
         }
     }
@@ -348,6 +363,9 @@ fn tower_shield(ecs: &mut World, x: i32, y: i32) {
 }
 
 fn tree(ecs: &mut World, x: i32, y: i32) {
+
+
+
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -393,3 +411,5 @@ pub fn wood(ecs: &mut World,  x: i32, y: i32){
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
+
+
