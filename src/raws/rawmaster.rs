@@ -1,15 +1,18 @@
+extern crate specs;
+
 use std::collections::{HashMap, HashSet};
 use specs::prelude::*;
 use crate::components::*;
 use super::{Raws};
 use crate::random_table::{RandomTable};
+use specs::prelude::*;
 
 pub enum SpawnType {
     AtPosition { x: i32, y: i32 }
 }
 
 pub struct RawMaster {
-    raws : Raws,
+    pub raws : Raws,
     pub item_index : HashMap<String, usize>, //todo revert pub
     mob_index : HashMap<String, usize>,
     pub prop_index : HashMap<String, usize>
@@ -211,16 +214,12 @@ pub fn spawn_named_prop(raws: &RawMaster, new_entity : EntityBuilder, key : &str
         if let Some(interactable_object) = &prop_template.interactable_object {
             eb = eb.with(interactable_object.clone()); //TODO comprendre pourquoi il ne fait pas comme ça( il passe par un itermediaire item_component)
         }
-
-
-
-
-
-
         return Some(eb.build());
     }
     None
 }
+
+
 //key is just a string, it's just the name of the entity
 pub fn spawn_named_entity(raws: &RawMaster, new_entity : EntityBuilder, key : &str, pos : SpawnType) -> Option<Entity> {
     if raws.item_index.contains_key(key) {

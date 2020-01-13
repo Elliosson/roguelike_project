@@ -81,7 +81,7 @@ impl State {
         drop_items.run_now(&self.ecs);
         let mut item_remove = ItemRemoveSystem{};
         item_remove.run_now(&self.ecs);
-        let mut wood = interaction_system::WoodSpawnSystem{};
+        let mut wood = interaction_system::ObjectSpawnSystem{};
         wood.run_now(&self.ecs);
         let mut interaction = interaction_system::InteractionSystem{};
         interaction.run_now(&self.ecs);

@@ -2,10 +2,10 @@ extern crate rltk;
 use rltk::{RandomNumberGenerator, RGB};
 extern crate specs;
 use super::{
-    map::MAPWIDTH, random_table::RandomTable, AreaOfEffect, BlocksTile, Interactable, CombatStats,
-    Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage, Item,
-    MeleePowerBonus, Monster, Name, Player, Position, ProvidesHealing, Ranged, Rect, Renderable,
-    SerializeMe, Viewshed, InteractableObject, Interaction, raws::*
+    map::MAPWIDTH, random_table::RandomTable, raws::*, AreaOfEffect, BlocksTile, CombatStats,
+    Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage, Interactable,
+    InteractableObject, Interaction, Item, MeleePowerBonus, Monster, Name, Player, Position,
+    ProvidesHealing, Ranged, Rect, Renderable, SerializeMe, Viewshed,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
@@ -96,18 +96,21 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
                 let raws: &RawMaster = &RAWS.lock().unwrap();
                 let key = "Tree";
                 if raws.prop_index.contains_key(key) {
-                    let spawn_result = spawn_named_prop(raws, ecs.create_entity(), key,  SpawnType::AtPosition{ x, y});
+                    let spawn_result = spawn_named_entity(
+                        raws,
+                        ecs.create_entity(),
+                        key,
+                        SpawnType::AtPosition { x, y },
+                    );
                     if spawn_result.is_some() {
-                    
-                    }
-                    else{
+
+                    } else {
                         println!("WARNING: We don't know how to spawn [{}]!", spawn.1);
                     }
-                }
-                else{
+                } else {
                     println!("WARNING: No keys !");
                 }
-            },
+            }
             _ => {}
         }
     }
@@ -363,9 +366,6 @@ fn tower_shield(ecs: &mut World, x: i32, y: i32) {
 }
 
 fn tree(ecs: &mut World, x: i32, y: i32) {
-
-
-
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -379,23 +379,25 @@ fn tree(ecs: &mut World, x: i32, y: i32) {
         })
         .with(Interactable {})
         //TODO mettre directement une liste d'interaction plutot que d'avoir la surcouche interactable object qui me fait chier
-        .with(InteractableObject{interactions: vec![
-            Interaction{
-                name: "Pick Apple".to_string(),
-                object_to_build: vec!["Apple".to_string()] ,
-                destructif: false,
-            },
-            Interaction{
-                name: "Chop Tree".to_string(),
-                object_to_build: vec!["Wood".to_string()] ,
-                destructif: true,
-            }
-            ]})
+        .with(InteractableObject {
+            interactions: vec![
+                Interaction {
+                    name: "Pick Apple".to_string(),
+                    object_to_build: vec!["Apple".to_string()],
+                    destructif: false,
+                },
+                Interaction {
+                    name: "Chop Tree".to_string(),
+                    object_to_build: vec!["Wood".to_string()],
+                    destructif: true,
+                },
+            ],
+        })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
 
-pub fn wood(ecs: &mut World,  x: i32, y: i32){
+pub fn wood(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -411,5 +413,3 @@ pub fn wood(ecs: &mut World,  x: i32, y: i32){
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
-
-

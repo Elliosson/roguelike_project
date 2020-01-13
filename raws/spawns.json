@@ -165,6 +165,26 @@
             "defense_bonus" : 1
         }
     },
+    
+    {
+        "name" : "Wood",
+        "renderable": {
+            "glyph" : "*",
+            "fg" : "#582900",
+            "bg" : "#000000",
+            "order" : 2
+        }
+    },
+
+    {
+        "name" : "Apple",
+        "renderable": {
+            "glyph" : "*",
+            "fg" : "#FF0000",
+            "bg" : "#000000",
+            "order" : 2
+        }
+    },
 
     {
         "name" : "Tower Shield",
@@ -260,7 +280,7 @@
                     "object_to_build": [
                         "Wood"
                     ],
-                    "destructif": false
+                    "destructif": true
                 }
             ]
         }
