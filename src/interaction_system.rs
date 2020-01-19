@@ -9,10 +9,13 @@ use super::{
     Position,
     Renderable,
     ToDelete,
+    Leaf,
+    Tree,
 };
 
 use rltk::RGB;
 use specs::prelude::*;
+
 
 pub struct InteractionSystem {}
 
@@ -111,64 +114,6 @@ impl<'a> System<'a> for ObjectSpawnSystem {
     }
 }
 
-//key is just a string, it's just the name of the entity
-pub fn spawn_named_prop_ingame(
-    data: ObjectSpawmerDataRef,
-    raws: &RawMaster,
-    key: &str,
-    pos: SpawnType,
-) {
-    let (entities, positions, renderables, names, items, interactables, interactable_objects) =
-        data;
-
-    println!("spawn_named_prop_ingame");
-    if raws.prop_index.contains_key(key) {
-        println!("key {}", key);
-        let prop_template = &raws.raws.props[raws.prop_index[key]];
-
-        let mut new_entity = entities.build_entity();
-
-        // Spawn in the specified location
-        match pos {
-            SpawnType::AtPosition { x, y } => {
-                new_entity = new_entity.with(Position { x, y }, positions);
-            }
-        }
-
-        // Renderable
-        if let Some(renderable) = &prop_template.renderable {
-            let renderable_obj = Renderable {
-                glyph: rltk::to_cp437(renderable.glyph.chars().next().unwrap()),
-                fg: rltk::RGB::from_hex(&renderable.fg).expect("Invalid RGB"),
-                bg: rltk::RGB::from_hex(&renderable.bg).expect("Invalid RGB"),
-                render_order: renderable.order,
-            };
-            new_entity = new_entity.with(renderable_obj, renderables);
-        }
-
-        new_entity = new_entity.with(
-            Name {
-                name: prop_template.name.clone(),
-            },
-            names,
-        );
-
-        // Interactable
-        if let Some(interactable) = prop_template.interactable {
-            if interactable {
-                new_entity = new_entity.with(Interactable {}, interactables)
-            };
-        }
-
-        // InteractableObject
-        if let Some(interactable_object) = &prop_template.interactable_object {
-            new_entity = new_entity.with(interactable_object.clone(), interactable_objects); //TODO comprendre pourquoi il ne fait pas comme ça( il passe par un itermediaire item_component)
-        }
-        new_entity.build();
-
-        println!("finish");
-    }
-}
 
 //almost duplicaton of rawmaster function , only diference is the insert because we don't have ecs
 pub fn spawn_named_item_ingame(

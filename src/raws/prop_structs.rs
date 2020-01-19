@@ -1,5 +1,5 @@
 use serde::{Deserialize};
-use super::{Renderable};
+use super::{Renderable, RawEnergyReserve, RawViewshed};
 use std::collections::HashMap;
 use crate::components::*; //todo maybe not ok
 
@@ -15,8 +15,10 @@ pub struct Prop {
     pub interactable : Option<bool>,
     pub interactable_object: Option<InteractableObject>,
     pub leaf : Option<bool>,
-    pub tree : Option<bool>
-
+    pub tree : Option<bool>,
+    pub energy_reserve : Option<RawEnergyReserve>,
+    pub viewshed : Option<RawViewshed>,
+    pub cow : Option<bool>
 }
 
 #[derive(Deserialize, Debug)]

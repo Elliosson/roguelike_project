@@ -491,14 +491,18 @@ fn main() {
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     for room in map.rooms.iter(){
+
         spawner::spawn_trees(&mut gs.ecs, room);
-        cow(&mut gs.ecs, 2, 2);
-        cow(&mut gs.ecs, 5, 2);
-        cow(&mut gs.ecs, 8, 10);
-        cow(&mut gs.ecs, 5, 3);
-        cow(&mut gs.ecs, 12, 6);
-        cow(&mut gs.ecs, 15, 15);
-        cow(&mut gs.ecs, 3, 8);
+
+        spawn_named (&mut gs.ecs, "Cow", 5, 5);
+        spawn_named (&mut gs.ecs, "Cow", 2, 2);
+        spawn_named (&mut gs.ecs, "Cow", 5, 2);
+        spawn_named (&mut gs.ecs, "Cow", 8, 10);
+        spawn_named (&mut gs.ecs, "Cow", 5, 3);
+        spawn_named (&mut gs.ecs, "Cow", 12, 6);
+        spawn_named (&mut gs.ecs, "Cow", 15, 15);
+
+
 
     }
 

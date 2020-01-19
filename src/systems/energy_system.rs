@@ -1,5 +1,5 @@
 extern crate specs;
-use crate::{gamelog::GameLog, EnergyReserve, Hunger};
+use crate::{gamelog::GameLog, EnergyReserve, Hunger, ToDelete};
 use specs::prelude::*;
 
 pub struct EnergySystem {}
@@ -10,16 +10,22 @@ impl<'a> System<'a> for EnergySystem {
         Entities<'a>,
         WriteExpect<'a, GameLog>,
         WriteStorage<'a, EnergyReserve>,
+        WriteStorage<'a, ToDelete>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _log, mut energy_reserves) = data;
+        let (entities, _log, mut energy_reserves, mut to_deletes) = data;
 
-        for (_entity, mut en_res) in (&entities, &mut energy_reserves).join() {
+        for (entity, mut en_res) in (&entities, &mut energy_reserves).join() {
             //consumption of energy
             en_res.reserve -= en_res.base_consumption;
 
-            if en_res.reserve < (en_res.max_reserve / 2) {
+            if en_res.reserve <= 0 {
+                //kill entity
+                to_deletes
+                    .insert(entity, ToDelete {})
+                    .expect("Unable to insert");
+            } else if en_res.reserve < (en_res.max_reserve / 2) {
                 en_res.hunger = Hunger::Hungry;
             } else {
                 en_res.hunger = Hunger::Full;

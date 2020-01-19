@@ -315,6 +315,26 @@
         "blocks_tile" : true,
         "blocks_visibility" : true,
         "door_open" : true
+    },
+    {
+        "name" : "Cow",
+        "renderable": {
+            "glyph" : "0",
+            "fg" : "#FF0000",
+            "bg" : "#000000",
+            "order" : 2
+        },
+        "blocks_tile" : true,
+        "viewshed": {
+            "range": 8
+        },
+        "energy_reserve": {
+            "reserve": 10,
+            "max_reserve": 200,
+            "base_consumption": 1
+        },
+        "cow": true
     }
 ]
 }
+

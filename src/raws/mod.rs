@@ -6,6 +6,8 @@ mod prop_structs;
 use prop_structs::*;
 mod spawn_table_structs;
 use spawn_table_structs::*;
+mod ingame_spawner;
+use ingame_spawner::*;
 
 mod rawmaster;
 pub use rawmaster::*;

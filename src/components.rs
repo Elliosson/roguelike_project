@@ -24,7 +24,7 @@ pub struct Renderable {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Player {}
 
-#[derive(Component, ConvertSaveload, Clone)]
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Viewshed {
     pub visible_tiles : Vec<rltk::Point>,
     pub range : i32,
@@ -179,7 +179,6 @@ pub struct ToDelete {}
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Cow {
     pub life : i32,
-    pub food : i32,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]

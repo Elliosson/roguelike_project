@@ -34,3 +34,16 @@ pub struct Weapon {
 pub struct Shield {
     pub defense_bonus: i32
 }
+
+
+#[derive(Deserialize, Debug)]
+pub struct RawViewshed {
+    pub range: i32
+}
+
+#[derive(Deserialize, Debug)]
+pub struct RawEnergyReserve {
+    pub reserve: i32,
+    pub max_reserve: i32,
+    pub base_consumption: i32
+}

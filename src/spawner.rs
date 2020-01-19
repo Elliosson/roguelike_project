@@ -117,6 +117,29 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
 }
 
 
+pub fn spawn_named (ecs: &mut World, key : &str,  x: i32, y: i32, ) {
+    let raws: &RawMaster = &RAWS.lock().unwrap();
+    if raws.prop_index.contains_key(key) {
+        let spawn_result = spawn_named_entity(
+            raws,
+            ecs.create_entity(),
+            key,
+            SpawnType::AtPosition { x, y },
+        );
+        if spawn_result.is_some() {
+
+        } else {
+            println!("WARNING: We don't know how to spawn [{}]!", key);
+        }
+    } else {
+        println!("WARNING: No keys {} !", key);
+    }
+
+}
+
+
+
+
 
 /// Fills a room with stuff!
 #[allow(clippy::map_entry)]
@@ -438,7 +461,7 @@ pub fn cow(ecs: &mut World, x: i32, y: i32) {
             name: "Cow".to_string(),
         })
         .with(BlocksTile {})
-        .with(Cow{life: 100, food: 5})
+        .with(Cow{life: 100})
         .with(EnergyReserve{
             reserve: 10,
             max_reserve: 200,

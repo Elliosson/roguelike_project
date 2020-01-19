@@ -1,6 +1,5 @@
 extern crate specs;
 use super::{gamelog::GameLog, Cow, EnergyReserve, Hunger, Leaf, WantToEat};
-use rltk::RGB;
 use specs::prelude::*;
 
 pub struct EatingSystem {}
@@ -21,7 +20,7 @@ impl<'a> System<'a> for EatingSystem {
         let mut eated_leafs: Vec<Entity> = Vec::new();
 
         //resolve eating
-        for (_entity, want_to_eat, mut cow, mut en_res) in
+        for (_entity, want_to_eat, mut _cow, mut en_res) in
             (&entities, &want_to_eats, &mut cows, &mut energy_reserves).join()
         {
             if let Some(leaf) = leafs.get(want_to_eat.target) {
