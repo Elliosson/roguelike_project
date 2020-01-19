@@ -43,7 +43,6 @@ impl<'a> System<'a> for CowAI {
             let idx = map.xy_idx(pos.x, pos.y);
             for thing in map.tile_content[idx].iter() {
                 if let Some(leaf) = leafs.get(*thing) {
-                    println!("The Cow is on the leaf");
                     cow.food += 100;
                 }
             }

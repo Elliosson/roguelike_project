@@ -212,30 +212,29 @@ pub fn draw_map(ecs: &World, ctx : &mut Rltk) {
     for (idx,tile) in map.tiles.iter().enumerate() {
         // Render a tile depending upon the tile type
 
-        if map.revealed_tiles[idx] {
-            let glyph;
-            let mut fg;
-            match tile {
-                TileType::Floor => {
-                    glyph = rltk::to_cp437('.');
-                    fg = RGB::from_f32(0.0, 0.5, 0.5);
-                }
-                TileType::Wall => {
-                    glyph = rltk::to_cp437('#');
-                    fg = RGB::from_f32(0., 1.0, 0.);
-                }
-                TileType::DownStairs => {
-                    glyph = rltk::to_cp437('>');
-                    fg = RGB::from_f32(0., 1.0, 1.0);
-                }
-                _=> {
-                    glyph = rltk::to_cp437('?');
-                    fg = RGB::from_f32(0., 1.0, 1.0);
-                }
+        let  glyph;
+        let mut fg;
+        match tile {
+            TileType::Floor => {
+                glyph = rltk::to_cp437('.');
+                fg = RGB::from_f32(0.0, 0.5, 0.5);
             }
-            if !map.visible_tiles[idx] { fg = fg.to_greyscale() }
-            ctx.set(x, y, fg, RGB::from_f32(0., 0., 0.), glyph);
+            TileType::Wall => {
+                glyph = rltk::to_cp437('#');
+                fg = RGB::from_f32(0., 1.0, 0.);
+            }
+            TileType::DownStairs => {
+                glyph = rltk::to_cp437('>');
+                fg = RGB::from_f32(0., 1.0, 1.0);
+            }
+            _=> {
+                glyph = rltk::to_cp437('?');
+                fg = RGB::from_f32(0., 1.0, 1.0);
+            }
         }
+        ctx.set(x, y, fg, RGB::from_f32(0., 0., 0.), glyph);
+
+
 
         // Move the coordinates
         x += 1;
