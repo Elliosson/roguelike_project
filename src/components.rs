@@ -225,6 +225,16 @@ pub struct ApplyTeleport {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct EntryTrigger {}
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Tree {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct EnergyReserve {
+    pub energy_reserve: i32,
+    pub max_energy_reserve: i32,
+    pub base_energy_consuption: i32,
+}
+
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.

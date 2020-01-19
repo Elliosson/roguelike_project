@@ -284,7 +284,8 @@
                 }
             ]
         },
-        "leaf": true
+        "leaf": true,
+        "tree": true
     },
     {
         "name" : "Bear Trap",

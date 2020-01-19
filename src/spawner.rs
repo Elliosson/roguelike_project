@@ -5,7 +5,7 @@ use super::{
     map::MAPWIDTH, random_table::RandomTable, raws::*, AreaOfEffect, BlocksTile, CombatStats,
     Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage, Interactable,
     InteractableObject, Interaction, Item, MeleePowerBonus, Monster, Name, Player, Position,
-    ProvidesHealing, Ranged, Rect, Renderable, SerializeMe, Viewshed, Cow, Leaf
+    ProvidesHealing, Ranged, Rect, Renderable, SerializeMe, Viewshed, Cow, Leaf, Tree
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
@@ -395,6 +395,7 @@ fn tree(ecs: &mut World, x: i32, y: i32) {
             ],
         })
         .with(Leaf{ nutriments: 100})
+        .with(Tree{})
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }

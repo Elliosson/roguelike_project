@@ -14,7 +14,8 @@ pub struct Prop {
     pub entry_trigger : Option<EntryTrigger>,
     pub interactable : Option<bool>,
     pub interactable_object: Option<InteractableObject>,
-    pub leaf : Option<bool>
+    pub leaf : Option<bool>,
+    pub tree : Option<bool>
 
 }
 

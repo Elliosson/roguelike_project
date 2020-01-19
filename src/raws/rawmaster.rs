@@ -216,6 +216,12 @@ pub fn spawn_named_prop(raws: &RawMaster, new_entity : EntityBuilder, key : &str
                 eb = eb.with(Leaf{nutriments: 100}); //TODO no default value
             }
         }
+
+        if let Some(tree) = prop_template.tree {
+            if tree == true{
+                eb = eb.with(Tree{}); //TODO no default value
+            }
+        }
         
         return Some(eb.build());
     }

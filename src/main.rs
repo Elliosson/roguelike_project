@@ -44,7 +44,12 @@ pub mod ai;
 mod trigger_system;
 mod tiletype;
 use tiletype::{TileType, tile_walkable};
-
+mod eating_system;
+use eating_system::EatingSystem;
+mod vegetable_grow_system;
+use vegetable_grow_system::VegetableGrowSystem;
+pub mod systems;
+use systems::EnergySystem;
 
 #[macro_use]
 extern crate lazy_static;
@@ -100,6 +105,12 @@ impl State {
         interaction.run_now(&self.ecs);
         let mut movement = MovementSystem{};
         movement.run_now(&self.ecs);
+        let mut eating = EatingSystem{};
+        eating.run_now(&self.ecs);
+        let mut veg_grow = VegetableGrowSystem{};
+        veg_grow.run_now(&self.ecs);
+        let mut energy = EnergySystem{};
+        energy.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -466,6 +477,8 @@ fn main() {
     gs.ecs.register::<MoveMode>();
     gs.ecs.register::<EntityMoved>();
     gs.ecs.register::<EntryTrigger>();
+    gs.ecs.register::<Tree>();
+    gs.ecs.register::<EnergyReserve>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
@@ -480,6 +493,13 @@ fn main() {
     for room in map.rooms.iter(){
         spawner::spawn_trees(&mut gs.ecs, room);
         cow(&mut gs.ecs, 2, 2);
+        cow(&mut gs.ecs, 5, 2);
+        cow(&mut gs.ecs, 8, 10);
+        cow(&mut gs.ecs, 5, 3);
+        cow(&mut gs.ecs, 12, 6);
+        cow(&mut gs.ecs, 15, 15);
+        cow(&mut gs.ecs, 3, 8);
+
     }
 
     
@@ -492,5 +512,9 @@ fn main() {
     gs.ecs.insert(interaction_system::ObjectBuilder::new());
     gs.ecs.insert(interaction_system::InteractionResquest::new());
 
+
+
     rltk::main_loop(context, gs);
+
+
 }
