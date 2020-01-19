@@ -228,11 +228,15 @@ pub struct EntryTrigger {}
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Tree {}
 
+#[derive(PartialEq, Debug, Copy, Clone, Serialize, Deserialize)]
+pub enum Hunger { Full, Hungry }
+
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct EnergyReserve {
-    pub energy_reserve: i32,
-    pub max_energy_reserve: i32,
-    pub base_energy_consuption: i32,
+    pub reserve: i32,
+    pub max_reserve: i32,
+    pub base_consumption: i32,
+    pub hunger: Hunger,
 }
 
 

@@ -10,6 +10,7 @@ use super::{
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
 use std::collections::HashMap;
+use crate::components::*;
 
 /// Spawns the player and returns his/her entity object.
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
@@ -438,6 +439,12 @@ pub fn cow(ecs: &mut World, x: i32, y: i32) {
         })
         .with(BlocksTile {})
         .with(Cow{life: 100, food: 5})
+        .with(EnergyReserve{
+            reserve: 10,
+            max_reserve: 200,
+            base_consumption: 1,
+            hunger: Hunger::Full
+        })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }

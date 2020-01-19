@@ -1,6 +1,5 @@
 extern crate specs;
-use crate::{gamelog::GameLog, Cow, Leaf, Renderable, WantToEat};
-use rltk::RGB;
+use crate::{gamelog::GameLog, EnergyReserve, Hunger};
 use specs::prelude::*;
 
 pub struct EnergySystem {}
@@ -10,13 +9,21 @@ impl<'a> System<'a> for EnergySystem {
     type SystemData = (
         Entities<'a>,
         WriteExpect<'a, GameLog>,
-        WriteStorage<'a, WantToEat>,
-        WriteStorage<'a, Cow>,
-        WriteStorage<'a, Leaf>,
-        WriteStorage<'a, Renderable>,
+        WriteStorage<'a, EnergyReserve>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _log, mut want_to_eats, mut cows, mut leafs, mut renderables) = data;
+        let (entities, _log, mut energy_reserves) = data;
+
+        for (_entity, mut en_res) in (&entities, &mut energy_reserves).join() {
+            //consumption of energy
+            en_res.reserve -= en_res.base_consumption;
+
+            if en_res.reserve < (en_res.max_reserve / 2) {
+                en_res.hunger = Hunger::Hungry;
+            } else {
+                en_res.hunger = Hunger::Full;
+            }
+        }
     }
 }
