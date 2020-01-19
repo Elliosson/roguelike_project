@@ -1,5 +1,5 @@
 extern crate specs;
-use super::{ApplyMove, Cow, Leaf, Map, Position, RunState, Viewshed, WantToEat};
+use super::{ApplyMove, Cow, Leaf, Map, Position, RunState, Viewshed, WantToEat, EnergyReserve, Hunger};
 use specs::prelude::*;
 extern crate rltk;
 use std::collections::HashMap;
@@ -18,6 +18,7 @@ impl<'a> System<'a> for CowAI {
         WriteStorage<'a, Leaf>,
         WriteStorage<'a, WantToEat>,
         WriteStorage<'a, ApplyMove>,
+        ReadStorage<'a, EnergyReserve>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -31,6 +32,7 @@ impl<'a> System<'a> for CowAI {
             leafs,
             mut want_to_eats,
             mut apply_move,
+            energy_reserves,
         ) = data;
 
         let mut targets_leaf: HashMap<Entity, Entity> = HashMap::new();
