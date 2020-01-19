@@ -1,5 +1,7 @@
 extern crate specs;
-use super::{ApplyMove, Cow, Leaf, Map, Position, RunState, Viewshed, WantToEat, EnergyReserve, Hunger};
+use super::{
+    ApplyMove, Cow, EnergyReserve, Hunger, Leaf, Map, Position, RunState, Viewshed, WantToEat,
+};
 use specs::prelude::*;
 extern crate rltk;
 use std::collections::HashMap;
@@ -37,16 +39,14 @@ impl<'a> System<'a> for CowAI {
 
         let mut targets_leaf: HashMap<Entity, Entity> = HashMap::new();
 
-
-        
-        
-
         //check if there is a leaf on position of a cow
         for (cow_entity, mut cow, pos) in (&entities, &mut cows, &mut positions).join() {
             let idx = map.xy_idx(pos.x, pos.y);
             for thing in map.tile_content[idx].iter() {
                 if let Some(_leaf) = leafs.get(*thing) {
-                    want_to_eats.insert(cow_entity, WantToEat{target: *thing}).expect("Unable to insert");
+                    want_to_eats
+                        .insert(cow_entity, WantToEat { target: *thing })
+                        .expect("Unable to insert");
                 }
             }
         }

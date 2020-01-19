@@ -1,5 +1,5 @@
 extern crate specs;
-use super::{gamelog::GameLog, Cow, Leaf, WantToEat, EnergyReserve, Hunger};
+use super::{gamelog::GameLog, Cow, EnergyReserve, Hunger, Leaf, WantToEat};
 use rltk::RGB;
 use specs::prelude::*;
 
@@ -21,11 +21,11 @@ impl<'a> System<'a> for EatingSystem {
         let mut eated_leafs: Vec<Entity> = Vec::new();
 
         //resolve eating
-        for (_entity, want_to_eat, mut cow,  mut en_res) in
+        for (_entity, want_to_eat, mut cow, mut en_res) in
             (&entities, &want_to_eats, &mut cows, &mut energy_reserves).join()
         {
             if let Some(leaf) = leafs.get(want_to_eat.target) {
-                if en_res.hunger == Hunger::Hungry{
+                if en_res.hunger == Hunger::Hungry {
                     en_res.reserve += leaf.nutriments; //TODO no control of max res for know
                     eated_leafs.push(want_to_eat.target);
                 }

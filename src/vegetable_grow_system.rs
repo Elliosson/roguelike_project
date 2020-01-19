@@ -23,13 +23,14 @@ impl<'a> System<'a> for VegetableGrowSystem {
             //todo very heavy to change
             if let Some(_leaf) = leafs.get(entity) {
                 renderable.fg = RGB::named(rltk::GREEN);
-
             } else {
                 renderable.fg = RGB::named(rltk::YELLOW);
                 //a chance to regrow the leaf
                 let regrow_roll = rng.roll_dice(1, 100);
-                if regrow_roll == 1{
-                    leafs.insert(entity, Leaf{nutriments: 100}).expect("Unable to insert");
+                if regrow_roll == 1 {
+                    leafs
+                        .insert(entity, Leaf { nutriments: 100 })
+                        .expect("Unable to insert");
                 }
             }
         }
