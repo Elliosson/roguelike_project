@@ -283,7 +283,8 @@
                     "destructif": true
                 }
             ]
-        }
+        },
+        "leaf": true
     },
     {
         "name" : "Bear Trap",

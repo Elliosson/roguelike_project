@@ -176,6 +176,56 @@ pub struct DefenseBonus {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct ToDelete {}
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Cow {
+    pub life : i32,
+    pub food : i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Leaf {
+    pub nutriments : i32,
+}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct WantToEat {
+    pub target : Entity,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct ApplyMove {
+    pub dest_idx : i32
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct MyTurn {}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
+pub enum Movement {
+    Static,
+    Random,
+    RandomWaypoint{ path : Option<Vec<i32>> }
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct MoveMode {
+    pub mode : Movement
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct EntityMoved {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct ApplyTeleport {
+    pub dest_x : i32,
+    pub dest_y : i32,
+    pub dest_depth : i32
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct EntryTrigger {}
+
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 
@@ -186,4 +236,6 @@ pub struct SerializeMe;
 pub struct SerializationHelper {
     pub map : super::map::Map
 }
+
+
 

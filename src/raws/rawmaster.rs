@@ -37,10 +37,6 @@ impl RawMaster {
                 println!("WARNING -  duplicate item name in raws [{}]", item.name);
             }
             if self.item_index.insert(item.name.clone(), i).is_some(){
-                println!("Success to inset item name is:  {}", item.name);
-            }
-            else{
-                println!("Failed  to insert: item name is:  {}", item.name);
             }
             used_names.insert(item.name.clone());
             println!("item name is:  {}", item.name);
@@ -214,6 +210,13 @@ pub fn spawn_named_prop(raws: &RawMaster, new_entity : EntityBuilder, key : &str
         if let Some(interactable_object) = &prop_template.interactable_object {
             eb = eb.with(interactable_object.clone()); //TODO comprendre pourquoi il ne fait pas comme ça( il passe par un itermediaire item_component)
         }
+
+        if let Some(leaf) = prop_template.leaf {
+            if leaf == true{
+                eb = eb.with(Leaf{nutriments: 100}); //TODO no default value
+            }
+        }
+        
         return Some(eb.build());
     }
     None

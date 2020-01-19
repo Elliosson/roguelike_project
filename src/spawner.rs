@@ -5,7 +5,7 @@ use super::{
     map::MAPWIDTH, random_table::RandomTable, raws::*, AreaOfEffect, BlocksTile, CombatStats,
     Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage, Interactable,
     InteractableObject, Interaction, Item, MeleePowerBonus, Monster, Name, Player, Position,
-    ProvidesHealing, Ranged, Rect, Renderable, SerializeMe, Viewshed,
+    ProvidesHealing, Ranged, Rect, Renderable, SerializeMe, Viewshed, Cow, Leaf
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
@@ -94,12 +94,11 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
         match spawn.1.as_ref() {
             "Tree" => {
                 let raws: &RawMaster = &RAWS.lock().unwrap();
-                let key = "Tree";
-                if raws.prop_index.contains_key(key) {
+                if raws.prop_index.contains_key(spawn.1) {
                     let spawn_result = spawn_named_entity(
                         raws,
                         ecs.create_entity(),
-                        key,
+                        spawn.1,
                         SpawnType::AtPosition { x, y },
                     );
                     if spawn_result.is_some() {
@@ -115,6 +114,8 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
         }
     }
 }
+
+
 
 /// Fills a room with stuff!
 #[allow(clippy::map_entry)]
@@ -393,6 +394,7 @@ fn tree(ecs: &mut World, x: i32, y: i32) {
                 },
             ],
         })
+        .with(Leaf{ nutriments: 100})
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
@@ -410,6 +412,31 @@ pub fn wood(ecs: &mut World, x: i32, y: i32) {
             name: "Wood".to_string(),
         })
         .with(Item {})
+        .marked::<SimpleMarker<SerializeMe>>()
+        .build();
+}
+
+
+
+pub fn cow(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Position { x, y })
+        .with(Renderable {
+            glyph: rltk::to_cp437('O'),
+            fg: RGB::named(rltk::RED),
+            bg: RGB::named(rltk::BLACK),
+            render_order: 1,
+        })
+        .with(Viewshed {
+            visible_tiles: Vec::new(),
+            range: 8,
+            dirty: true,
+        })
+        .with(Name {
+            name: "Cow".to_string(),
+        })
+        .with(BlocksTile {})
+        .with(Cow{life: 100, food: 5})
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }

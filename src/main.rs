@@ -27,6 +27,7 @@ use damage_system::DamageSystem;
 mod gui;
 mod gamelog;
 mod spawner;
+use spawner::*;
 mod inventory_system;
 use inventory_system::{ ItemCollectionSystem, ItemUseSystem, ItemDropSystem, ItemRemoveSystem };
 mod interaction_system;
@@ -35,6 +36,16 @@ pub mod saveload_system;
 pub mod random_table;
 mod object_deleter;
 pub mod raws;
+mod cow_ai_system;
+use cow_ai_system::CowAI;
+mod movement_system;
+use movement_system::MovementSystem;
+pub mod ai;
+mod trigger_system;
+mod tiletype;
+use tiletype::{TileType, tile_walkable};
+
+
 #[macro_use]
 extern crate lazy_static;
 
@@ -67,6 +78,8 @@ impl State {
         vis.run_now(&self.ecs);
         let mut mob = MonsterAI{};
         mob.run_now(&self.ecs);
+        let mut cow = CowAI{};
+        cow.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem{};
         mapindex.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
@@ -85,6 +98,8 @@ impl State {
         wood.run_now(&self.ecs);
         let mut interaction = interaction_system::InteractionSystem{};
         interaction.run_now(&self.ecs);
+        let mut movement = MovementSystem{};
+        movement.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -442,6 +457,15 @@ fn main() {
     gs.ecs.register::<WantsToInteract>();
     gs.ecs.register::<Interaction>();
     gs.ecs.register::<ToDelete>();
+    gs.ecs.register::<Cow>();
+    gs.ecs.register::<Leaf>();
+    gs.ecs.register::<WantToEat>();
+    gs.ecs.register::<ApplyMove>();
+    gs.ecs.register::<ApplyTeleport>();
+    gs.ecs.register::<MyTurn>();
+    gs.ecs.register::<MoveMode>();
+    gs.ecs.register::<EntityMoved>();
+    gs.ecs.register::<EntryTrigger>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
@@ -455,6 +479,7 @@ fn main() {
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     for room in map.rooms.iter(){
         spawner::spawn_trees(&mut gs.ecs, room);
+        cow(&mut gs.ecs, 2, 2);
     }
 
     
