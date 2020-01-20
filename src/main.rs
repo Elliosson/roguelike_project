@@ -49,7 +49,7 @@ use eating_system::EatingSystem;
 mod vegetable_grow_system;
 use vegetable_grow_system::VegetableGrowSystem;
 pub mod systems;
-use systems::EnergySystem;
+use systems::{EnergySystem, PropSpawnerSystem, SoloReproductionSystem};
 
 #[macro_use]
 extern crate lazy_static;
@@ -116,6 +116,10 @@ impl State {
         veg_grow.run_now(&self.ecs);
         let mut energy = EnergySystem {};
         energy.run_now(&self.ecs);
+        let mut solo_reprod = SoloReproductionSystem {};
+        solo_reprod.run_now(&self.ecs);
+        let mut prop_spawmer = PropSpawnerSystem {};
+        prop_spawmer.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -524,6 +528,7 @@ fn main() {
     gs.ecs.register::<Tree>();
     gs.ecs.register::<EnergyReserve>();
     gs.ecs.register::<SoloReproduction>();
+    gs.ecs.register::<WantsToDuplicate>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

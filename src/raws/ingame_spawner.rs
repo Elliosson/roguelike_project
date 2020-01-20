@@ -3,9 +3,9 @@ use crate::components::*;
 use rltk::RGB;
 use specs::prelude::*;
 
-use super::{rawmaster::*, Raws};
+use super::{rawmaster::*, RAWS};
 
-type SpwanPropData<'a, 'b> = (
+pub type SpwanPropData<'a, 'b> = (
     &'b Entities<'a>,
     &'b mut WriteStorage<'a, Position>,
     &'b mut WriteStorage<'a, Renderable>,
@@ -20,10 +20,11 @@ type SpwanPropData<'a, 'b> = (
     &'b mut WriteStorage<'a, Viewshed>,
     &'b mut WriteStorage<'a, Cow>,
     &'b mut WriteStorage<'a, SoloReproduction>,
+    &'b mut WriteStorage<'a, WantsToDuplicate>,
 );
 
 //key is just a string, it's just the name of the entity
-pub fn _spawn_named_prop_ingame(data: SpwanPropData, raws: &RawMaster, key: &str, pos: SpawnType) {
+pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
     let (
         entities,
         positions,
@@ -39,11 +40,11 @@ pub fn _spawn_named_prop_ingame(data: SpwanPropData, raws: &RawMaster, key: &str
         viewsheds,
         cows,
         solo_reprods,
+        want_to_duplicate,
     ) = data;
 
-    println!("spawn_named_prop_ingame");
+    let raws: &RawMaster = &RAWS.lock().unwrap();
     if raws.prop_index.contains_key(key) {
-        println!("key {}", key);
         let prop_template = &raws.raws.props[raws.prop_index[key]];
 
         let mut eb = entities.build_entity();
@@ -137,12 +138,10 @@ pub fn _spawn_named_prop_ingame(data: SpwanPropData, raws: &RawMaster, key: &str
 
         // SoloReproduction
         if let Some(solo_reproduction) = &prop_template.solo_reproduction {
-            eb = eb.with(solo_reproduction.clone(), solo_reprods); 
+            eb = eb.with(solo_reproduction.clone(), solo_reprods);
         }
 
         eb.build();
-
-        println!("finish");
     }
 }
 

@@ -244,6 +244,9 @@ pub struct SoloReproduction {
     pub cost: i32,
 }
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct WantsToDuplicate {}
+
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
