@@ -319,6 +319,13 @@ pub fn spawn_named_prop(
             }
         }
 
+
+        // SoloReproduction
+        if let Some(solo_reproduction) = &prop_template.solo_reproduction {
+            eb = eb.with(solo_reproduction.clone()); 
+        }
+
+
         return Some(eb.build());
     }
     None

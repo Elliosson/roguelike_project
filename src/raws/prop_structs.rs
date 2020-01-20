@@ -6,7 +6,7 @@ use crate::components::*; //todo maybe not ok
 #[derive(Deserialize, Debug)]
 pub struct Prop {
     pub name : String,
-    pub renderable : Option<Renderable>,
+    pub renderable : Option<super::item_structs::Renderable>,
     pub hidden : Option<bool>,
     pub blocks_tile : Option<bool>,
     pub blocks_visibility : Option<bool>,
@@ -18,7 +18,8 @@ pub struct Prop {
     pub tree : Option<bool>,
     pub energy_reserve : Option<RawEnergyReserve>,
     pub viewshed : Option<RawViewshed>,
-    pub cow : Option<bool>
+    pub cow : Option<bool>,
+    pub solo_reproduction : Option<SoloReproduction>
 }
 
 #[derive(Deserialize, Debug)]

@@ -238,6 +238,12 @@ pub struct EnergyReserve {
     pub hunger: Hunger,
 }
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct SoloReproduction {
+    pub threshold: i32,
+    pub cost: i32,
+}
+
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.

@@ -19,6 +19,7 @@ type SpwanPropData<'a, 'b> = (
     &'b mut WriteStorage<'a, BlocksTile>,
     &'b mut WriteStorage<'a, Viewshed>,
     &'b mut WriteStorage<'a, Cow>,
+    &'b mut WriteStorage<'a, SoloReproduction>,
 );
 
 //key is just a string, it's just the name of the entity
@@ -37,6 +38,7 @@ pub fn _spawn_named_prop_ingame(data: SpwanPropData, raws: &RawMaster, key: &str
         block_tiles,
         viewsheds,
         cows,
+        solo_reprods,
     ) = data;
 
     println!("spawn_named_prop_ingame");
@@ -44,12 +46,12 @@ pub fn _spawn_named_prop_ingame(data: SpwanPropData, raws: &RawMaster, key: &str
         println!("key {}", key);
         let prop_template = &raws.raws.props[raws.prop_index[key]];
 
-        let mut new_entity = entities.build_entity();
+        let mut eb = entities.build_entity();
 
         // Spawn in the specified location
         match pos {
             SpawnType::AtPosition { x, y } => {
-                new_entity = new_entity.with(Position { x, y }, positions);
+                eb = eb.with(Position { x, y }, positions);
             }
         }
 
@@ -61,10 +63,10 @@ pub fn _spawn_named_prop_ingame(data: SpwanPropData, raws: &RawMaster, key: &str
                 bg: rltk::RGB::from_hex(&renderable.bg).expect("Invalid RGB"),
                 render_order: renderable.order,
             };
-            new_entity = new_entity.with(renderable_obj, renderables);
+            eb = eb.with(renderable_obj, renderables);
         }
 
-        new_entity = new_entity.with(
+        eb = eb.with(
             Name {
                 name: prop_template.name.clone(),
             },
@@ -74,30 +76,30 @@ pub fn _spawn_named_prop_ingame(data: SpwanPropData, raws: &RawMaster, key: &str
         // Interactable
         if let Some(interactable) = prop_template.interactable {
             if interactable {
-                new_entity = new_entity.with(Interactable {}, interactables)
+                eb = eb.with(Interactable {}, interactables)
             };
         }
 
         // InteractableObject
         if let Some(interactable_object) = &prop_template.interactable_object {
-            new_entity = new_entity.with(interactable_object.clone(), interactable_objects); //TODO comprendre pourquoi il ne fait pas comme ça( il passe par un itermediaire item_component)
+            eb = eb.with(interactable_object.clone(), interactable_objects); //TODO comprendre pourquoi il ne fait pas comme ça( il passe par un itermediaire item_component)
         }
 
         if let Some(leaf) = prop_template.leaf {
             if leaf == true {
-                new_entity = new_entity.with(Leaf { nutriments: 100 }, leafs); //TODO no default value
+                eb = eb.with(Leaf { nutriments: 100 }, leafs); //TODO no default value
             }
         }
 
         if let Some(tree) = prop_template.tree {
             if tree == true {
-                new_entity = new_entity.with(Tree {}, trees); //TODO no default value
+                eb = eb.with(Tree {}, trees); //TODO no default value
             }
         }
 
         // EnergyReserve
         if let Some(energy_reserve) = &prop_template.energy_reserve {
-            new_entity = new_entity.with(
+            eb = eb.with(
                 EnergyReserve {
                     reserve: energy_reserve.reserve,
                     max_reserve: energy_reserve.max_reserve,
@@ -110,13 +112,13 @@ pub fn _spawn_named_prop_ingame(data: SpwanPropData, raws: &RawMaster, key: &str
 
         if let Some(block_tile) = prop_template.blocks_tile {
             if block_tile == true {
-                new_entity = new_entity.with(BlocksTile {}, block_tiles); //TODO no default value
+                eb = eb.with(BlocksTile {}, block_tiles); //TODO no default value
             }
         }
 
         // Viewshed
         if let Some(viewshed) = &prop_template.viewshed {
-            new_entity = new_entity.with(
+            eb = eb.with(
                 Viewshed {
                     visible_tiles: Vec::new(),
                     range: viewshed.range,
@@ -129,11 +131,16 @@ pub fn _spawn_named_prop_ingame(data: SpwanPropData, raws: &RawMaster, key: &str
         // Cow
         if let Some(cow) = prop_template.cow {
             if cow == true {
-                new_entity = new_entity.with(Cow { life: 100 }, cows); //TODO no default value
+                eb = eb.with(Cow { life: 100 }, cows); //TODO no default value
             }
         }
 
-        new_entity.build();
+        // SoloReproduction
+        if let Some(solo_reproduction) = &prop_template.solo_reproduction {
+            eb = eb.with(solo_reproduction.clone(), solo_reprods); 
+        }
+
+        eb.build();
 
         println!("finish");
     }
