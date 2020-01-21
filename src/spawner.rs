@@ -98,7 +98,7 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
                 if raws.prop_index.contains_key(spawn.1) {
                     let spawn_result = spawn_named_entity(
                         raws,
-                        ecs.create_entity(),
+                        ecs.create_entity().marked::<SimpleMarker<SerializeMe>>(),
                         spawn.1,
                         SpawnType::AtPosition { x, y },
                     );
@@ -121,7 +121,7 @@ pub fn spawn_named(ecs: &mut World, key: &str, x: i32, y: i32) {
     if raws.prop_index.contains_key(key) {
         let spawn_result = spawn_named_entity(
             raws,
-            ecs.create_entity(),
+            ecs.create_entity().marked::<SimpleMarker<SerializeMe>>(),
             key,
             SpawnType::AtPosition { x, y },
         );

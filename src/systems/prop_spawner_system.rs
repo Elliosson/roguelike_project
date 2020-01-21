@@ -1,5 +1,6 @@
 extern crate specs;
 use crate::raws::*;
+use crate::specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 use crate::{components::*, EnergyReserve, Name, SoloReproduction};
 use specs::prelude::*;
 
@@ -23,6 +24,8 @@ impl<'a> System<'a> for PropSpawnerSystem {
         WriteStorage<'a, Cow>,
         WriteStorage<'a, SoloReproduction>,
         WriteStorage<'a, WantsToDuplicate>,
+        WriteStorage<'a, SimpleMarker<SerializeMe>>,
+        WriteExpect<'a, SimpleMarkerAllocator<SerializeMe>>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -42,6 +45,8 @@ impl<'a> System<'a> for PropSpawnerSystem {
             mut cows,
             mut solo_reprods,
             mut want_to_duplicates,
+            mut simple_markers,
+            mut simple_marker_allocators,
         ) = data;
 
         let mut to_spawn: Vec<(String, i32, i32)> = Vec::new();
@@ -73,6 +78,8 @@ impl<'a> System<'a> for PropSpawnerSystem {
                     &mut cows,
                     &mut solo_reprods,
                     &mut want_to_duplicates,
+                    &mut simple_markers,
+                    &mut simple_marker_allocators,
                 ),
                 &spawn.0,
                 SpawnType::AtPosition {

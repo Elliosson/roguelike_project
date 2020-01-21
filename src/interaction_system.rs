@@ -1,8 +1,6 @@
 extern crate specs;
 use super::{
     raws::*, // See if we can not use them
-    Interactable,
-    InteractableObject,
     Interaction,
     Item,
     Name,
@@ -57,8 +55,6 @@ type ObjectSpawmerDataRef<'a, 'b> = (
     &'b mut WriteStorage<'a, Renderable>,
     &'b mut WriteStorage<'a, Name>,
     &'b mut WriteStorage<'a, Item>,
-    &'b mut WriteStorage<'a, Interactable>,
-    &'b mut WriteStorage<'a, InteractableObject>,
 );
 
 impl<'a> System<'a> for ObjectSpawnSystem {
@@ -70,21 +66,11 @@ impl<'a> System<'a> for ObjectSpawnSystem {
         WriteStorage<'a, Name>,
         WriteStorage<'a, Item>,
         WriteExpect<'a, ObjectBuilder>,
-        WriteStorage<'a, Interactable>,
-        WriteStorage<'a, InteractableObject>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (
-            entities,
-            mut positions,
-            mut renderables,
-            mut names,
-            mut items,
-            mut object_builder,
-            mut interactables,
-            mut interactable_objects,
-        ) = data;
+        let (entities, mut positions, mut renderables, mut names, mut items, mut object_builder) =
+            data;
         for request in object_builder.requests.iter() {
             //Get raw(json data) and build the object according to the json
             let raws: &RawMaster = &RAWS.lock().unwrap();
@@ -95,8 +81,6 @@ impl<'a> System<'a> for ObjectSpawnSystem {
                     &mut renderables,
                     &mut names,
                     &mut items,
-                    &mut interactables,
-                    &mut interactable_objects,
                 ),
                 raws,
                 request.name.as_ref(),
@@ -112,14 +96,15 @@ impl<'a> System<'a> for ObjectSpawnSystem {
 }
 
 //almost duplicaton of rawmaster function , only diference is the insert because we don't have ecs
+//TODO deplacer dans raw
+//TODO Atention marker not added, opject will not be save
 pub fn spawn_named_item_ingame(
     data: ObjectSpawmerDataRef,
     raws: &RawMaster,
     key: &str,
     pos: SpawnType,
 ) {
-    let (entities, positions, renderables, names, items, interactables, spawn_named_item_ingame) =
-        data;
+    let (entities, positions, renderables, names, items) = data;
 
     if raws.item_index.contains_key(key) {
         let item_template = &raws.raws.items[raws.item_index[key]];
@@ -169,8 +154,7 @@ pub fn spawn_named_item_ingame(
 
 // TODO add marker as in the classic builder
 fn _wood_spawn<'a>(data: ObjectSpawmerDataRef, x: i32, y: i32) {
-    let (entities, positions, renderables, names, items, interactables, interactable_objects) =
-        data;
+    let (entities, positions, renderables, names, items) = data;
 
     let p = entities.create();
     positions
@@ -199,8 +183,7 @@ fn _wood_spawn<'a>(data: ObjectSpawmerDataRef, x: i32, y: i32) {
 }
 
 fn _apple_spawn<'a>(data: ObjectSpawmerDataRef, x: i32, y: i32) {
-    let (entities, positions, renderables, names, items, interactables, interactable_objects) =
-        data;
+    let (entities, positions, renderables, names, items) = data;
 
     entities
         .build_entity()

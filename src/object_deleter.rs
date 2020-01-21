@@ -1,11 +1,9 @@
 extern crate specs;
+use super::ToDelete;
 use specs::prelude::*;
-use super::{ToDelete};
 
-
-pub fn delete_entity_to_delete(ecs : &mut World) {
-    
-    let mut dead : Vec<Entity> = Vec::new();
+pub fn delete_entity_to_delete(ecs: &mut World) {
+    let mut dead: Vec<Entity> = Vec::new();
     // Using a scope to make the borrow checker happy
     {
         let to_deletes = ecs.write_storage::<ToDelete>();
@@ -21,20 +19,16 @@ pub fn delete_entity_to_delete(ecs : &mut World) {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn object_deleter_test(){
-
+    fn object_deleter_test() {
         //create a new world
-        let mut ecs :World = World::new();
+        let mut ecs: World = World::new();
         ecs.register::<ToDelete>();
 
-        ecs.create_entity()
-            .with(ToDelete {})
-            .build();
+        ecs.create_entity().with(ToDelete {}).build();
 
         {
             let to_deletes = ecs.read_storage::<ToDelete>();
@@ -43,13 +37,11 @@ mod tests {
             assert_eq!(composant_count, 1);
         }
 
-
         delete_entity_to_delete(&mut ecs);
 
         let to_deletes = ecs.read_storage::<ToDelete>();
         let composant_count = to_deletes.join().count();
 
         assert_eq!(composant_count, 0);
-
     }
 }

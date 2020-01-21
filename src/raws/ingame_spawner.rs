@@ -1,5 +1,6 @@
 extern crate specs;
 use crate::components::*;
+use crate::specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 use specs::prelude::*;
 
 use super::{rawmaster::*, RAWS};
@@ -20,6 +21,8 @@ pub type SpwanPropData<'a, 'b> = (
     &'b mut WriteStorage<'a, Cow>,
     &'b mut WriteStorage<'a, SoloReproduction>,
     &'b mut WriteStorage<'a, WantsToDuplicate>,
+    &'b mut WriteStorage<'a, SimpleMarker<SerializeMe>>,
+    &'b mut WriteExpect<'a, SimpleMarkerAllocator<SerializeMe>>,
 );
 
 //key is just a string, it's just the name of the entity
@@ -29,7 +32,7 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
         positions,
         renderables,
         names,
-        items,
+        _items,
         interactables,
         interactable_objects,
         leafs,
@@ -40,13 +43,17 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
         cows,
         solo_reprods,
         _want_to_duplicate,
+        simple_markers,
+        simple_marker_allocators,
     ) = data;
 
     let raws: &RawMaster = &RAWS.lock().unwrap();
     if raws.prop_index.contains_key(key) {
         let prop_template = &raws.raws.props[raws.prop_index[key]];
 
-        let mut eb = entities.build_entity();
+        let mut eb = entities
+            .build_entity()
+            .marked(simple_markers, simple_marker_allocators);
 
         // Spawn in the specified location
         match pos {

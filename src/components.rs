@@ -250,7 +250,6 @@ pub struct WantsToDuplicate {}
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
-
 pub struct SerializeMe;
 
 // Special component that exists to help serialize the game data

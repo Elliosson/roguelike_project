@@ -3,7 +3,7 @@ use super::{algo::*, ApplyMove, Cow, Leaf, Map, Position, RunState, Viewshed, Wa
 use specs::prelude::*;
 extern crate rltk;
 use std::collections::HashMap;
-use std::time::{Duration, Instant};
+//use std::time::{Duration, Instant};
 
 pub struct CowAI {}
 
