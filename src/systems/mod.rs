@@ -4,3 +4,5 @@ mod solo_reproduction_system;
 pub use solo_reproduction_system::SoloReproductionSystem;
 mod prop_spawner_system;
 pub use  prop_spawner_system::PropSpawnerSystem;
+mod named_counter;
+pub use named_counter::NamedCounterSystem;

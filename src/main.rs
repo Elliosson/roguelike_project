@@ -49,7 +49,7 @@ use eating_system::EatingSystem;
 mod vegetable_grow_system;
 use vegetable_grow_system::VegetableGrowSystem;
 pub mod systems;
-use systems::{EnergySystem, PropSpawnerSystem, SoloReproductionSystem};
+use systems::{EnergySystem, PropSpawnerSystem, SoloReproductionSystem, NamedCounterSystem};
 mod algo;
 
 #[macro_use]
@@ -121,6 +121,8 @@ impl State {
         solo_reprod.run_now(&self.ecs);
         let mut prop_spawmer = PropSpawnerSystem {};
         prop_spawmer.run_now(&self.ecs);
+        let mut named_counter = NamedCounterSystem {};
+        named_counter.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
