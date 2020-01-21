@@ -1,6 +1,5 @@
 extern crate specs;
 use crate::components::*;
-use rltk::RGB;
 use specs::prelude::*;
 
 use super::{rawmaster::*, RAWS};
@@ -40,7 +39,7 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
         viewsheds,
         cows,
         solo_reprods,
-        want_to_duplicate,
+        _want_to_duplicate,
     ) = data;
 
     let raws: &RawMaster = &RAWS.lock().unwrap();

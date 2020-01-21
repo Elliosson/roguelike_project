@@ -4,7 +4,6 @@ use super::Raws;
 use crate::components::*;
 use crate::random_table::RandomTable;
 use specs::prelude::*;
-use specs::prelude::*;
 use std::collections::{HashMap, HashSet};
 
 pub enum SpawnType {
@@ -98,12 +97,6 @@ fn get_renderable_component(
         bg: rltk::RGB::from_hex(&renderable.bg).expect("Invalid RGB"),
         render_order: renderable.order,
     }
-}
-
-fn get_interacable_component(
-    interactable: crate::components::Interactable,
-) -> crate::components::Interactable {
-    crate::components::Interactable {}
 }
 
 pub fn spawn_named_item(
@@ -319,12 +312,10 @@ pub fn spawn_named_prop(
             }
         }
 
-
         // SoloReproduction
         if let Some(solo_reproduction) = &prop_template.solo_reproduction {
-            eb = eb.with(solo_reproduction.clone()); 
+            eb = eb.with(solo_reproduction.clone());
         }
-
 
         return Some(eb.build());
     }

@@ -1,33 +1,42 @@
 extern crate specs;
+use super::{gamelog::GameLog, AreaOfEffect, EntityMoved, EntryTrigger, Map, Name, Position};
 use specs::prelude::*;
-use super::{EntityMoved, Position, EntryTrigger, Map, Name, gamelog::GameLog,
-    AreaOfEffect};
 
-pub struct TriggerSystem {}
-
+pub struct _TriggerSystem {}
 
 //System who check all the entity that moved this turn
 //will trigger a trap if needed
-impl<'a> System<'a> for TriggerSystem {
+impl<'a> System<'a> for _TriggerSystem {
     #[allow(clippy::type_complexity)]
-    type SystemData = ( ReadExpect<'a, Map>,
-                        WriteStorage<'a, EntityMoved>,
-                        ReadStorage<'a, Position>,
-                        ReadStorage<'a, EntryTrigger>,
-                        ReadStorage<'a, Name>,
-                        Entities<'a>,
-                        WriteExpect<'a, GameLog>,
-                        ReadStorage<'a, AreaOfEffect>);
-
-    fn run(&mut self, data : Self::SystemData) {
-        let (map, mut entity_moved, position, entry_trigger, 
-            names, entities, mut log, area_of_effect) = data;
+    type SystemData = (
+        ReadExpect<'a, Map>,
+        WriteStorage<'a, EntityMoved>,
+        ReadStorage<'a, Position>,
+        ReadStorage<'a, EntryTrigger>,
+        ReadStorage<'a, Name>,
+        Entities<'a>,
+        WriteExpect<'a, GameLog>,
+        ReadStorage<'a, AreaOfEffect>,
+    );
+    //Desactivated
+    fn run(&mut self, data: Self::SystemData) {
+        let (
+            map,
+            mut entity_moved,
+            position,
+            _entry_trigger,
+            _names,
+            entities,
+            mut _log,
+            _area_of_effect,
+        ) = data;
 
         // Iterate the entities that moved and their final position
         for (entity, mut _entity_moved, pos) in (&entities, &mut entity_moved, &position).join() {
             let idx = map.xy_idx(pos.x, pos.y);
             for entity_id in map.tile_content[idx].iter() {
-                if entity != *entity_id { // Do not bother to check yourself for being a trap!
+                if entity != *entity_id {
+                    // Do not bother to check yourself for being a trap!
 
                     //For now the trap system is desactivated
                     /*

@@ -9,13 +9,10 @@ use super::{
     Position,
     Renderable,
     ToDelete,
-    Leaf,
-    Tree,
 };
 
 use rltk::RGB;
 use specs::prelude::*;
-
 
 pub struct InteractionSystem {}
 
@@ -114,7 +111,6 @@ impl<'a> System<'a> for ObjectSpawnSystem {
     }
 }
 
-
 //almost duplicaton of rawmaster function , only diference is the insert because we don't have ecs
 pub fn spawn_named_item_ingame(
     data: ObjectSpawmerDataRef,
@@ -172,7 +168,7 @@ pub fn spawn_named_item_ingame(
 }
 
 // TODO add marker as in the classic builder
-fn wood_spawn<'a>(data: ObjectSpawmerDataRef, x: i32, y: i32) {
+fn _wood_spawn<'a>(data: ObjectSpawmerDataRef, x: i32, y: i32) {
     let (entities, positions, renderables, names, items, interactables, interactable_objects) =
         data;
 
@@ -202,7 +198,7 @@ fn wood_spawn<'a>(data: ObjectSpawmerDataRef, x: i32, y: i32) {
     items.insert(p, Item {}).expect("Unable to insert item");
 }
 
-fn apple_spawn<'a>(data: ObjectSpawmerDataRef, x: i32, y: i32) {
+fn _apple_spawn<'a>(data: ObjectSpawmerDataRef, x: i32, y: i32) {
     let (entities, positions, renderables, names, items, interactables, interactable_objects) =
         data;
 

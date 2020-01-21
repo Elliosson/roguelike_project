@@ -1,6 +1,6 @@
 extern crate specs;
 use crate::raws::*;
-use crate::{components::*, gamelog::GameLog, EnergyReserve, Name, SoloReproduction};
+use crate::{components::*, EnergyReserve, Name, SoloReproduction};
 use specs::prelude::*;
 
 pub struct PropSpawnerSystem {}

@@ -1,26 +1,35 @@
 extern crate specs;
+use super::{ApplyMove, BlocksTile, EntityMoved, Map, Position, RunState, Viewshed};
 use specs::prelude::*;
-use super::{Map, Position, BlocksTile, ApplyMove, EntityMoved,
-    Viewshed, RunState};
 
 pub struct MovementSystem {}
 
 impl<'a> System<'a> for MovementSystem {
     #[allow(clippy::type_complexity)]
-    type SystemData = ( WriteExpect<'a, Map>,
-                        WriteStorage<'a, Position>,
-                        ReadStorage<'a, BlocksTile>,
-                        Entities<'a>,
-                        WriteStorage<'a, ApplyMove>,
-                        WriteStorage<'a, EntityMoved>,
-                        WriteStorage<'a, Viewshed>,
-                        ReadExpect<'a, Entity>,
-                        WriteExpect<'a, RunState>);
+    type SystemData = (
+        WriteExpect<'a, Map>,
+        WriteStorage<'a, Position>,
+        ReadStorage<'a, BlocksTile>,
+        Entities<'a>,
+        WriteStorage<'a, ApplyMove>,
+        WriteStorage<'a, EntityMoved>,
+        WriteStorage<'a, Viewshed>,
+        ReadExpect<'a, Entity>,
+        WriteExpect<'a, RunState>,
+    );
 
-    fn run(&mut self, data : Self::SystemData) {
-        let (mut map, mut position, blockers, entities, mut apply_move,
+    fn run(&mut self, data: Self::SystemData) {
+        let (
+            mut map,
+            mut position,
+            blockers,
+            entities,
+            mut apply_move,
             mut moved,
-            mut viewsheds, player_entity, mut runstate) = data;
+            mut viewsheds,
+            _player_entity,
+            mut _runstate,
+        ) = data;
 
         // Apply broad movement
         for (entity, movement, mut pos) in (&entities, &apply_move, &mut position).join() {
@@ -36,7 +45,9 @@ impl<'a> System<'a> for MovementSystem {
             if let Some(vs) = viewsheds.get_mut(entity) {
                 vs.dirty = true;
             }
-            moved.insert(entity, EntityMoved{}).expect("Unable to insert");
+            moved
+                .insert(entity, EntityMoved {})
+                .expect("Unable to insert");
         }
         apply_move.clear();
     }

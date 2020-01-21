@@ -1,5 +1,5 @@
 use serde::{Deserialize};
-use super::{Renderable, RawEnergyReserve, RawViewshed};
+use super::{RawEnergyReserve, RawViewshed};
 use std::collections::HashMap;
 use crate::components::*; //todo maybe not ok
 

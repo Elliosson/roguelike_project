@@ -3,14 +3,14 @@ use rltk::{RandomNumberGenerator, RGB};
 extern crate specs;
 use super::{
     map::MAPWIDTH, random_table::RandomTable, raws::*, AreaOfEffect, BlocksTile, CombatStats,
-    Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage, Interactable,
-    InteractableObject, Interaction, Item, MeleePowerBonus, Monster, Name, Player, Position,
-    ProvidesHealing, Ranged, Rect, Renderable, SerializeMe, Viewshed, Cow, Leaf, Tree
+    Confusion, Consumable, Cow, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage,
+    Interactable, InteractableObject, Interaction, Item, Leaf, MeleePowerBonus, Monster, Name,
+    Player, Position, ProvidesHealing, Ranged, Rect, Renderable, SerializeMe, Tree, Viewshed,
 };
+use crate::components::*;
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
 use std::collections::HashMap;
-use crate::components::*;
 
 /// Spawns the player and returns his/her entity object.
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
@@ -116,8 +116,7 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
     }
 }
 
-
-pub fn spawn_named (ecs: &mut World, key : &str,  x: i32, y: i32, ) {
+pub fn spawn_named(ecs: &mut World, key: &str, x: i32, y: i32) {
     let raws: &RawMaster = &RAWS.lock().unwrap();
     if raws.prop_index.contains_key(key) {
         let spawn_result = spawn_named_entity(
@@ -134,12 +133,7 @@ pub fn spawn_named (ecs: &mut World, key : &str,  x: i32, y: i32, ) {
     } else {
         println!("WARNING: No keys {} !", key);
     }
-
 }
-
-
-
-
 
 /// Fills a room with stuff!
 #[allow(clippy::map_entry)]
@@ -390,7 +384,7 @@ fn tower_shield(ecs: &mut World, x: i32, y: i32) {
         .build();
 }
 
-fn tree(ecs: &mut World, x: i32, y: i32) {
+fn _tree(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -418,13 +412,13 @@ fn tree(ecs: &mut World, x: i32, y: i32) {
                 },
             ],
         })
-        .with(Leaf{ nutriments: 100})
-        .with(Tree{})
+        .with(Leaf { nutriments: 100 })
+        .with(Tree {})
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
 
-pub fn wood(ecs: &mut World, x: i32, y: i32) {
+pub fn _wood(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -441,9 +435,7 @@ pub fn wood(ecs: &mut World, x: i32, y: i32) {
         .build();
 }
 
-
-
-pub fn cow(ecs: &mut World, x: i32, y: i32) {
+pub fn _cow(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -461,12 +453,12 @@ pub fn cow(ecs: &mut World, x: i32, y: i32) {
             name: "Cow".to_string(),
         })
         .with(BlocksTile {})
-        .with(Cow{life: 100})
-        .with(EnergyReserve{
+        .with(Cow { life: 100 })
+        .with(EnergyReserve {
             reserve: 10,
             max_reserve: 200,
             base_consumption: 1,
-            hunger: Hunger::Full
+            hunger: Hunger::Full,
         })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();

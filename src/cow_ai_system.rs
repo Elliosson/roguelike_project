@@ -1,8 +1,5 @@
 extern crate specs;
-use super::{
-    algo::*, ApplyMove, Cow, EnergyReserve, Hunger, Leaf, Map, Position, RunState, Viewshed,
-    WantToEat,
-};
+use super::{algo::*, ApplyMove, Cow, Leaf, Map, Position, RunState, Viewshed, WantToEat};
 use specs::prelude::*;
 extern crate rltk;
 use std::collections::HashMap;
@@ -22,7 +19,6 @@ impl<'a> System<'a> for CowAI {
         WriteStorage<'a, Leaf>,
         WriteStorage<'a, WantToEat>,
         WriteStorage<'a, ApplyMove>,
-        ReadStorage<'a, EnergyReserve>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -30,19 +26,18 @@ impl<'a> System<'a> for CowAI {
             mut map,
             _runstate,
             entities,
-            mut viewsheds,
-            mut cows,
+            viewsheds,
+            cows,
             mut positions,
             leafs,
             mut want_to_eats,
             mut apply_move,
-            energy_reserves,
         ) = data;
 
         let mut targets_leaf: HashMap<Entity, Entity> = HashMap::new();
 
         //check if there is a leaf on position of a cow
-        for (cow_entity, mut cow, pos) in (&entities, &mut cows, &mut positions).join() {
+        for (cow_entity, _cow, pos) in (&entities, &cows, &mut positions).join() {
             let idx = map.xy_idx(pos.x, pos.y);
             for thing in map.tile_content[idx].iter() {
                 if let Some(_leaf) = leafs.get(*thing) {
