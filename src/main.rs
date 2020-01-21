@@ -32,24 +32,22 @@ mod inventory_system;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
 mod interaction_system;
 use interaction_system::InteractionResquest;
-mod cow_ai_system;
+mod movement_system;
 mod object_deleter;
 pub mod random_table;
 pub mod raws;
 pub mod saveload_system;
-use cow_ai_system::CowAI;
-mod movement_system;
 use movement_system::MovementSystem;
 pub mod ai;
+use ai::CowAI;
 mod tiletype;
 mod trigger_system;
 use tiletype::{tile_walkable, TileType};
-mod eating_system;
-use eating_system::EatingSystem;
-mod vegetable_grow_system;
-use vegetable_grow_system::VegetableGrowSystem;
 pub mod systems;
-use systems::{EnergySystem, NamedCounterSystem, PropSpawnerSystem, SoloReproductionSystem};
+use systems::{
+    EatingSystem, EnergySystem, NamedCounterSystem, PropSpawnerSystem, SoloReproductionSystem,
+    VegetableGrowSystem,
+};
 mod algo;
 
 #[macro_use]

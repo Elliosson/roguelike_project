@@ -1,5 +1,5 @@
 extern crate specs;
-use super::{gamelog::GameLog, Cow, EnergyReserve, Hunger, Leaf, WantToEat};
+use crate::{gamelog::GameLog, Cow, EnergyReserve, Hunger, Leaf, WantToEat};
 use specs::prelude::*;
 
 pub struct EatingSystem {}

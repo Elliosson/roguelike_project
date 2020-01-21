@@ -1,5 +1,5 @@
 extern crate specs;
-use super::{algo::*, ApplyMove, Cow, Leaf, Map, Position, RunState, Viewshed, WantToEat};
+use crate::{algo::*, ApplyMove, Cow, Leaf, Map, Position, RunState, Viewshed, WantToEat};
 use specs::prelude::*;
 extern crate rltk;
 use std::collections::HashMap;

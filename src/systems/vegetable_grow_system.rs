@@ -1,5 +1,5 @@
 extern crate specs;
-use super::{gamelog::GameLog, Leaf, Renderable, Tree};
+use crate::{gamelog::GameLog, Leaf, Renderable, Tree};
 use rltk::RGB;
 use specs::prelude::*;
 
