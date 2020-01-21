@@ -50,6 +50,7 @@ mod vegetable_grow_system;
 use vegetable_grow_system::VegetableGrowSystem;
 pub mod systems;
 use systems::{EnergySystem, PropSpawnerSystem, SoloReproductionSystem};
+mod algo;
 
 #[macro_use]
 extern crate lazy_static;

@@ -1,10 +1,12 @@
 extern crate specs;
 use super::{
-    ApplyMove, Cow, EnergyReserve, Hunger, Leaf, Map, Position, RunState, Viewshed, WantToEat,
+    algo::*, ApplyMove, Cow, EnergyReserve, Hunger, Leaf, Map, Position, RunState, Viewshed,
+    WantToEat,
 };
 use specs::prelude::*;
 extern crate rltk;
 use std::collections::HashMap;
+use std::time::{Duration, Instant};
 
 pub struct CowAI {}
 
@@ -71,16 +73,24 @@ impl<'a> System<'a> for CowAI {
             }
         }
 
+        //println!("Start A*");
+        //let now2 = Instant::now();
+
         //Creat path to the chosen leaf
         for (cow_ent, leaf_ent) in &targets_leaf {
             let pos = positions.get(*cow_ent).expect("No postion");
             let target_pos = positions.get(*leaf_ent).expect("No postion");
 
-            let path = rltk::a_star_search(
+            //let now = Instant::now();
+
+            let path = a_star_search(
                 map.xy_idx(pos.x, pos.y) as i32,
                 map.xy_idx(target_pos.x, target_pos.y) as i32,
                 &mut *map,
+                100, //Max step for search, TODO thonk of a way to automatically find an acceptable number
             );
+
+            //println!("a* time = {}", now.elapsed().as_micros());
 
             //move
             if path.success && path.steps.len() > 1 {
@@ -94,6 +104,8 @@ impl<'a> System<'a> for CowAI {
                     .expect("Unable to insert");
             }
         }
+
+        //println!("Total a* time = {}", now2.elapsed().as_micros());
 
         targets_leaf.clear();
     }
