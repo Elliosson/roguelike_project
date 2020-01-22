@@ -43,9 +43,9 @@ mod trigger_system;
 use tiletype::{tile_walkable, TileType};
 pub mod systems;
 use systems::{
-    EatingSystem, EnergySystem, InteractionResquest, InteractionSystem, NamedCounterSystem,
-    ObjectBuilder, ObjectSpawnSystem, PropSpawnerSystem, SoloReproductionSystem,
-    VegetableGrowSystem,
+    Date, DateSystem, EatingSystem, EnergySystem, InteractionResquest, InteractionSystem,
+    NamedCounterSystem, ObjectBuilder, ObjectSpawnSystem, PropSpawnerSystem,
+    SoloReproductionSystem, VegetableGrowSystem,
 };
 mod algo;
 
@@ -82,6 +82,8 @@ pub struct State {
 
 impl State {
     fn run_systems(&mut self) {
+        let mut date = DateSystem {};
+        date.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
         let mut mob = MonsterAI {};
@@ -561,6 +563,7 @@ fn main() {
     });
     gs.ecs.insert(ObjectBuilder::new());
     gs.ecs.insert(InteractionResquest::new());
+    gs.ecs.insert(Date::new());
 
     rltk::main_loop(context, gs);
 }
