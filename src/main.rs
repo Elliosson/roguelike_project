@@ -30,8 +30,6 @@ mod spawner;
 use spawner::*;
 mod inventory_system;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
-mod interaction_system;
-use interaction_system::InteractionResquest;
 mod movement_system;
 mod object_deleter;
 pub mod random_table;
@@ -45,7 +43,8 @@ mod trigger_system;
 use tiletype::{tile_walkable, TileType};
 pub mod systems;
 use systems::{
-    EatingSystem, EnergySystem, NamedCounterSystem, PropSpawnerSystem, SoloReproductionSystem,
+    EatingSystem, EnergySystem, InteractionResquest, InteractionSystem, NamedCounterSystem,
+    ObjectBuilder, ObjectSpawnSystem, PropSpawnerSystem, SoloReproductionSystem,
     VegetableGrowSystem,
 };
 mod algo;
@@ -103,9 +102,9 @@ impl State {
         drop_items.run_now(&self.ecs);
         let mut item_remove = ItemRemoveSystem {};
         item_remove.run_now(&self.ecs);
-        let mut wood = interaction_system::ObjectSpawnSystem {};
-        wood.run_now(&self.ecs);
-        let mut interaction = interaction_system::InteractionSystem {};
+        let mut object_spawn = ObjectSpawnSystem {};
+        object_spawn.run_now(&self.ecs);
+        let mut interaction = InteractionSystem {};
         interaction.run_now(&self.ecs);
         let mut movement = MovementSystem {};
         movement.run_now(&self.ecs);
@@ -560,9 +559,8 @@ fn main() {
     gs.ecs.insert(gamelog::GameLog {
         entries: vec!["Welcome to Rusty Roguelike".to_string()],
     });
-    gs.ecs.insert(interaction_system::ObjectBuilder::new());
-    gs.ecs
-        .insert(interaction_system::InteractionResquest::new());
+    gs.ecs.insert(ObjectBuilder::new());
+    gs.ecs.insert(InteractionResquest::new());
 
     rltk::main_loop(context, gs);
 }

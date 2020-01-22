@@ -151,6 +151,71 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
     }
 }
 
+type ObjectSpawmerDataRef<'a, 'b> = (
+    &'b Entities<'a>,
+    &'b mut WriteStorage<'a, Position>,
+    &'b mut WriteStorage<'a, Renderable>,
+    &'b mut WriteStorage<'a, Name>,
+    &'b mut WriteStorage<'a, Item>,
+);
+
+//almost duplicaton of rawmaster function , only diference is the insert because we don't have ecs
+//TODO deplacer dans raw
+//TODO Atention marker not added, opject will not be save
+pub fn spawn_named_item_ingame(
+    data: ObjectSpawmerDataRef,
+    raws: &RawMaster,
+    key: &str,
+    pos: SpawnType,
+) {
+    let (entities, positions, renderables, names, items) = data;
+
+    if raws.item_index.contains_key(key) {
+        let item_template = &raws.raws.items[raws.item_index[key]];
+
+        let new_entity = entities.create();
+
+        // Spawn in the specified location
+        match pos {
+            SpawnType::AtPosition { x, y } => {
+                positions
+                    .insert(new_entity, Position { x, y })
+                    .expect("Unable to inser position");
+            }
+        }
+
+        // Renderable
+        if let Some(renderable) = &item_template.renderable {
+            renderables
+                .insert(
+                    new_entity,
+                    Renderable {
+                        glyph: rltk::to_cp437(renderable.glyph.chars().next().unwrap()),
+                        fg: rltk::RGB::from_hex(&renderable.fg).expect("Invalid RGB"),
+                        bg: rltk::RGB::from_hex(&renderable.bg).expect("Invalid RGB"),
+                        render_order: renderable.order,
+                    },
+                )
+                .expect("Unable to insert renderable");
+        }
+
+        names
+            .insert(
+                new_entity,
+                Name {
+                    name: item_template.name.clone(),
+                },
+            )
+            .expect("Unable to insert name");
+
+        items
+            .insert(new_entity, Item {})
+            .expect("Unable to insert item");
+    } else {
+        println!("Error: key: {} , is not know", key);
+    }
+}
+
 /*
 
 type SpwanMobData<'a, 'b> = (

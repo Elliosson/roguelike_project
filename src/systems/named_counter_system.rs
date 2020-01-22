@@ -24,7 +24,7 @@ impl<'a> System<'a> for NamedCounterSystem {
 
             for (s_name, s_count) in &mut names_stats.iter_mut() {
                 if *s_name == name.name {
-                    *s_count +=1;
+                    *s_count += 1;
                     done = true;
                     break;
                 }
