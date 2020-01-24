@@ -337,7 +337,7 @@ impl GameState for State {
         damage_system::delete_the_dead(&mut self.ecs);
         birth::give_birth(&mut self.ecs);
         object_deleter::delete_entity_to_delete(&mut self.ecs);
-        data_representation::write_genealogy(&mut self.ecs);
+        data_representation::write_genealogy(&mut self.ecs).unwrap();
     }
 }
 
