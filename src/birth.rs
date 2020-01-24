@@ -1,5 +1,7 @@
 extern crate specs;
-use super::{raws::*, Date, EnergyReserve, Name, Position, SerializeMe, SoloReproduction};
+use super::{
+    raws::*, Date, EnergyReserve, Name, Position, SerializeMe, SoloReproduction, UniqueId,
+};
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
 
@@ -7,7 +9,9 @@ use specs::prelude::*;
 pub struct BirthCertificate {
     pub name: Name,
     pub entity: Entity,
+    pub id: usize,
     pub parents: Entity,
+    pub parent_id: usize,
     pub date: Date,
     pub position: Position,
 }
@@ -16,6 +20,7 @@ pub struct BirthCertificate {
 pub struct BirthForm {
     pub name: Name,
     pub parents: Entity,
+    pub parent_id: usize,
     pub date: Date,
     pub position: Position,
 }
@@ -83,37 +88,48 @@ impl BirthRegistery {
     }
 }
 
+// Spawn the birth request and create the birth certificate if success
 pub fn give_birth(ecs: &mut World) {
     let birth_requests = ecs.write_resource::<BirthRequetList>().requests.clone();
 
-    let mut birth_success: Vec<BirthCertificate> = Vec::new();
+    let mut birth_success: Vec<(Entity, BirthForm)> = Vec::new();
 
-    // Using a scope to make the borrow checker happy
+    // Create the entity
     {
         for birth_request in birth_requests.iter() {
             //appelle a la fonction creation entity avec raw
             let entity_builder = ecs.create_entity().marked::<SimpleMarker<SerializeMe>>();
 
             if let Some(spawn_result) = spawn_birth(entity_builder, birth_request.clone()) {
-                let form = birth_request.form.clone();
-                let certif = BirthCertificate {
-                    name: form.name,
-                    entity: spawn_result,
-                    parents: form.parents,
-                    date: form.date,
-                    position: form.position,
-                };
-                birth_success.push(certif);
+                birth_success.push((spawn_result, birth_request.form.clone()));
             }
         }
     }
 
-    let mut birth_requests_list = ecs.write_resource::<BirthRequetList>();
-    birth_requests_list.requests.clear();
+    {
+        let mut birth_requests_list = ecs.write_resource::<BirthRequetList>();
+        birth_requests_list.requests.clear();
+    }
 
-    let mut birth_registery = ecs.write_resource::<BirthRegistery>();
-    for birth in birth_success {
-        birth_registery.insert(birth);
+    //Create Birth certificate
+    {
+        let mut birth_registery = ecs.write_resource::<BirthRegistery>();
+        let unique_ids = ecs.read_storage::<UniqueId>();
+        for (entity, form) in birth_success {
+            let certif = BirthCertificate {
+                name: form.name,
+                entity: entity,
+                id: unique_ids
+                    .get(entity)
+                    .expect("Error: No uniqueId in the new born entity")
+                    .get(),
+                parents: form.parents,
+                parent_id: form.parent_id,
+                date: form.date,
+                position: form.position,
+            };
+            birth_registery.insert(certif);
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
     gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, Mutations, Name, Position,
-    SoloReproduction, WantsToDuplicate,
+    SoloReproduction, WantsToDuplicate, UniqueId
 };
 use specs::prelude::*;
 
@@ -19,6 +19,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
         WriteExpect<'a, BirthRequetList>,
         ReadStorage<'a, Position>,
         ReadExpect<'a, Date>,
+        ReadStorage<'a, UniqueId>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -32,14 +33,16 @@ impl<'a> System<'a> for SoloReproductionSystem {
             mut birth_request_list,
             positions,
             date,
+            unique_ids,
         ) = data;
 
-        for (entity, solo_reprod, mut energy_reserve, name, position) in (
+        for (entity, solo_reprod, mut energy_reserve, name, position, id) in (
             &entities,
             &solo_reproductions,
             &mut energy_reserves,
             &names,
             &positions,
+            &unique_ids,
         )
             .join()
         {
@@ -51,6 +54,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
                 let form = BirthForm {
                     name: name.clone(),
                     parents: entity,
+                    parent_id: id.get(),
                     date: date.get_date(),
                     position: position.clone(),
                 };

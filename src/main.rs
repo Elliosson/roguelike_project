@@ -51,6 +51,8 @@ mod algo;
 mod birth;
 use birth::{BirthForm, BirthRegistery, BirthRequetList, Mutations};
 mod data_representation;
+mod atomic_funtions;
+
 
 #[macro_use]
 extern crate lazy_static;
@@ -534,6 +536,7 @@ fn main() {
     gs.ecs.register::<EnergyReserve>();
     gs.ecs.register::<SoloReproduction>();
     gs.ecs.register::<WantsToDuplicate>();
+    gs.ecs.register::<UniqueId>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

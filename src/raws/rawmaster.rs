@@ -1,11 +1,11 @@
 extern crate specs;
 
 use super::Raws;
+use crate::birth::BirthRequest;
 use crate::components::*;
 use crate::random_table::RandomTable;
 use specs::prelude::*;
-use std::collections::{HashMap, HashSet};
-use crate::birth::BirthRequest; //TODO se if we can suppress
+use std::collections::{HashMap, HashSet}; //TODO se if we can suppress
 
 pub enum SpawnType {
     AtPosition { x: i32, y: i32 },
@@ -245,6 +245,8 @@ pub fn spawn_named_prop(
 
         let mut eb = new_entity;
 
+        eb = eb.with(UniqueId::new());
+
         // Spawn in the specified location
         eb = spawn_position(pos, eb);
 
@@ -363,27 +365,19 @@ pub fn get_spawn_table_for_depth(raws: &RawMaster, depth: i32) -> RandomTable {
     rt
 }
 
-pub fn spawn_born(
-    raws: &RawMaster,
-    new_entity: EntityBuilder,
-    br: BirthRequest
-) -> Option<Entity> {
-
+pub fn spawn_born(raws: &RawMaster, new_entity: EntityBuilder, br: BirthRequest) -> Option<Entity> {
     let pos = br.form.position;
-    let pos = SpawnType::AtPosition{x: pos.x, y: pos.y};
+    let pos = SpawnType::AtPosition { x: pos.x, y: pos.y };
 
     let key = &br.form.name.name;
     //TODO insert certificate or not ?
-
-
 
     if raws.prop_index.contains_key(key) {
         let prop_template = &raws.raws.props[raws.prop_index[key]];
 
         let mut eb = new_entity;
 
-
-
+        eb = eb.with(UniqueId::new());
 
         // Spawn in the specified location
         eb = spawn_position(pos, eb);
@@ -397,14 +391,11 @@ pub fn spawn_born(
             name: prop_template.name.clone(),
         });
 
-
-
         /*****component wiht possible mutation */
         // EnergyReserve
-        if let Some(energy_reserve) = br.mutations.energy_reserve{
+        if let Some(energy_reserve) = br.mutations.energy_reserve {
             eb = eb.with(energy_reserve.clone());
-        }
-        else if let Some(energy_reserve) = &prop_template.energy_reserve {
+        } else if let Some(energy_reserve) = &prop_template.energy_reserve {
             eb = eb.with(EnergyReserve {
                 reserve: energy_reserve.reserve,
                 max_reserve: energy_reserve.max_reserve,
@@ -414,16 +405,14 @@ pub fn spawn_born(
         }
 
         // SoloReproduction
-        if let Some(solo_reproduction) = br.mutations.solo_reproduction{
+        if let Some(solo_reproduction) = br.mutations.solo_reproduction {
             eb = eb.with(solo_reproduction.clone());
         }
         if let Some(solo_reproduction) = &prop_template.solo_reproduction {
             eb = eb.with(solo_reproduction.clone());
         }
 
-
-
-/********************************** */
+        /********************************** */
 
         if let Some(blocks_tile) = prop_template.blocks_tile {
             if blocks_tile == true {
@@ -455,8 +444,6 @@ pub fn spawn_born(
             }
         }
 
-
-
         // Viewshed
         if let Some(viewshed) = &prop_template.viewshed {
             eb = eb.with(Viewshed {
@@ -472,8 +459,6 @@ pub fn spawn_born(
                 eb = eb.with(Cow { life: 100 }); //TODO no default value
             }
         }
-
-
 
         return Some(eb.build());
     }

@@ -26,6 +26,8 @@ pub type SpwanPropData<'a, 'b> = (
 );
 
 //key is just a string, it's just the name of the entity
+//TODO WARNING, No unique id add here
+//This spawner is proplably to abandon
 pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
     let (
         entities,

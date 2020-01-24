@@ -19,12 +19,7 @@ pub fn write_genealogy(ecs: &mut World) -> std::io::Result<()> {
         println!("{} [label=\"{}]", certif.entity.id(), certif.name.name);
         println!("{} [label=\"{}]", certif.parents.id(), certif.name.name);
         */
-        write!(
-            file,
-            "    {} -> {};\n",
-            certif.parents.id(),
-            certif.entity.id()
-        )?;
+        write!(file, "    {} -> {};\n", certif.parent_id, certif.id)?;
         /*
         write!(
             file,

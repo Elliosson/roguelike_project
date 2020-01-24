@@ -6,6 +6,7 @@ use rltk::RGB;
 use serde::{Deserialize, Serialize};
 use specs::error::NoError;
 use specs::saveload::{ConvertSaveload, Marker};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Position {
@@ -252,6 +253,26 @@ pub struct SoloReproduction {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct WantsToDuplicate {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct UniqueId {
+    _id: usize,
+}
+
+impl UniqueId {
+    pub fn get(&self) -> usize {
+        self._id
+    }
+
+    //generate an unique id Id
+    pub fn new() -> Self{
+        static COUNTER: AtomicUsize = AtomicUsize::new(1);
+        UniqueId{
+            _id: COUNTER.fetch_add(1, Ordering::Relaxed)
+        }
+    }
+}
+
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
