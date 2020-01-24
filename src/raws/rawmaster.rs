@@ -369,10 +369,10 @@ pub fn spawn_born(
     br: BirthRequest
 ) -> Option<Entity> {
 
-    let pos = br.certificate.position;
+    let pos = br.form.position;
     let pos = SpawnType::AtPosition{x: pos.x, y: pos.y};
 
-    let key = &br.certificate.name.name;
+    let key = &br.form.name.name;
     //TODO insert certificate or not ?
 
 

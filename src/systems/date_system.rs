@@ -47,6 +47,10 @@ impl Date {
     pub fn get_total_day(&self) -> i64 {
         self.days_count
     }
+
+    pub fn get_date(&self) -> Date {
+        self.clone()
+    }
 }
 
 #[cfg(test)]

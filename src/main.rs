@@ -49,6 +49,8 @@ use systems::{
 };
 mod algo;
 mod birth;
+use birth::{BirthForm, BirthRegistery, BirthRequetList, Mutations};
+mod data_representation;
 
 #[macro_use]
 extern crate lazy_static;
@@ -333,7 +335,9 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
         damage_system::delete_the_dead(&mut self.ecs);
+        birth::give_birth(&mut self.ecs);
         object_deleter::delete_entity_to_delete(&mut self.ecs);
+        data_representation::write_genealogy(&mut self.ecs);
     }
 }
 
@@ -565,6 +569,8 @@ fn main() {
     gs.ecs.insert(ObjectBuilder::new());
     gs.ecs.insert(InteractionResquest::new());
     gs.ecs.insert(Date::new());
+    gs.ecs.insert(BirthRequetList::new());
+    gs.ecs.insert(BirthRegistery::new());
 
     rltk::main_loop(context, gs);
 }

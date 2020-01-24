@@ -1,5 +1,8 @@
 extern crate specs;
-use crate::{gamelog::GameLog, EnergyReserve, Name, SoloReproduction, WantsToDuplicate};
+use crate::{
+    gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, Mutations, Name, Position,
+    SoloReproduction, WantsToDuplicate,
+};
 use specs::prelude::*;
 
 pub struct SoloReproductionSystem {}
@@ -13,6 +16,9 @@ impl<'a> System<'a> for SoloReproductionSystem {
         WriteStorage<'a, SoloReproduction>,
         ReadStorage<'a, Name>,
         WriteStorage<'a, WantsToDuplicate>,
+        WriteExpect<'a, BirthRequetList>,
+        ReadStorage<'a, Position>,
+        ReadExpect<'a, Date>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -22,19 +28,37 @@ impl<'a> System<'a> for SoloReproductionSystem {
             mut energy_reserves,
             solo_reproductions,
             names,
-            mut want_to_duplicates,
+            mut _want_to_duplicates,
+            mut birth_request_list,
+            positions,
+            date,
         ) = data;
 
-        for (entity, solo_reprod, mut energy_reserve, _names) in
-            (&entities, &solo_reproductions, &mut energy_reserves, &names).join()
+        for (entity, solo_reprod, mut energy_reserve, name, position) in (
+            &entities,
+            &solo_reproductions,
+            &mut energy_reserves,
+            &names,
+            &positions,
+        )
+            .join()
         {
             if energy_reserve.reserve >= solo_reprod.threshold {
                 energy_reserve.reserve -= solo_reprod.cost;
                 log.entries
                     .insert(0, format!("A entity is want to divide."));
-                want_to_duplicates
-                    .insert(entity, WantsToDuplicate {})
-                    .expect("Unable to insert");
+
+                let form = BirthForm {
+                    name: name.clone(),
+                    parents: entity,
+                    date: date.get_date(),
+                    position: position.clone(),
+                };
+
+                birth_request_list.request(form, Mutations::new());
+                /*    want_to_duplicates
+                .insert(entity, WantsToDuplicate {})
+                .expect("Unable to insert");*/
             }
         }
     }

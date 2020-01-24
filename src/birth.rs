@@ -1,6 +1,5 @@
 extern crate specs;
 use super::{raws::*, Date, EnergyReserve, Name, Position, SerializeMe, SoloReproduction};
-use crate::gamelog::GameLog;
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 use specs::prelude::*;
 
@@ -13,6 +12,14 @@ pub struct BirthCertificate {
     pub position: Position,
 }
 
+#[derive(Clone)]
+pub struct BirthForm {
+    pub name: Name,
+    pub parents: Entity,
+    pub date: Date,
+    pub position: Position,
+}
+
 //for now just a few
 #[derive(Clone)]
 pub struct Mutations {
@@ -20,9 +27,18 @@ pub struct Mutations {
     pub energy_reserve: Option<EnergyReserve>,
 }
 
+impl Mutations {
+    pub fn new() -> Mutations {
+        Mutations {
+            solo_reproduction: None,
+            energy_reserve: None,
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct BirthRequest {
-    pub certificate: BirthCertificate,
+    pub form: BirthForm,
     pub mutations: Mutations,
 }
 
@@ -40,11 +56,8 @@ impl BirthRequetList {
         }
     }
 
-    pub fn request(&mut self, certificate: BirthCertificate, mutations: Mutations) {
-        self.requests.push(BirthRequest {
-            certificate,
-            mutations,
-        });
+    pub fn request(&mut self, form: BirthForm, mutations: Mutations) {
+        self.requests.push(BirthRequest { form, mutations });
     }
 }
 
@@ -64,10 +77,14 @@ impl BirthRegistery {
     pub fn insert(&mut self, certificate: BirthCertificate) {
         self.registery.push(certificate);
     }
+
+    pub fn get(&self) -> Vec<BirthCertificate> {
+        self.registery.clone()
+    }
 }
 
 pub fn give_birth(ecs: &mut World) {
-    let mut birth_requests = ecs.write_resource::<BirthRequetList>().requests.clone();
+    let birth_requests = ecs.write_resource::<BirthRequetList>().requests.clone();
 
     let mut birth_success: Vec<BirthCertificate> = Vec::new();
 
@@ -75,8 +92,18 @@ pub fn give_birth(ecs: &mut World) {
     {
         for birth_request in birth_requests.iter() {
             //appelle a la fonction creation entity avec raw
-            if spawn_birth(ecs, birth_request.clone()) {
-                birth_success.push(birth_request.certificate.clone());
+            let entity_builder = ecs.create_entity().marked::<SimpleMarker<SerializeMe>>();
+
+            if let Some(spawn_result) = spawn_birth(entity_builder, birth_request.clone()) {
+                let form = birth_request.form.clone();
+                let certif = BirthCertificate {
+                    name: form.name,
+                    entity: spawn_result,
+                    parents: form.parents,
+                    date: form.date,
+                    position: form.position,
+                };
+                birth_success.push(certif);
             }
         }
     }
@@ -86,26 +113,23 @@ pub fn give_birth(ecs: &mut World) {
 
     let mut birth_registery = ecs.write_resource::<BirthRegistery>();
     for birth in birth_success {
-        birth_registery.registery.push(birth);
+        birth_registery.insert(birth);
     }
 }
 
 //TODO gerer les mutation ici ?
-pub fn spawn_birth(ecs: &mut World, birth_request: BirthRequest) -> bool {
+pub fn spawn_birth(entity: EntityBuilder, birth_request: BirthRequest) -> Option<Entity> {
     //TODO appler la fonction specifique de creation d'une nouvelle creature avec heritage
 
-    let mut ret = false;
-    let key = &birth_request.certificate.name.name.clone();
+    let mut spawn_result = None;
+
+    let key = &birth_request.form.name.name.clone();
 
     let raws: &RawMaster = &RAWS.lock().unwrap();
     if raws.prop_index.contains_key(key) {
-        let spawn_result = spawn_born(
-            raws,
-            ecs.create_entity().marked::<SimpleMarker<SerializeMe>>(),
-            birth_request,
-        );
+        spawn_result = spawn_born(raws, entity, birth_request);
         if spawn_result.is_some() {
-            ret = true;
+
         } else {
             println!("WARNING: We don't know how to spawn [{}]!", key);
         }
@@ -113,5 +137,5 @@ pub fn spawn_birth(ecs: &mut World, birth_request: BirthRequest) -> bool {
         println!("WARNING: No keys {} !", key);
     }
 
-    return ret;
+    return spawn_result;
 }
