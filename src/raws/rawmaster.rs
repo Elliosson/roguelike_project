@@ -5,6 +5,7 @@ use crate::components::*;
 use crate::random_table::RandomTable;
 use specs::prelude::*;
 use std::collections::{HashMap, HashSet};
+use crate::birth::BirthRequest; //TODO se if we can suppress
 
 pub enum SpawnType {
     AtPosition { x: i32, y: i32 },
@@ -360,4 +361,121 @@ pub fn get_spawn_table_for_depth(raws: &RawMaster, depth: i32) -> RandomTable {
     }
 
     rt
+}
+
+pub fn spawn_born(
+    raws: &RawMaster,
+    new_entity: EntityBuilder,
+    br: BirthRequest
+) -> Option<Entity> {
+
+    let pos = br.certificate.position;
+    let pos = SpawnType::AtPosition{x: pos.x, y: pos.y};
+
+    let key = &br.certificate.name.name;
+    //TODO insert certificate or not ?
+
+
+
+    if raws.prop_index.contains_key(key) {
+        let prop_template = &raws.raws.props[raws.prop_index[key]];
+
+        let mut eb = new_entity;
+
+
+
+
+        // Spawn in the specified location
+        eb = spawn_position(pos, eb);
+
+        // Renderable
+        if let Some(renderable) = &prop_template.renderable {
+            eb = eb.with(get_renderable_component(renderable));
+        }
+
+        eb = eb.with(Name {
+            name: prop_template.name.clone(),
+        });
+
+
+
+        /*****component wiht possible mutation */
+        // EnergyReserve
+        if let Some(energy_reserve) = br.mutations.energy_reserve{
+            eb = eb.with(energy_reserve.clone());
+        }
+        else if let Some(energy_reserve) = &prop_template.energy_reserve {
+            eb = eb.with(EnergyReserve {
+                reserve: energy_reserve.reserve,
+                max_reserve: energy_reserve.max_reserve,
+                base_consumption: energy_reserve.base_consumption,
+                hunger: Hunger::Full,
+            });
+        }
+
+        // SoloReproduction
+        if let Some(solo_reproduction) = br.mutations.solo_reproduction{
+            eb = eb.with(solo_reproduction.clone());
+        }
+        if let Some(solo_reproduction) = &prop_template.solo_reproduction {
+            eb = eb.with(solo_reproduction.clone());
+        }
+
+
+
+/********************************** */
+
+        if let Some(blocks_tile) = prop_template.blocks_tile {
+            if blocks_tile == true {
+                eb = eb.with(BlocksTile {});
+            }
+        }
+
+        // Interactable
+        if let Some(interactable) = prop_template.interactable {
+            if interactable {
+                eb = eb.with(Interactable {})
+            };
+        }
+
+        // InteractableObject
+        if let Some(interactable_object) = &prop_template.interactable_object {
+            eb = eb.with(interactable_object.clone()); //TODO comprendre pourquoi il ne fait pas comme ça( il passe par un itermediaire item_component)
+        }
+
+        if let Some(leaf) = prop_template.leaf {
+            if leaf == true {
+                eb = eb.with(Leaf { nutriments: 100 }); //TODO no default value
+            }
+        }
+
+        if let Some(tree) = prop_template.tree {
+            if tree == true {
+                eb = eb.with(Tree {}); //TODO no default value
+            }
+        }
+
+
+
+        // Viewshed
+        if let Some(viewshed) = &prop_template.viewshed {
+            eb = eb.with(Viewshed {
+                visible_tiles: Vec::new(),
+                range: viewshed.range,
+                dirty: true,
+            });
+        }
+
+        // Cow
+        if let Some(cow) = prop_template.cow {
+            if cow == true {
+                eb = eb.with(Cow { life: 100 }); //TODO no default value
+            }
+        }
+
+
+
+        return Some(eb.build());
+    }
+    None
 }
