@@ -1,10 +1,8 @@
 extern crate specs;
+use super::{raws::*, Date, EnergyReserve, Name, Position, SerializeMe, SoloReproduction};
 use crate::gamelog::GameLog;
-use specs::prelude::*;
-use super::{Name, Date, Position, SoloReproduction, EnergyReserve, raws::*, SerializeMe};
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
-
-
+use specs::prelude::*;
 
 #[derive(Clone)]
 pub struct BirthCertificate {
@@ -15,22 +13,18 @@ pub struct BirthCertificate {
     pub position: Position,
 }
 
-
-
-
 //for now just a few
 #[derive(Clone)]
-pub struct Mutations{
+pub struct Mutations {
     pub solo_reproduction: Option<SoloReproduction>,
     pub energy_reserve: Option<EnergyReserve>,
 }
 
 #[derive(Clone)]
-pub struct BirthRequest{
+pub struct BirthRequest {
     pub certificate: BirthCertificate,
     pub mutations: Mutations,
 }
-
 
 //struc de demande de birth
 //to insert in world
@@ -46,14 +40,16 @@ impl BirthRequetList {
         }
     }
 
-    pub fn request(&mut self,  certificate: BirthCertificate, mutations: Mutations) {
-        self.requests.push(BirthRequest { certificate, mutations});
+    pub fn request(&mut self, certificate: BirthCertificate, mutations: Mutations) {
+        self.requests.push(BirthRequest {
+            certificate,
+            mutations,
+        });
     }
 }
 
-
 //registery of bith ever. to insert in world and to save in savegame
-pub struct BirthRegistery{
+pub struct BirthRegistery {
     registery: Vec<BirthCertificate>,
 }
 
@@ -65,31 +61,23 @@ impl BirthRegistery {
         }
     }
 
-    pub fn insert(&mut self,  certificate: BirthCertificate) {
+    pub fn insert(&mut self, certificate: BirthCertificate) {
         self.registery.push(certificate);
     }
 }
 
-
-
-
 pub fn give_birth(ecs: &mut World) {
-
-
     let mut birth_requests = ecs.write_resource::<BirthRequetList>().requests.clone();
 
-    let mut birth_success : Vec<BirthCertificate> = Vec::new();
+    let mut birth_success: Vec<BirthCertificate> = Vec::new();
 
     // Using a scope to make the borrow checker happy
     {
-
-        for birth_request in birth_requests.iter(){
+        for birth_request in birth_requests.iter() {
             //appelle a la fonction creation entity avec raw
-            if spawn_birth(ecs, birth_request.clone()){
+            if spawn_birth(ecs, birth_request.clone()) {
                 birth_success.push(birth_request.certificate.clone());
             }
-            
-
         }
     }
 
@@ -97,13 +85,13 @@ pub fn give_birth(ecs: &mut World) {
     birth_requests_list.requests.clear();
 
     let mut birth_registery = ecs.write_resource::<BirthRegistery>();
-    for birth in birth_success{
+    for birth in birth_success {
         birth_registery.registery.push(birth);
     }
 }
 
 //TODO gerer les mutation ici ?
-pub fn spawn_birth(ecs: &mut World, birth_request: BirthRequest) -> bool{
+pub fn spawn_birth(ecs: &mut World, birth_request: BirthRequest) -> bool {
     //TODO appler la fonction specifique de creation d'une nouvelle creature avec heritage
 
     let mut ret = false;
@@ -118,7 +106,6 @@ pub fn spawn_birth(ecs: &mut World, birth_request: BirthRequest) -> bool{
         );
         if spawn_result.is_some() {
             ret = true;
-
         } else {
             println!("WARNING: We don't know how to spawn [{}]!", key);
         }
@@ -126,8 +113,5 @@ pub fn spawn_birth(ecs: &mut World, birth_request: BirthRequest) -> bool{
         println!("WARNING: No keys {} !", key);
     }
 
-    return ret
+    return ret;
 }
-
-
-
