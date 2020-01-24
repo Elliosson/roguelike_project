@@ -48,6 +48,7 @@ use systems::{
     SoloReproductionSystem, VegetableGrowSystem,
 };
 mod algo;
+mod birth;
 
 #[macro_use]
 extern crate lazy_static;

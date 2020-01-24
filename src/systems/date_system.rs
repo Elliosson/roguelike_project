@@ -16,6 +16,7 @@ impl<'a> System<'a> for DateSystem {
     }
 }
 
+#[derive(Clone)]
 pub struct Date {
     days_count: i64,
 }
