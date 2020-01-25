@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
     gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, Mutations, Name, Position,
-    SoloReproduction, WantsToDuplicate, UniqueId
+    SoloReproduction, UniqueId, WantsToDuplicate,
 };
 use specs::prelude::*;
 
@@ -46,8 +46,8 @@ impl<'a> System<'a> for SoloReproductionSystem {
         )
             .join()
         {
-            if energy_reserve.reserve >= solo_reprod.threshold {
-                energy_reserve.reserve -= solo_reprod.cost;
+            if energy_reserve.reserve >= solo_reprod.threshold as f32 {
+                energy_reserve.reserve -= solo_reprod.cost as f32;
                 log.entries
                     .insert(0, format!("A entity is want to divide."));
 
@@ -59,7 +59,11 @@ impl<'a> System<'a> for SoloReproductionSystem {
                     position: position.clone(),
                 };
 
-                birth_request_list.request(form, Mutations::new());
+                let mutations = Mutations{
+                    solo_reproduction: Some(solo_reprod.clone()),
+                    energy_reserve: Some(energy_reserve.clone())};
+
+                birth_request_list.request(form, mutations);
                 /*    want_to_duplicates
                 .insert(entity, WantsToDuplicate {})
                 .expect("Unable to insert");*/

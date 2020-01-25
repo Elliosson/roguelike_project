@@ -50,9 +50,8 @@ use systems::{
 mod algo;
 mod birth;
 use birth::{BirthForm, BirthRegistery, BirthRequetList, Mutations};
-mod data_representation;
 mod atomic_funtions;
-
+mod data_representation;
 
 #[macro_use]
 extern crate lazy_static;

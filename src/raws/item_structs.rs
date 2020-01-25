@@ -41,7 +41,7 @@ pub struct RawViewshed {
 
 #[derive(Deserialize, Debug)]
 pub struct RawEnergyReserve {
-    pub reserve: i32,
-    pub max_reserve: i32,
-    pub base_consumption: i32,
+    pub reserve: f32,
+    pub max_reserve: f32,
+    pub base_consumption: f32,
 }

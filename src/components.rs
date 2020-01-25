@@ -239,9 +239,9 @@ pub enum Hunger {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct EnergyReserve {
-    pub reserve: i32,
-    pub max_reserve: i32,
-    pub base_consumption: i32,
+    pub reserve: f32,
+    pub max_reserve: f32,
+    pub base_consumption: f32,
     pub hunger: Hunger,
 }
 
@@ -265,14 +265,13 @@ impl UniqueId {
     }
 
     //generate an unique id Id
-    pub fn new() -> Self{
+    pub fn new() -> Self {
         static COUNTER: AtomicUsize = AtomicUsize::new(1);
-        UniqueId{
-            _id: COUNTER.fetch_add(1, Ordering::Relaxed)
+        UniqueId {
+            _id: COUNTER.fetch_add(1, Ordering::Relaxed),
         }
     }
 }
-
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.

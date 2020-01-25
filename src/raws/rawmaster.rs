@@ -1,7 +1,7 @@
 extern crate specs;
 
 use super::Raws;
-use crate::birth::BirthRequest;
+use crate::birth::{BirthForm, Mutations};
 use crate::components::*;
 use crate::random_table::RandomTable;
 use specs::prelude::*;
@@ -365,11 +365,16 @@ pub fn get_spawn_table_for_depth(raws: &RawMaster, depth: i32) -> RandomTable {
     rt
 }
 
-pub fn spawn_born(raws: &RawMaster, new_entity: EntityBuilder, br: BirthRequest) -> Option<Entity> {
-    let pos = br.form.position;
+pub fn spawn_born(
+    raws: &RawMaster,
+    new_entity: EntityBuilder,
+    form: BirthForm,
+    mutations: Mutations,
+) -> Option<Entity> {
+    let pos = form.position;
     let pos = SpawnType::AtPosition { x: pos.x, y: pos.y };
 
-    let key = &br.form.name.name;
+    let key = &form.name.name;
     //TODO insert certificate or not ?
 
     if raws.prop_index.contains_key(key) {
@@ -391,9 +396,9 @@ pub fn spawn_born(raws: &RawMaster, new_entity: EntityBuilder, br: BirthRequest)
             name: prop_template.name.clone(),
         });
 
-        /*****component wiht possible mutation */
+        /*****component with possible mutation */
         // EnergyReserve
-        if let Some(energy_reserve) = br.mutations.energy_reserve {
+        if let Some(energy_reserve) = mutations.energy_reserve {
             eb = eb.with(energy_reserve.clone());
         } else if let Some(energy_reserve) = &prop_template.energy_reserve {
             eb = eb.with(EnergyReserve {
@@ -405,7 +410,7 @@ pub fn spawn_born(raws: &RawMaster, new_entity: EntityBuilder, br: BirthRequest)
         }
 
         // SoloReproduction
-        if let Some(solo_reproduction) = br.mutations.solo_reproduction {
+        if let Some(solo_reproduction) = mutations.solo_reproduction {
             eb = eb.with(solo_reproduction.clone());
         }
         if let Some(solo_reproduction) = &prop_template.solo_reproduction {

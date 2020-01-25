@@ -20,7 +20,7 @@ impl<'a> System<'a> for EnergySystem {
             //consumption of energy
             en_res.reserve -= en_res.base_consumption;
 
-            if en_res.reserve <= 0 {
+            if en_res.reserve <= 0.0 {
                 //kill entity
                 to_deletes
                     .insert(entity, ToDelete {})
@@ -28,7 +28,7 @@ impl<'a> System<'a> for EnergySystem {
 
                 log.entries
                     .insert(0, format!("A entity is dead of starvation."));
-            } else if en_res.reserve < (en_res.max_reserve / 2) {
+            } else if en_res.reserve < (en_res.max_reserve / 2.0) {
                 en_res.hunger = Hunger::Hungry;
             } else {
                 en_res.hunger = Hunger::Full;

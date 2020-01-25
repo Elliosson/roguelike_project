@@ -25,7 +25,7 @@ impl<'a> System<'a> for EatingSystem {
         {
             if let Some(leaf) = leafs.get(want_to_eat.target) {
                 if en_res.hunger == Hunger::Hungry {
-                    en_res.reserve += leaf.nutriments; //TODO no control of max res for know
+                    en_res.reserve += leaf.nutriments as f32; //TODO no control of max res for know
                     eated_leafs.push(want_to_eat.target);
                 }
             }

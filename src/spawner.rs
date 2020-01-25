@@ -455,9 +455,9 @@ pub fn _cow(ecs: &mut World, x: i32, y: i32) {
         .with(BlocksTile {})
         .with(Cow { life: 100 })
         .with(EnergyReserve {
-            reserve: 10,
-            max_reserve: 200,
-            base_consumption: 1,
+            reserve: 10.0,
+            max_reserve: 200.0,
+            base_consumption: 1.0,
             hunger: Hunger::Full,
         })
         .marked::<SimpleMarker<SerializeMe>>()
