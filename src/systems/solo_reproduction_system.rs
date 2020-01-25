@@ -64,10 +64,18 @@ impl<'a> System<'a> for SoloReproductionSystem {
                     energy_reserve: Some(energy_reserve.clone()),
                 };
 
+                println!(
+                    "Birth request: id:{}, reserve{}, thrshoild{}, cost{} ,x{}, y{} ",
+                    id.get(),
+                    energy_reserve.reserve,
+                    solo_reprod.threshold(),
+                    solo_reprod.cost(),
+                    position.x,
+                    position.y
+                );
+
                 birth_request_list.request(form, mutations);
-                /*    want_to_duplicates
-                .insert(entity, WantsToDuplicate {})
-                .expect("Unable to insert");*/
+
             }
         }
     }

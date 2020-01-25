@@ -537,6 +537,7 @@ fn main() {
     gs.ecs.register::<WantsToDuplicate>();
     gs.ecs.register::<UniqueId>();
     gs.ecs.register::<Aging>();
+    gs.ecs.register::<InUse>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

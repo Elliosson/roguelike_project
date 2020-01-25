@@ -295,6 +295,11 @@ pub struct Aging {
     pub age: i32,
 }
 
+//Mark the component as in use for this turn to prevent other to use it
+//Must delete at the end of each turn
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct InUse {}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 pub struct SerializeMe;

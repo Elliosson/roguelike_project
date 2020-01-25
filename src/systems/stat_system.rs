@@ -1,5 +1,5 @@
 extern crate specs;
-use crate::{gamelog::GameLog, EnergyReserve, Name, SoloReproduction};
+use crate::{gamelog::GameLog, Date, EnergyReserve, Name, SoloReproduction};
 use specs::prelude::*;
 
 pub struct StatSystem {}
@@ -12,10 +12,11 @@ impl<'a> System<'a> for StatSystem {
         ReadStorage<'a, Name>,
         ReadStorage<'a, EnergyReserve>,
         ReadStorage<'a, SoloReproduction>,
+        ReadExpect<'a, Date>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _log, _names, energy_reserves, solo_reproductions) = data;
+        let (entities, _log, _names, energy_reserves, solo_reproductions, _date) = data;
 
         let mut thresholds = Vec::new();
         let mut max_res = Vec::new();

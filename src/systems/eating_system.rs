@@ -23,9 +23,10 @@ impl<'a> System<'a> for EatingSystem {
         for (_entity, want_to_eat, mut _cow, mut en_res) in
             (&entities, &want_to_eats, &mut cows, &mut energy_reserves).join()
         {
-            if let Some(leaf) = leafs.get(want_to_eat.target) {
+            if let Some(leaf) = leafs.get_mut(want_to_eat.target) {
                 if en_res.hunger == Hunger::Hungry {
                     en_res.reserve += leaf.nutriments as f32; //TODO no control of max res for know
+                    leaf.nutriments = 0; //TODO maybe do something proper to imediatly suppress the leaf
                     eated_leafs.push(want_to_eat.target);
                 }
             }
