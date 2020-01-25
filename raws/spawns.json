@@ -400,6 +400,10 @@
             "solo_reproduction": {
                 "threshold": 150,
                 "cost": 100
+            },
+            "aging": {
+                "life_expectancy": 100,
+                "age": 0
             }
         }
     ]

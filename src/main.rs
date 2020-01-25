@@ -42,11 +42,7 @@ mod tiletype;
 mod trigger_system;
 use tiletype::{tile_walkable, TileType};
 pub mod systems;
-use systems::{
-    Date, DateSystem, EatingSystem, EnergySystem, InteractionResquest, InteractionSystem,
-    NamedCounterSystem, ObjectBuilder, ObjectSpawnSystem, PropSpawnerSystem,
-    SoloReproductionSystem, StatSystem, VegetableGrowSystem,
-};
+use systems::*;
 mod algo;
 mod birth;
 use birth::{BirthForm, BirthRegistery, BirthRequetList, Mutations};
@@ -124,6 +120,8 @@ impl State {
         solo_reprod.run_now(&self.ecs);
         let mut prop_spawmer = PropSpawnerSystem {};
         prop_spawmer.run_now(&self.ecs);
+        let mut aging = AgingSystem {};
+        aging.run_now(&self.ecs);
         let mut named_counter = NamedCounterSystem {};
         named_counter.run_now(&self.ecs);
         let mut stat = StatSystem {};
@@ -538,6 +536,7 @@ fn main() {
     gs.ecs.register::<SoloReproduction>();
     gs.ecs.register::<WantsToDuplicate>();
     gs.ecs.register::<UniqueId>();
+    gs.ecs.register::<Aging>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

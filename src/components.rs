@@ -273,6 +273,12 @@ impl UniqueId {
     }
 }
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Aging {
+    pub life_expectancy: i32,
+    pub age: i32,
+}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 pub struct SerializeMe;

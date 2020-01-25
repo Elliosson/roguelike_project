@@ -320,6 +320,11 @@ pub fn spawn_named_prop(
             eb = eb.with(solo_reproduction.clone());
         }
 
+        // Aging
+        if let Some(aging) = &prop_template.aging {
+            eb = eb.with(aging.clone());
+        }
+
         return Some(eb.build());
     }
     None
@@ -462,6 +467,11 @@ pub fn spawn_born(
             if cow == true {
                 eb = eb.with(Cow { life: 100 }); //TODO no default value
             }
+        }
+
+        // Aging
+        if let Some(aging) = &prop_template.aging {
+            eb = eb.with(aging.clone());
         }
 
         return Some(eb.build());

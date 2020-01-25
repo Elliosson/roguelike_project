@@ -20,6 +20,8 @@ pub struct Prop {
     pub viewshed: Option<RawViewshed>,
     pub cow: Option<bool>,
     pub solo_reproduction: Option<SoloReproduction>,
+    pub aging: Option<Aging>,
+
 }
 
 #[derive(Deserialize, Debug)]
