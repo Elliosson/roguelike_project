@@ -166,12 +166,13 @@ pub fn spawn_birth(entity: EntityBuilder, birth_request: BirthRequest) -> Option
 }
 
 //Take an already existing set of mutation randomly add some new mutatition
+//TODO create a new mutation to avois transmission of thing like energy reserve and hunger
 pub fn change_mutation(mut mutations: Mutations) -> Mutations {
     let mut rng = rand::thread_rng();
 
     //For now just change the parametere of soloreprod
     if let Some(solo_reprod) = &mut mutations.solo_reproduction {
-        solo_reprod.cost += rng.gen_range(-1, 2);
+        //solo_reprod.cost += rng.gen_range(-1, 2);
         solo_reprod.threshold += rng.gen_range(-1, 2);
     }
 
@@ -201,4 +202,33 @@ fn base_comsumption(mutations: Mutations) -> f32 {
     }
     let new_consuption: f32 = features_cost / 300.0;
     new_consuption
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::Hunger;
+    //Hard to test random
+    /*
+    #[test]
+    fn change_mutation_test() {
+        let mutations = Mutations {
+            solo_reproduction: Some(SoloReproduction {
+                threshold: 101,
+                cost: 102,
+            }),
+            energy_reserve: Some(EnergyReserve {
+                reserve: 103.0,
+                max_reserve: 104.0,
+                base_consumption: 105.0,
+                hunger: Hunger::Full,
+            }),
+        };
+
+        let new_mut = change_mutation(mutations);
+
+        //Pretty hard to test random
+        //assert_ne!(new_mut.solo_reproduction.unwrap().threshold, 101);
+    }
+    */
 }

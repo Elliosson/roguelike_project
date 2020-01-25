@@ -16,3 +16,5 @@ mod interaction_system;
 pub use interaction_system::{InteractionResquest, InteractionSystem};
 mod date_system;
 pub use date_system::{Date, DateSystem};
+mod stat_system;
+pub use stat_system::StatSystem;

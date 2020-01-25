@@ -412,8 +412,7 @@ pub fn spawn_born(
         // SoloReproduction
         if let Some(solo_reproduction) = mutations.solo_reproduction {
             eb = eb.with(solo_reproduction.clone());
-        }
-        if let Some(solo_reproduction) = &prop_template.solo_reproduction {
+        } else if let Some(solo_reproduction) = &prop_template.solo_reproduction {
             eb = eb.with(solo_reproduction.clone());
         }
 

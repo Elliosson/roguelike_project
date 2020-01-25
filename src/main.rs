@@ -45,7 +45,7 @@ pub mod systems;
 use systems::{
     Date, DateSystem, EatingSystem, EnergySystem, InteractionResquest, InteractionSystem,
     NamedCounterSystem, ObjectBuilder, ObjectSpawnSystem, PropSpawnerSystem,
-    SoloReproductionSystem, VegetableGrowSystem,
+    SoloReproductionSystem, StatSystem, VegetableGrowSystem,
 };
 mod algo;
 mod birth;
@@ -126,6 +126,8 @@ impl State {
         prop_spawmer.run_now(&self.ecs);
         let mut named_counter = NamedCounterSystem {};
         named_counter.run_now(&self.ecs);
+        let mut stat = StatSystem {};
+        stat.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
