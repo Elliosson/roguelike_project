@@ -9,7 +9,7 @@ use std::io::Write;
 pub fn write_genealogy(ecs: &mut World) -> std::io::Result<()> {
     let registery = ecs.fetch::<BirthRegistery>();
 
-    let mut file = File::create("birth_registery.txt")?;
+    let mut file = File::create("birth_registery.dot")?;
 
     write!(file, "digraph G {{\n")?;
 

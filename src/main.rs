@@ -323,6 +323,7 @@ impl GameState for State {
             }
             RunState::SaveGame => {
                 saveload_system::save_game(&mut self.ecs);
+                data_representation::write_genealogy(&mut self.ecs).unwrap();
                 newrunstate = RunState::MainMenu {
                     menu_selection: gui::MainMenuSelection::LoadGame,
                 };
@@ -340,7 +341,6 @@ impl GameState for State {
         damage_system::delete_the_dead(&mut self.ecs);
         birth::give_birth(&mut self.ecs);
         object_deleter::delete_entity_to_delete(&mut self.ecs);
-        data_representation::write_genealogy(&mut self.ecs).unwrap();
     }
 }
 
