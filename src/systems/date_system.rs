@@ -1,18 +1,27 @@
 extern crate specs;
-use crate::gamelog::GameLog;
+use crate::gamelog::{GameLog, WorldStatLog};
 use specs::prelude::*;
 
 pub struct DateSystem {}
 
 impl<'a> System<'a> for DateSystem {
     #[allow(clippy::type_complexity)]
-    type SystemData = (WriteExpect<'a, GameLog>, WriteExpect<'a, Date>);
+    type SystemData = (
+        WriteExpect<'a, GameLog>,
+        WriteExpect<'a, Date>,
+        WriteExpect<'a, WorldStatLog>,
+    );
     fn run(&mut self, data: Self::SystemData) {
-        let (_log, mut date) = data;
+        let (_log, mut date, mut world_logs) = data;
 
         date.new_day();
 
-        println!("Day {} of year {}", date.get_day(), date.get_year());
+        let buf = format!(
+            "\n********Day {} of year {}********",
+            date.get_day(),
+            date.get_year()
+        );
+        world_logs.entries.push(buf);
     }
 }
 

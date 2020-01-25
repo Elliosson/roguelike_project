@@ -1,5 +1,8 @@
 extern crate specs;
-use crate::{gamelog::GameLog, Name};
+use crate::{
+    gamelog::{GameLog, WorldStatLog},
+    Name,
+};
 use specs::prelude::*;
 
 pub struct NamedCounterSystem {}
@@ -10,10 +13,11 @@ impl<'a> System<'a> for NamedCounterSystem {
         Entities<'a>,
         WriteExpect<'a, GameLog>,
         ReadStorage<'a, Name>,
+        WriteExpect<'a, WorldStatLog>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _log, names) = data;
+        let (entities, _log, names, mut world_logs) = data;
 
         let mut names_stats: Vec<(String, i32)> = Vec::new();
 
@@ -35,7 +39,8 @@ impl<'a> System<'a> for NamedCounterSystem {
         }
 
         for (name, count) in names_stats.iter() {
-            println!("There is {} {}", count, name);
+            let buf = format!("There is {} {}", count, name);
+            world_logs.entries.push(buf);
         }
     }
 }

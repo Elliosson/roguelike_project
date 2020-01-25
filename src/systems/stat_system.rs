@@ -1,5 +1,5 @@
 extern crate specs;
-use crate::{gamelog::GameLog, Date, EnergyReserve, Name, SoloReproduction};
+use crate::{gamelog::{GameLog, WorldStatLog}, Date, EnergyReserve, Name, SoloReproduction, };
 use specs::prelude::*;
 
 pub struct StatSystem {}
@@ -13,10 +13,11 @@ impl<'a> System<'a> for StatSystem {
         ReadStorage<'a, EnergyReserve>,
         ReadStorage<'a, SoloReproduction>,
         ReadExpect<'a, Date>,
+        WriteExpect<'a, WorldStatLog>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _log, _names, energy_reserves, solo_reproductions, _date) = data;
+        let (entities, _log, _names, energy_reserves, solo_reproductions, _date, mut world_logs) = data;
 
         let mut thresholds = Vec::new();
         let mut max_res = Vec::new();
@@ -35,29 +36,24 @@ impl<'a> System<'a> for StatSystem {
         let len = thresholds.iter().len();
         if len > 0 {
             let sum: u32 = thresholds.iter().sum();
-            let mean = sum / (thresholds.iter().len() as u32);
-            println!("Mean bith offset threshold: {}", mean);
-        }
+            let mean = sum / (len as u32);
+            let buf = format!("Mean bith offset threshold: {}", mean);
+            world_logs.entries.push(buf);
 
-        let len = max_res.iter().len();
-        if len > 0 {
             let sum: f32 = max_res.iter().sum();
-            let mean = sum / (max_res.iter().len() as f32);
-            println!("Mean energy reserve: {}", mean);
-        }
+            let mean = sum / (len as f32);
+            let buf = format!("Mean energy reserve: {}", mean);
+            world_logs.entries.push(buf);
 
-        let len = consumptions.iter().len();
-        if len > 0 {
             let sum: f32 = consumptions.iter().sum();
-            let mean = sum / (consumptions.iter().len() as f32);
-            println!("Mean energy consuption: {}", mean);
-        }
+            let mean = sum / (len as f32);
+            let buf = format!("Mean energy consuption: {}", mean);
+            world_logs.entries.push(buf);
 
-        let len = birth_energy.iter().len();
-        if len > 0 {
             let sum: u32 = birth_energy.iter().sum();
-            let mean = sum / (birth_energy.iter().len() as u32);
-            println!("Mean birth energy: {}", mean);
+            let mean = sum / (len as u32);
+            let buf = format!("Mean birth energy: {}", mean);
+            world_logs.entries.push(buf);
         }
     }
 }

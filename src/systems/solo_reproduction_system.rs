@@ -64,7 +64,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
                     energy_reserve: Some(energy_reserve.clone()),
                 };
 
-                println!(
+                /*println!(
                     "Birth request: id:{}, reserve{}, thrshoild{}, cost{} ,x{}, y{} ",
                     id.get(),
                     energy_reserve.reserve,
@@ -72,10 +72,9 @@ impl<'a> System<'a> for SoloReproductionSystem {
                     solo_reprod.cost(),
                     position.x,
                     position.y
-                );
+                );*/
 
                 birth_request_list.request(form, mutations);
-
             }
         }
     }

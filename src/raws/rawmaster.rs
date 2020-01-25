@@ -56,11 +56,7 @@ impl RawMaster {
             if used_names.contains(&prop.name) {
                 println!("WARNING -  duplicate prop name in raws [{}]", prop.name);
             }
-            if self.prop_index.insert(prop.name.clone(), i).is_some() {
-                println!("prop name is:  {}", prop.name);
-            } else {
-                println!("Failed  to insert: prop name is:  {}", prop.name);
-            }
+            self.prop_index.insert(prop.name.clone(), i);
 
             used_names.insert(prop.name.clone());
         }

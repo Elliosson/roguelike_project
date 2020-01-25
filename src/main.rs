@@ -321,6 +321,7 @@ impl GameState for State {
             }
             RunState::SaveGame => {
                 saveload_system::save_game(&mut self.ecs);
+                data_representation::world_state_log(&mut self.ecs).unwrap(); //TODO it's fuck with the log is i  write it's here, but it's better for performance
                 data_representation::write_genealogy(&mut self.ecs).unwrap();
                 newrunstate = RunState::MainMenu {
                     menu_selection: gui::MainMenuSelection::LoadGame,
@@ -575,6 +576,9 @@ fn main() {
     gs.ecs.insert(Date::new());
     gs.ecs.insert(BirthRequetList::new());
     gs.ecs.insert(BirthRegistery::new());
+    gs.ecs.insert(gamelog::WorldStatLog {
+        entries: vec!["Rust Roguelike log file".to_string()],
+    });
 
     rltk::main_loop(context, gs);
 }
