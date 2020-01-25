@@ -178,6 +178,9 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
 
     if let Some(energy_res) = &mut mutations.energy_reserve {
         energy_res.max_reserve += rng.gen_range(-1, 2) as f32;
+
+        //Todo set this manualy for know, must be done toherwise after
+        energy_res.reserve = 50.0;
     }
 
     let new_comsuption = base_comsumption(mutations.clone());
@@ -206,10 +209,10 @@ fn base_comsumption(mutations: Mutations) -> f32 {
 
 #[cfg(test)]
 mod tests {
+    /*
     use super::*;
     use crate::Hunger;
     //Hard to test random
-    /*
     #[test]
     fn change_mutation_test() {
         let mutations = Mutations {
