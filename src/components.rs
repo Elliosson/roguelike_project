@@ -247,8 +247,24 @@ pub struct EnergyReserve {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct SoloReproduction {
-    pub threshold: i32,
-    pub cost: i32,
+    //energy of the new born
+    pub birth_energy: u32,
+    //offset of energy used by the birth
+    pub offset_cost: u32,
+    //amoount of energy that the creature must have left  after reproduction
+    pub offset_threshold: u32,
+}
+
+impl SoloReproduction {
+    //Minimum of energy to have to reproduce
+    pub fn threshold(&self) -> u32 {
+        self.birth_energy + self.offset_cost + self.offset_threshold
+    }
+
+    //cost of giving birth
+    pub fn cost(&self) -> u32 {
+        self.birth_energy + self.offset_cost
+    }
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]

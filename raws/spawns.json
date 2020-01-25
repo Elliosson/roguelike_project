@@ -398,8 +398,9 @@
             },
             "cow": true,
             "solo_reproduction": {
-                "threshold": 150,
-                "cost": 100
+                "birth_energy": 50,
+                "offset_cost": 50,
+                "offset_threshold": 50
             },
             "aging": {
                 "life_expectancy": 100,

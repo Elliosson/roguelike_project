@@ -1,6 +1,6 @@
 extern crate specs;
 use super::{
-    raws,
+    algo, raws,
     raws::{RawMaster, RAWS},
     Date, EnergyReserve, Name, Position, SerializeMe, SoloReproduction, UniqueId,
 };
@@ -170,17 +170,25 @@ pub fn spawn_birth(entity: EntityBuilder, birth_request: BirthRequest) -> Option
 pub fn change_mutation(mut mutations: Mutations) -> Mutations {
     let mut rng = rand::thread_rng();
 
+    //intit todo suppress
+    let mut birth_energy = 50.0;
+
     //For now just change the parametere of soloreprod
     if let Some(solo_reprod) = &mut mutations.solo_reproduction {
+        birth_energy = solo_reprod.birth_energy as f32;
+
         //solo_reprod.cost += rng.gen_range(-1, 2);
-        solo_reprod.threshold += rng.gen_range(-1, 2);
+        solo_reprod.offset_threshold =
+            algo::add_or_zero(solo_reprod.offset_threshold, rng.gen_range(-10, 11));
+        solo_reprod.birth_energy =
+            algo::add_or_zero(solo_reprod.birth_energy, rng.gen_range(-10, 11));
     }
 
     if let Some(energy_res) = &mut mutations.energy_reserve {
-        energy_res.max_reserve += rng.gen_range(-1, 2) as f32;
+        energy_res.max_reserve += rng.gen_range(-10, 11) as f32;
 
-        //Todo set this manualy for know, must be done toherwise after
-        energy_res.reserve = 50.0;
+        //Set the birth energy here problably not the best place
+        energy_res.reserve = birth_energy;
     }
 
     let new_comsuption = base_comsumption(mutations.clone());
@@ -195,15 +203,15 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
 fn base_comsumption(mutations: Mutations) -> f32 {
     let mut features_cost: f32 = 0.0;
 
-    if let Some(solo_reprod) = &mutations.solo_reproduction {
-        features_cost += solo_reprod.cost as f32;
-        features_cost += solo_reprod.threshold as f32;
+    if let Some(_solo_reprod) = &mutations.solo_reproduction {
+        //features_cost += solo_reprod.cost as f32;
+        //features_cost += solo_reprod.threshold as f32;
     }
 
     if let Some(energy_res) = &mutations.energy_reserve {
         features_cost += energy_res.max_reserve;
     }
-    let new_consuption: f32 = features_cost / 300.0;
+    let new_consuption: f32 = features_cost / 200.0;
     new_consuption
 }
 

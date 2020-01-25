@@ -46,8 +46,8 @@ impl<'a> System<'a> for SoloReproductionSystem {
         )
             .join()
         {
-            if energy_reserve.reserve >= solo_reprod.threshold as f32 {
-                energy_reserve.reserve -= solo_reprod.cost as f32;
+            if energy_reserve.reserve >= solo_reprod.threshold() as f32 {
+                energy_reserve.reserve -= solo_reprod.cost() as f32;
                 log.entries
                     .insert(0, format!("A entity is want to divide."));
 
@@ -59,9 +59,10 @@ impl<'a> System<'a> for SoloReproductionSystem {
                     position: position.clone(),
                 };
 
-                let mutations = Mutations{
+                let mutations = Mutations {
                     solo_reproduction: Some(solo_reprod.clone()),
-                    energy_reserve: Some(energy_reserve.clone())};
+                    energy_reserve: Some(energy_reserve.clone()),
+                };
 
                 birth_request_list.request(form, mutations);
                 /*    want_to_duplicates
