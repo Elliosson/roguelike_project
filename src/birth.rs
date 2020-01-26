@@ -204,7 +204,7 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
     }
 
     if let Some(temp_sensi) = &mut mutations.temp_sensi {
-        temp_sensi.optimum += rng.gen_range(-5, 6) as f32;
+        temp_sensi.optimum += rng.gen_range(-2, 3) as f32;
     }
     mutations
 }

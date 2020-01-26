@@ -91,6 +91,8 @@ impl State {
         temperature.run_now(&self.ecs);
         let mut temperature_sens = TemperatureSensitivitySystem {};
         temperature_sens.run_now(&self.ecs);
+        let mut specie = SpecieSystem {};
+        specie.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
         let mut mob = MonsterAI {};
@@ -129,8 +131,6 @@ impl State {
         prop_spawmer.run_now(&self.ecs);
         let mut aging = AgingSystem {};
         aging.run_now(&self.ecs);
-        let mut specie = SpecieSystem {};
-        specie.run_now(&self.ecs);
         let mut named_counter = NamedCounterSystem {};
         named_counter.run_now(&self.ecs);
         let mut stat = StatSystem {};

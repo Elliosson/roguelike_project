@@ -20,10 +20,20 @@ impl<'a> System<'a> for SpecieSystem {
         WriteStorage<'a, Specie>,
         WriteStorage<'a, TemperatureSensitive>,
         WriteStorage<'a, Renderable>,
+        WriteExpect<'a, rltk::RandomNumberGenerator>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _log, _names, _world_logs, mut species, temp_sensis, mut renderables) = data;
+        let (
+            entities,
+            _log,
+            _names,
+            _world_logs,
+            mut species,
+            temp_sensis,
+            mut renderables,
+            mut rng,
+        ) = data;
 
         let mut species_hash: HashMap<String, Vec<Entity>> = HashMap::new();
 
@@ -67,6 +77,16 @@ impl<'a> System<'a> for SpecieSystem {
         let mut count = 0;
         for new_specie in new_species {
             count += 1;
+            //random color for the new specie
+
+            let glyph = rng.roll_dice(1, 255) as u8;
+
+            //TODO find a good thing to have only flashy color
+            /*
+            let r = rng.roll_dice(1, 255) as u8;
+            let g = rng.roll_dice(1, 255) as u8;
+            let b = rng.roll_dice(1, 255) as u8;
+            */
             for (entity, _opti) in new_specie {
                 let mut specie = species.get_mut(entity).unwrap();
 
@@ -75,7 +95,8 @@ impl<'a> System<'a> for SpecieSystem {
 
                 //change the color of the new specie todo get random color
                 let mut renderable = renderables.get_mut(entity).unwrap();
-                renderable.fg = RGB::named(rltk::BLUE);
+
+                renderable.glyph = glyph;
             }
         }
     }

@@ -407,8 +407,8 @@
                 "age": 0
             },
             "temp_sensi": {
-                "optimum": 25,
-                "k": 0.1
+                "optimum": 5,
+                "k": 0.02
             },
             "specie": {
                 "id": 0,

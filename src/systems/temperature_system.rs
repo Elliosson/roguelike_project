@@ -23,10 +23,10 @@ impl<'a> System<'a> for TemperatureSystem {
 
         //Pour l'instant
         //gradiant de temperature constant de 30C entre le nord le sud
-        //20C entre plus frid et plus chaud
-        let saisonal_variation = 20.0;
-        //1jour de l'anné remp min, temp max au jour 182
         let latitude_variation = 30.0;
+        //temperature entre plus frid et plus chaud
+        //1jour de l'anné remp min, temp max au jour 182
+        let saisonal_variation = 5.0;
 
         //"value" of the day in term of temperature (between 0 and 1 )
         let day_ref: f32 = (date.get_day() as f32 - (Date::YEAR_DURATION / 2) as f32).abs()
