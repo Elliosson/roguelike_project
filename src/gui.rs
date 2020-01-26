@@ -3,15 +3,15 @@ use rltk::{Console, Point, Rltk, VirtualKeyCode, RGB};
 extern crate specs;
 use super::{
     gamelog::GameLog, CombatStats, Equipped, InBackpack, InteractableObject, Interaction, Map,
-    Name, Player, Position, RunState, State, Viewshed,
+    Name, Player, Position, RunState, State, Viewshed, WINDOWHEIGHT, WINDOWWIDTH
 };
 use specs::prelude::*;
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     ctx.draw_box(
         0,
-        43,
-        79,
+        WINDOWHEIGHT as i32 - 7,
+        WINDOWWIDTH as i32 - 1,
         6,
         RGB::named(rltk::WHITE),
         RGB::named(rltk::BLACK),
@@ -23,7 +23,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         let health = format!(" HP: {} / {} ", stats.hp, stats.max_hp);
         ctx.print_color(
             12,
-            43,
+            WINDOWHEIGHT as i32 -7,
             RGB::named(rltk::YELLOW),
             RGB::named(rltk::BLACK),
             &health,
@@ -31,8 +31,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
         ctx.draw_bar_horizontal(
             28,
-            43,
-            51,
+            WINDOWHEIGHT as i32 - 7,
+            WINDOWWIDTH as i32 + 1,
             stats.hp,
             stats.max_hp,
             RGB::named(rltk::RED),
@@ -44,16 +44,16 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let depth = format!("Depth: {}", map.depth);
     ctx.print_color(
         2,
-        43,
+        WINDOWHEIGHT as i32 -7,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
         &depth,
     );
 
     let log = ecs.fetch::<GameLog>();
-    let mut y = 44;
+    let mut y = WINDOWHEIGHT as i32 -6;
     for s in log.entries.iter() {
-        if y < 49 {
+        if y < WINDOWHEIGHT as i32 -1 {
             ctx.print(2, y, &s.to_string());
         }
         y += 1;

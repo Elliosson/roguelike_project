@@ -54,6 +54,10 @@ extern crate lazy_static;
 
 rltk::add_wasm_support!();
 
+
+pub const WINDOWWIDTH: usize = 150;
+pub const WINDOWHEIGHT: usize = 90;
+
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
     AwaitingInput,
@@ -489,7 +493,7 @@ impl State {
 }
 
 fn main() {
-    let mut context = Rltk::init_simple8x8(80, 50, "Hello Rust World", "resources");
+    let mut context = Rltk::init_simple8x8(WINDOWWIDTH as u32, WINDOWHEIGHT as u32, "Ecosystem symulator", "resources");
     context.with_post_scanlines(true);
     let mut gs = State { ecs: World::new() };
     gs.ecs.register::<Position>();
