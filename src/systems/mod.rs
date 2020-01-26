@@ -20,3 +20,5 @@ mod stat_system;
 pub use stat_system::StatSystem;
 mod aging_system;
 pub use aging_system::AgingSystem;
+mod temperature_system;
+pub use temperature_system::*;

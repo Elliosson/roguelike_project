@@ -25,11 +25,18 @@ pub struct Map {
     #[serde(skip_serializing)]
     #[serde(skip_deserializing)]
     pub tile_content: Vec<Vec<Entity>>,
+    pub tile_temperature: Vec<f32>,
 }
 
 impl Map {
     pub fn xy_idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
+    }
+
+    pub fn idx_xy(&self, idx: usize) -> (i32, i32) {
+        let x = idx as i32 % self.width;
+        let y = idx as i32 / self.width;
+        (x, y)
     }
 
     fn apply_room_to_map(&mut self, room: &Rect) {
@@ -90,6 +97,7 @@ impl Map {
             visible_tiles: vec![false; MAPCOUNT],
             blocked: vec![false; MAPCOUNT],
             tile_content: vec![Vec::new(); MAPCOUNT],
+            tile_temperature: vec![0.0; MAPCOUNT],
             depth: 0,
         };
 
@@ -113,6 +121,7 @@ impl Map {
             visible_tiles: vec![false; MAPCOUNT],
             blocked: vec![false; MAPCOUNT],
             tile_content: vec![Vec::new(); MAPCOUNT],
+            tile_temperature: vec![0.0; MAPCOUNT],
             depth: new_depth,
         };
 

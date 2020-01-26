@@ -31,7 +31,7 @@ pub struct Date {
 }
 
 impl Date {
-    const YEAR_DURATION: i64 = 365;
+    pub const YEAR_DURATION: i64 = 365;
 
     #[allow(clippy::new_without_default)]
     pub fn new() -> Date {

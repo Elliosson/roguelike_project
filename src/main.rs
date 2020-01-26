@@ -126,6 +126,8 @@ impl State {
         named_counter.run_now(&self.ecs);
         let mut stat = StatSystem {};
         stat.run_now(&self.ecs);
+        let mut temperature = TemperatureSystem {};
+        temperature.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
