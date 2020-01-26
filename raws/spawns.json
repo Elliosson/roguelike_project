@@ -409,6 +409,10 @@
             "temp_sensi": {
                 "optimum": 25,
                 "k": 0.1
+            },
+            "specie": {
+                "id": 0,
+                "name": "a"
             }
         }
     ]

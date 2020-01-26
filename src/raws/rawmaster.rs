@@ -326,6 +326,11 @@ pub fn spawn_named_prop(
             eb = eb.with(temp_sensi.clone());
         }
 
+        // Specie
+        if let Some(specie) = &prop_template.specie {
+            eb = eb.with(specie.clone());
+        }
+
         return Some(eb.build());
     }
     None
@@ -478,6 +483,11 @@ pub fn spawn_born(
         // Temp Sensitivity
         if let Some(temp_sensi) = &prop_template.temp_sensi {
             eb = eb.with(temp_sensi.clone());
+        }
+
+        // Specie
+        if let Some(specie) = &prop_template.specie {
+            eb = eb.with(specie.clone());
         }
 
         return Some(eb.build());

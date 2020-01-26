@@ -54,7 +54,6 @@ extern crate lazy_static;
 
 rltk::add_wasm_support!();
 
-
 pub const WINDOWWIDTH: usize = 150;
 pub const WINDOWHEIGHT: usize = 90;
 
@@ -130,6 +129,8 @@ impl State {
         prop_spawmer.run_now(&self.ecs);
         let mut aging = AgingSystem {};
         aging.run_now(&self.ecs);
+        let mut specie = SpecieSystem {};
+        specie.run_now(&self.ecs);
         let mut named_counter = NamedCounterSystem {};
         named_counter.run_now(&self.ecs);
         let mut stat = StatSystem {};
@@ -495,7 +496,12 @@ impl State {
 }
 
 fn main() {
-    let mut context = Rltk::init_simple8x8(WINDOWWIDTH as u32, WINDOWHEIGHT as u32, "Ecosystem symulator", "resources");
+    let mut context = Rltk::init_simple8x8(
+        WINDOWWIDTH as u32,
+        WINDOWHEIGHT as u32,
+        "Ecosystem symulator",
+        "resources",
+    );
     context.with_post_scanlines(true);
     let mut gs = State { ecs: World::new() };
     gs.ecs.register::<Position>();
@@ -548,6 +554,7 @@ fn main() {
     gs.ecs.register::<Aging>();
     gs.ecs.register::<InUse>();
     gs.ecs.register::<TemperatureSensitive>();
+    gs.ecs.register::<Specie>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

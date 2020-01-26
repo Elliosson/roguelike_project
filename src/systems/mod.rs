@@ -24,3 +24,5 @@ mod temperature_system;
 pub use temperature_system::*;
 mod temperature_sensitivity_system;
 pub use temperature_sensitivity_system::TemperatureSensitivitySystem;
+mod specie_system;
+pub use specie_system::SpecieSystem;

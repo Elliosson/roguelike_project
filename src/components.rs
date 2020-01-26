@@ -307,6 +307,13 @@ pub struct TemperatureSensitive {
     pub k: f32, //ecrasement de la guassiene ou carré
 }
 
+//mark the specie of the creature
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Specie {
+    pub name: String,
+    pub id: i32,
+}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 pub struct SerializeMe;

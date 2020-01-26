@@ -22,6 +22,7 @@ pub struct Prop {
     pub solo_reproduction: Option<SoloReproduction>,
     pub aging: Option<Aging>,
     pub temp_sensi: Option<TemperatureSensitive>,
+    pub specie: Option<Specie>,
 }
 
 #[derive(Deserialize, Debug)]
