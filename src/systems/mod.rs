@@ -22,3 +22,5 @@ mod aging_system;
 pub use aging_system::AgingSystem;
 mod temperature_system;
 pub use temperature_system::*;
+mod temperature_sensitivity_system;
+pub use temperature_sensitivity_system::TemperatureSensitivitySystem;

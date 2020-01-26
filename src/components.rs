@@ -300,6 +300,13 @@ pub struct Aging {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct InUse {}
 
+//optimum of temperature plage of acceptebality
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct TemperatureSensitive {
+    pub optimum: f32,
+    pub k: f32, //ecrasement de la guassiene ou carré
+}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 pub struct SerializeMe;

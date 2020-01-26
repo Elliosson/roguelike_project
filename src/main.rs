@@ -88,6 +88,10 @@ impl State {
     fn run_systems(&mut self) {
         let mut date = DateSystem {};
         date.run_now(&self.ecs);
+        let mut temperature = TemperatureSystem {};
+        temperature.run_now(&self.ecs);
+        let mut temperature_sens = TemperatureSensitivitySystem {};
+        temperature_sens.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
         let mut mob = MonsterAI {};
@@ -130,8 +134,6 @@ impl State {
         named_counter.run_now(&self.ecs);
         let mut stat = StatSystem {};
         stat.run_now(&self.ecs);
-        let mut temperature = TemperatureSystem {};
-        temperature.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -545,6 +547,7 @@ fn main() {
     gs.ecs.register::<UniqueId>();
     gs.ecs.register::<Aging>();
     gs.ecs.register::<InUse>();
+    gs.ecs.register::<TemperatureSensitive>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
