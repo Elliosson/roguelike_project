@@ -21,7 +21,7 @@ pub struct Prop {
     pub cow: Option<bool>,
     pub solo_reproduction: Option<SoloReproduction>,
     pub aging: Option<Aging>,
-
+    pub temp_sensi: Option<TemperatureSensitive>,
 }
 
 #[derive(Deserialize, Debug)]
