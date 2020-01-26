@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
     gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, Mutations, Name, Position,
-    SoloReproduction, UniqueId, WantsToDuplicate,
+    Renderable, SoloReproduction, Specie, TemperatureSensitive, UniqueId, WantsToDuplicate,
 };
 use specs::prelude::*;
 
@@ -20,6 +20,9 @@ impl<'a> System<'a> for SoloReproductionSystem {
         ReadStorage<'a, Position>,
         ReadExpect<'a, Date>,
         ReadStorage<'a, UniqueId>,
+        ReadStorage<'a, TemperatureSensitive>,
+        ReadStorage<'a, Specie>,
+        ReadStorage<'a, Renderable>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -34,15 +37,32 @@ impl<'a> System<'a> for SoloReproductionSystem {
             positions,
             date,
             unique_ids,
+            temp_sensis,
+            species,
+            renderables,
         ) = data;
 
-        for (entity, solo_reprod, mut energy_reserve, name, position, id) in (
+        //TODO don't check the mutable componant and them later if the entity have it
+        for (
+            entity,
+            solo_reprod,
+            mut energy_reserve,
+            name,
+            position,
+            id,
+            temp_sensi,
+            specie,
+            renderable,
+        ) in (
             &entities,
             &solo_reproductions,
             &mut energy_reserves,
             &names,
             &positions,
             &unique_ids,
+            &temp_sensis,
+            &species,
+            &renderables,
         )
             .join()
         {
@@ -62,6 +82,9 @@ impl<'a> System<'a> for SoloReproductionSystem {
                 let mutations = Mutations {
                     solo_reproduction: Some(solo_reprod.clone()),
                     energy_reserve: Some(energy_reserve.clone()),
+                    temp_sensi: Some(temp_sensi.clone()),
+                    specie: Some(specie.clone()),
+                    renderable: Some(renderable.clone()),
                 };
 
                 /*println!(

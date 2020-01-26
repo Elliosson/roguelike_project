@@ -2,7 +2,8 @@ extern crate specs;
 use super::{
     algo, raws,
     raws::{RawMaster, RAWS},
-    Date, EnergyReserve, Name, Position, SerializeMe, SoloReproduction, UniqueId,
+    Date, EnergyReserve, Name, Position, Renderable, SerializeMe, SoloReproduction, Specie,
+    TemperatureSensitive, UniqueId,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 
@@ -34,6 +35,9 @@ pub struct BirthForm {
 pub struct Mutations {
     pub solo_reproduction: Option<SoloReproduction>,
     pub energy_reserve: Option<EnergyReserve>,
+    pub temp_sensi: Option<TemperatureSensitive>,
+    pub specie: Option<Specie>,
+    pub renderable: Option<Renderable>,
 }
 
 impl Mutations {
@@ -41,6 +45,9 @@ impl Mutations {
         Mutations {
             solo_reproduction: None,
             energy_reserve: None,
+            temp_sensi: None,
+            specie: None,
+            renderable: None,
         }
     }
 }
@@ -154,7 +161,6 @@ pub fn spawn_birth(entity: EntityBuilder, birth_request: BirthRequest) -> Option
             change_mutation(birth_request.mutations),
         );
         if spawn_result.is_some() {
-
         } else {
             println!("WARNING: We don't know how to spawn [{}]!", key);
         }
@@ -195,6 +201,10 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
 
     if let Some(energy_res) = &mut mutations.energy_reserve {
         energy_res.base_consumption = new_comsuption;
+    }
+
+    if let Some(temp_sensi) = &mut mutations.temp_sensi {
+        temp_sensi.optimum += rng.gen_range(-5, 6) as f32;
     }
     mutations
 }

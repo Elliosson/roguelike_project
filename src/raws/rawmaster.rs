@@ -398,16 +398,19 @@ pub fn spawn_born(
         // Spawn in the specified location
         eb = spawn_position(pos, eb);
 
-        // Renderable
-        if let Some(renderable) = &prop_template.renderable {
-            eb = eb.with(get_renderable_component(renderable));
-        }
-
         eb = eb.with(Name {
             name: prop_template.name.clone(),
         });
 
         /*****component with possible mutation */
+
+        // Renderable
+        if let Some(renderable) = mutations.renderable {
+            eb = eb.with(renderable.clone());
+        } else if let Some(renderable) = &prop_template.renderable {
+            eb = eb.with(get_renderable_component(renderable));
+        }
+
         // EnergyReserve
         if let Some(energy_reserve) = mutations.energy_reserve {
             eb = eb.with(energy_reserve.clone());
@@ -425,6 +428,20 @@ pub fn spawn_born(
             eb = eb.with(solo_reproduction.clone());
         } else if let Some(solo_reproduction) = &prop_template.solo_reproduction {
             eb = eb.with(solo_reproduction.clone());
+        }
+
+        // Temp Sensitivity
+        if let Some(temp_sensi) = mutations.temp_sensi {
+            eb = eb.with(temp_sensi.clone());
+        } else if let Some(temp_sensi) = &prop_template.temp_sensi {
+            eb = eb.with(temp_sensi.clone());
+        }
+
+        // Specie
+        if let Some(specie) = mutations.specie {
+            eb = eb.with(specie.clone());
+        } else if let Some(specie) = &prop_template.specie {
+            eb = eb.with(specie.clone());
         }
 
         /********************************** */
@@ -479,17 +496,6 @@ pub fn spawn_born(
         if let Some(aging) = &prop_template.aging {
             eb = eb.with(aging.clone());
         }
-
-        // Temp Sensitivity
-        if let Some(temp_sensi) = &prop_template.temp_sensi {
-            eb = eb.with(temp_sensi.clone());
-        }
-
-        // Specie
-        if let Some(specie) = &prop_template.specie {
-            eb = eb.with(specie.clone());
-        }
-
         return Some(eb.build());
     }
     None

@@ -23,15 +23,14 @@ impl<'a> System<'a> for SpecieSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _log, names, mut world_logs, mut species, temp_sensis, mut renderables) =
-            data;
+        let (entities, _log, _names, _world_logs, mut species, temp_sensis, mut renderables) = data;
 
         let mut species_hash: HashMap<String, Vec<Entity>> = HashMap::new();
 
-        let max_specie_member = 20;
+        let max_specie_member = 100;
 
         //create an hash map of all the member of all specie
-        for (entity, specie, temp_sens) in (&entities, &mut species, &temp_sensis).join() {
+        for (entity, specie, _temp_sens) in (&entities, &mut species, &temp_sensis).join() {
             if species_hash.contains_key(&specie.name) {
                 let member_list = species_hash.get_mut(&specie.name).unwrap();
                 member_list.push(entity);
@@ -43,7 +42,7 @@ impl<'a> System<'a> for SpecieSystem {
         let mut new_species: Vec<Vec<(Entity, f32)>> = Vec::new();
 
         //For now just divide the specie acording to the number of member
-        for (name, member_list) in &species_hash {
+        for (_name, member_list) in &species_hash {
             if member_list.len() > max_specie_member {
                 println!("Divide the specie");
                 //divide the specie in two species, for knwo just acording to temperature optimum
@@ -68,7 +67,7 @@ impl<'a> System<'a> for SpecieSystem {
         let mut count = 0;
         for new_specie in new_species {
             count += 1;
-            for (entity, opti) in new_specie {
+            for (entity, _opti) in new_specie {
                 let mut specie = species.get_mut(entity).unwrap();
 
                 //concatenate ne old name with a number
