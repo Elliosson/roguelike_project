@@ -26,3 +26,5 @@ mod temperature_sensitivity_system;
 pub use temperature_sensitivity_system::TemperatureSensitivitySystem;
 mod specie_system;
 pub use specie_system::SpecieSystem;
+mod gendered_reproduction_system;
+pub use gendered_reproduction_system::GenderedReproductionSystem;
