@@ -3,6 +3,7 @@ use crate::{
     gamelog::{GameLog, WorldStatLog},
     Name, Renderable, Specie, TemperatureSensitive,
 };
+use rltk::HSV;
 use rltk::RGB;
 use specs::prelude::*;
 use std::cmp::Ordering;
@@ -77,16 +78,13 @@ impl<'a> System<'a> for SpecieSystem {
         let mut count = 0;
         for new_specie in new_species {
             count += 1;
-            //random color for the new specie
 
+            //random glyph color for the new specie
             let glyph = rng.roll_dice(1, 255) as u8;
 
             //TODO find a good thing to have only flashy color
-            /*
-            let r = rng.roll_dice(1, 255) as u8;
-            let g = rng.roll_dice(1, 255) as u8;
-            let b = rng.roll_dice(1, 255) as u8;
-            */
+            let hue = rng.roll_dice(1, 99) as f32;
+            let hue = hue / 100.0;
             for (entity, _opti) in new_specie {
                 let mut specie = species.get_mut(entity).unwrap();
 
@@ -97,6 +95,7 @@ impl<'a> System<'a> for SpecieSystem {
                 let mut renderable = renderables.get_mut(entity).unwrap();
 
                 renderable.glyph = glyph;
+                renderable.fg = HSV::from_f32(hue, 0.99, 0.99).to_rgb();
             }
         }
     }
