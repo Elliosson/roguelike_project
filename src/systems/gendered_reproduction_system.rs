@@ -14,7 +14,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
         Entities<'a>,
         WriteExpect<'a, GameLog>,
         WriteStorage<'a, EnergyReserve>,
-        WriteStorage<'a, SoloReproduction>,
+        WriteStorage<'a, SoloReproduction>, //TODO remplace by genderedReproduction
         ReadStorage<'a, Name>,
         WriteStorage<'a, WantsToDuplicate>,
         WriteExpect<'a, BirthRequetList>,
