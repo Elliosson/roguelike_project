@@ -125,8 +125,10 @@ impl State {
         veg_grow.run_now(&self.ecs);
         let mut energy = EnergySystem {};
         energy.run_now(&self.ecs);
-        let mut solo_reprod = SoloReproductionSystem {};
-        solo_reprod.run_now(&self.ecs);
+        //let mut solo_reprod = SoloReproductionSystem {};
+        //solo_reprod.run_now(&self.ecs);
+        let mut gendered_reprod = GenderedReproductionSystem {};
+        gendered_reprod.run_now(&self.ecs);
         let mut prop_spawmer = PropSpawnerSystem {};
         prop_spawmer.run_now(&self.ecs);
         let mut aging = AgingSystem {};
@@ -173,7 +175,7 @@ impl GameState for State {
 
         match newrunstate {
             RunState::PreRun => {
-                self.run_systems();
+                //self.run_systems();
                 self.ecs.maintain();
                 newrunstate = RunState::AwaitingInput;
             }
@@ -186,7 +188,7 @@ impl GameState for State {
                 newrunstate = RunState::MonsterTurn;
             }
             RunState::MonsterTurn => {
-                self.run_systems();
+                //self.run_systems();
                 self.ecs.maintain();
                 newrunstate = RunState::AwaitingInput;
             }
@@ -569,13 +571,8 @@ fn main() {
     for room in map.rooms.iter() {
         spawner::spawn_trees(&mut gs.ecs, room);
 
-        spawn_named(&mut gs.ecs, "Cow", 5, 5);
+        spawn_named(&mut gs.ecs, "Cow", 3, 3);
         spawn_named(&mut gs.ecs, "Cow", 2, 2);
-        spawn_named(&mut gs.ecs, "Cow", 5, 2);
-        spawn_named(&mut gs.ecs, "Cow", 8, 10);
-        spawn_named(&mut gs.ecs, "Cow", 5, 3);
-        spawn_named(&mut gs.ecs, "Cow", 12, 6);
-        spawn_named(&mut gs.ecs, "Cow", 15, 15);
     }
 
     gs.ecs.insert(map);

@@ -161,6 +161,7 @@ pub fn spawn_birth(entity: EntityBuilder, birth_request: BirthRequest) -> Option
             change_mutation(birth_request.mutations),
         );
         if spawn_result.is_some() {
+            println!("A new entity is born");
         } else {
             println!("WARNING: We don't know how to spawn [{}]!", key);
         }

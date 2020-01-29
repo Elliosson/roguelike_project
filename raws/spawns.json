@@ -392,8 +392,8 @@
                 "range": 8
             },
             "energy_reserve": {
-                "reserve": 10,
-                "max_reserve": 200,
+                "reserve": 50,
+                "max_reserve": 300,
                 "base_consumption": 1
             },
             "cow": true,

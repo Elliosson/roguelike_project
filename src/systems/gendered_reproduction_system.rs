@@ -33,7 +33,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (
             entities,
-            mut log,
+            mut _log,
             mut energy_reserves,
             solo_reproductions,
             names,
@@ -53,7 +53,6 @@ impl<'a> System<'a> for GenderedReproductionSystem {
         let mut have_reproduce: Vec<(Entity, f32)> = Vec::new();
 
         //search a male in the viewshed that can reproduce and are of the same specie
-        //TODO add the condition to reproduce
         //TODO probably supress solo reproduction
         for (
             entity,
@@ -121,12 +120,12 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     //For now we handle this the ugly way by doing a median on the componant that interest us
 
                     let new_temp_sensi = TemperatureSensitive {
-                        optimum: temp_sensi.optimum / mate_temp_sensi.optimum,
-                        k: temp_sensi.k / mate_temp_sensi.k,
+                        optimum: (temp_sensi.optimum + mate_temp_sensi.optimum) / 2.0,
+                        k: (temp_sensi.k + mate_temp_sensi.k) / 2.0,
                     };
                     let new_energy_res = EnergyReserve {
                         reserve: 0.0, //No heritance
-                        max_reserve: eng_res.max_reserve / mate_energy.max_reserve,
+                        max_reserve: (eng_res.max_reserve + mate_energy.max_reserve) / 2.0,
                         base_consumption: 0.0, //No heritance
                         hunger: Hunger::Full,  //No heritance
                     };
@@ -146,7 +145,6 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         date: date.get_date(),
                         position: position.clone(),
                     };
-
                     //Send the birth request the classical way
                     birth_request_list.request(form, mutations);
 

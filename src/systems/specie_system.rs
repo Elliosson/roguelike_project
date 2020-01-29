@@ -4,7 +4,6 @@ use crate::{
     Name, Renderable, Specie, TemperatureSensitive,
 };
 use rltk::HSV;
-use rltk::RGB;
 use specs::prelude::*;
 use std::cmp::Ordering;
 use std::collections::HashMap;
