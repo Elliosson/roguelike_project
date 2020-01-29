@@ -1,10 +1,10 @@
 extern crate specs;
 use crate::{
-    gamelog::{GameLog, WorldStatLog},
+    gamelog::{GameLog, SpeciesInstantLog, WorldStatLog},
     Date, EnergyReserve, Name, Renderable, SoloReproduction, Specie, TemperatureSensitive,
 };
 use specs::prelude::*;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 pub struct StatSystem {}
 
@@ -21,6 +21,7 @@ impl<'a> System<'a> for StatSystem {
         ReadStorage<'a, Specie>,
         ReadStorage<'a, TemperatureSensitive>,
         ReadStorage<'a, Renderable>,
+        WriteExpect<'a, SpeciesInstantLog>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -35,6 +36,7 @@ impl<'a> System<'a> for StatSystem {
             species,
             temp_sensis,
             renderables,
+            mut species_log,
         ) = data;
 
         let mut thresholds = Vec::new();
@@ -75,7 +77,7 @@ impl<'a> System<'a> for StatSystem {
             world_logs.entries.push(buf);
         }
 
-        let mut species_hash: HashMap<String, Vec<Entity>> = HashMap::new();
+        let mut species_hash: BTreeMap<String, Vec<Entity>> = BTreeMap::new();
 
         //create an hash map of all the member of all species
         for (entity, specie) in (&entities, &species).join() {
@@ -87,23 +89,54 @@ impl<'a> System<'a> for StatSystem {
             }
         }
 
+        species_log.entries.clear();
         //print all the species and the number of their members
         for (name, member_list) in &species_hash {
             let renderable = renderables.get(member_list[0]).unwrap(); //should not be possible to have 0 members, still ugly
-            let temp_sensi = temp_sensis.get(member_list[0]).unwrap(); //should not be possible to have 0 members, still ugly
-            let energy_reserve = energy_reserves.get(member_list[0]).unwrap(); //should not be possible to have 0 members, still ugly
-            let solo_reproduction = solo_reproductions.get(member_list[0]).unwrap(); //should not be possible to have 0 members, still ugly
-            println!(
-                "Their is {} members of the specie {} {}\n tmp opti: {}, max eng: {}, eng cmsp:{}\n birth eng: {}, b offset: {}",
-                member_list.len(),
-                name,
-                renderable.glyph as char,
-                temp_sensi.optimum,
-                energy_reserve.max_reserve,
-                energy_reserve.base_consumption,
-                solo_reproduction.birth_energy,
-                solo_reproduction.offset_threshold,
+
+            let mut optimum = 0.0;
+            let mut max_reserve = 0.0;
+            let mut base_consumption = 0.0;
+            let mut birth_energy = 0;
+            let mut offset_threshold = 0;
+            let number = member_list.len();
+
+            //Do the mean of the vamue of each caracteristique for the specie
+            for member in member_list.iter() {
+                let temp_sensi = temp_sensis.get(*member).unwrap();
+                let energy_reserve = energy_reserves.get(*member).unwrap();
+                let solo_reproduction = solo_reproductions.get(*member).unwrap();
+
+                optimum += temp_sensi.optimum;
+                max_reserve += energy_reserve.max_reserve;
+                base_consumption += energy_reserve.base_consumption;
+                birth_energy += solo_reproduction.birth_energy;
+                offset_threshold += solo_reproduction.offset_threshold;
+            }
+
+            optimum = optimum / number as f32;
+            max_reserve = max_reserve / number as f32;
+            base_consumption = base_consumption / number as f32;
+            birth_energy = birth_energy / number as u32;
+            offset_threshold = offset_threshold / number as u32;
+
+            let buf = format!("   ");
+            species_log.entries.push((buf, renderable.fg));
+            let buf = format!("  {}  ", renderable.glyph as char,);
+            species_log.entries.push((buf, renderable.fg));
+            let buf = format!("{} members of {} ", member_list.len(), name);
+            species_log.entries.push((buf, renderable.fg));
+            let buf = format!(
+                "tmp opti: {:.1}, max eng: {:.1}, eng cmsp:{:.1}",
+                optimum, max_reserve, base_consumption,
+            );
+            species_log.entries.push((buf, renderable.fg));
+            let buf = format!(
+                "birth eng: {}, b offset: {}",
+                birth_energy, offset_threshold,
             ); //TODO add the temperature sensibilité an reprod threshold
+
+            species_log.entries.push((buf, renderable.fg));
         }
     }
 }

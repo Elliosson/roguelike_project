@@ -54,7 +54,7 @@ extern crate lazy_static;
 
 rltk::add_wasm_support!();
 
-pub const WINDOWWIDTH: usize = 150;
+pub const WINDOWWIDTH: usize = 200;
 pub const WINDOWHEIGHT: usize = 90;
 
 #[derive(PartialEq, Copy, Clone)]
@@ -592,6 +592,8 @@ fn main() {
     gs.ecs.insert(gamelog::WorldStatLog {
         entries: vec!["Rust Roguelike log file".to_string()],
     });
+    gs.ecs
+        .insert(gamelog::SpeciesInstantLog { entries: vec![] });
 
     rltk::main_loop(context, gs);
 }

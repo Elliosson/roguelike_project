@@ -94,7 +94,7 @@ impl<'a> System<'a> for SpecieSystem {
                 let mut renderable = renderables.get_mut(entity).unwrap();
 
                 renderable.glyph = glyph;
-                renderable.fg = HSV::from_f32(hue, 0.99, 0.99).to_rgb();
+                renderable.fg = HSV::from_f32(hue, 0.7, 0.99).to_rgb();
             }
         }
     }

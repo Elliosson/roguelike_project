@@ -2,8 +2,9 @@ extern crate rltk;
 use rltk::{Console, Point, Rltk, VirtualKeyCode, RGB};
 extern crate specs;
 use super::{
-    gamelog::GameLog, CombatStats, Equipped, InBackpack, InteractableObject, Interaction, Map,
-    Name, Player, Position, RunState, State, Viewshed, WINDOWHEIGHT, WINDOWWIDTH
+    gamelog::{GameLog, SpeciesInstantLog},
+    CombatStats, Equipped, InBackpack, InteractableObject, Interaction, Map, Name, Player,
+    Position, RunState, State, Viewshed, WINDOWHEIGHT, WINDOWWIDTH,
 };
 use specs::prelude::*;
 
@@ -23,7 +24,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         let health = format!(" HP: {} / {} ", stats.hp, stats.max_hp);
         ctx.print_color(
             12,
-            WINDOWHEIGHT as i32 -7,
+            WINDOWHEIGHT as i32 - 7,
             RGB::named(rltk::YELLOW),
             RGB::named(rltk::BLACK),
             &health,
@@ -44,17 +45,26 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let depth = format!("Depth: {}", map.depth);
     ctx.print_color(
         2,
-        WINDOWHEIGHT as i32 -7,
+        WINDOWHEIGHT as i32 - 7,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
         &depth,
     );
 
     let log = ecs.fetch::<GameLog>();
-    let mut y = WINDOWHEIGHT as i32 -6;
+    let mut y = WINDOWHEIGHT as i32 - 6;
     for s in log.entries.iter() {
-        if y < WINDOWHEIGHT as i32 -1 {
+        if y < WINDOWHEIGHT as i32 - 1 {
             ctx.print(2, y, &s.to_string());
+        }
+        y += 1;
+    }
+
+    let species_log = ecs.fetch::<SpeciesInstantLog>();
+    let mut y = 0;
+    for s in species_log.entries.iter() {
+        if y < WINDOWHEIGHT as i32 - 1 {
+            ctx.print_color(153, y, s.1, RGB::named(rltk::BLACK), &s.0.to_string());
         }
         y += 1;
     }
@@ -504,7 +514,7 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
         15,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
-        "Rust Roguelike Tutorial",
+        "Rust Roguelike Ecosystem Simulator",
     );
 
     if let RunState::MainMenu {
