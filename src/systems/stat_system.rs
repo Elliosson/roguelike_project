@@ -120,23 +120,23 @@ impl<'a> System<'a> for StatSystem {
             birth_energy = birth_energy / number as u32;
             offset_threshold = offset_threshold / number as u32;
 
-            let buf = format!("   ");
-            species_log.entries.push((buf, renderable.fg));
-            let buf = format!("  {}  ", renderable.glyph as char,);
-            species_log.entries.push((buf, renderable.fg));
+            let mut string_vec = Vec::new();
+
             let buf = format!("{} members of {} ", member_list.len(), name);
-            species_log.entries.push((buf, renderable.fg));
+            string_vec.push(buf);
             let buf = format!(
                 "tmp opti: {:.1}, max eng: {:.1}, eng cmsp:{:.1}",
                 optimum, max_reserve, base_consumption,
             );
-            species_log.entries.push((buf, renderable.fg));
+            string_vec.push(buf);
             let buf = format!(
                 "birth eng: {}, b offset: {}",
                 birth_energy, offset_threshold,
             ); //TODO add the temperature sensibilité an reprod threshold
-
-            species_log.entries.push((buf, renderable.fg));
+            string_vec.push(buf);
+            species_log
+                .entries
+                .push((string_vec, renderable.fg, renderable.glyph));
         }
     }
 }

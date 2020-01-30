@@ -9,5 +9,5 @@ pub struct WorldStatLog {
 }
 
 pub struct SpeciesInstantLog {
-    pub entries: Vec<(String, RGB)>,
+    pub entries: Vec<(Vec<String>, RGB, u8)>,
 }

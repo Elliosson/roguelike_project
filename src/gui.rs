@@ -3,7 +3,7 @@ use rltk::{Console, Point, Rltk, VirtualKeyCode, RGB};
 extern crate specs;
 use super::{
     gamelog::{GameLog, SpeciesInstantLog},
-    CombatStats, Equipped, InBackpack, InteractableObject, Interaction, Map, Name, Player,
+    CombatStats, Date, Equipped, InBackpack, InteractableObject, Interaction, Map, Name, Player,
     Position, RunState, State, Viewshed, WINDOWHEIGHT, WINDOWWIDTH,
 };
 use specs::prelude::*;
@@ -60,13 +60,24 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         y += 1;
     }
 
+    //Draw date
+    let date = ecs.fetch::<Date>();
+    let buf = format!("Day {} of year {}", date.get_day(), date.get_year());
+    ctx.print(153, 1, &buf.to_string());
+
+    //Draw species stats
     let species_log = ecs.fetch::<SpeciesInstantLog>();
-    let mut y = 0;
-    for s in species_log.entries.iter() {
-        if y < WINDOWHEIGHT as i32 - 1 {
-            ctx.print_color(153, y, s.1, RGB::named(rltk::BLACK), &s.0.to_string());
+    let mut y = 4;
+    for (string_vec, fg, glyph) in species_log.entries.iter() {
+        if y < WINDOWHEIGHT as i32 - string_vec.len() as i32 - 2 {
+            y += 1; // empty line
+            ctx.set(153, y, *fg, RGB::named(rltk::BLACK), *glyph);
+            y += 1;
+            for s in string_vec.iter() {
+                ctx.print_color(153, y, *fg, RGB::named(rltk::BLACK), s);
+                y += 1;
+            }
         }
-        y += 1;
     }
 
     // Draw mouse cursor

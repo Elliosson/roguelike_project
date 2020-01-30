@@ -82,7 +82,11 @@ impl<'a> System<'a> for SpecieSystem {
             let glyph = rng.roll_dice(1, 255) as u8;
 
             //TODO find a good thing to have only flashy color
-            let hue = rng.roll_dice(1, 99) as f32;
+            let mut hue = rng.roll_dice(1, 99) as f32;
+            //try to avoid the blue, you see nothing on a dark background
+            while hue > 61.0 && hue < 72.0 {
+                hue = rng.roll_dice(1, 99) as f32;
+            }
             let hue = hue / 100.0;
             for (entity, _opti) in new_specie {
                 let mut specie = species.get_mut(entity).unwrap();
