@@ -77,6 +77,7 @@ pub enum RunState {
     ShowRemoveItem,
     GameOver,
     ObjectInteraction,
+    TemperatureMap,
 }
 
 pub struct State {
@@ -341,6 +342,13 @@ impl GameState for State {
             RunState::NextLevel => {
                 self.goto_next_level();
                 newrunstate = RunState::PreRun;
+            }
+            RunState::TemperatureMap => {
+                let result = gui::temperature_map(self, ctx);
+                match result {
+                    gui::TemperatureMapResult::Cancel => newrunstate = RunState::PlayerTurn,
+                    gui::TemperatureMapResult::NoResponse => {}
+                }
             }
         }
 

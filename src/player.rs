@@ -3,7 +3,7 @@ use rltk::{Point, Rltk, VirtualKeyCode};
 extern crate specs;
 use super::{
     gamelog::GameLog, CombatStats, Item, Map, Monster, Player, Position, RunState, State, TileType,
-    Viewshed, WantsToMelee, WantsToPickupItem, WINDOWWIDTH, WINDOWHEIGHT
+    Viewshed, WantsToMelee, WantsToPickupItem, WINDOWHEIGHT, WINDOWWIDTH,
 };
 use specs::prelude::*;
 use std::cmp::{max, min};
@@ -186,6 +186,11 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             VirtualKeyCode::F => {
                 //interact(&mut gs.ecs); //TODO suppresse when we have a true systeme
                 return RunState::ObjectInteraction;
+            }
+
+            //Show Temperature Map
+            VirtualKeyCode::T => {
+                return RunState::TemperatureMap;
             }
 
             // Save and Quit

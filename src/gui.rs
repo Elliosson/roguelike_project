@@ -4,7 +4,7 @@ extern crate specs;
 use super::{
     gamelog::{GameLog, SpeciesInstantLog},
     CombatStats, Date, Equipped, InBackpack, InteractableObject, Interaction, Map, Name, Player,
-    Position, RunState, State, Viewshed, WINDOWHEIGHT, WINDOWWIDTH,
+    Position, RunState, State, Viewshed, MAPWIDTH, WINDOWHEIGHT, WINDOWWIDTH,
 };
 use specs::prelude::*;
 
@@ -790,5 +790,60 @@ pub fn show_object_interaction_choice(
                 }
             }
         }
+    }
+}
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum TemperatureMapResult {
+    Cancel,
+    NoResponse,
+}
+
+pub fn temperature_map(gs: &mut State, ctx: &mut Rltk) -> TemperatureMapResult {
+    let map = gs.ecs.fetch::<Map>();
+
+    let mut x = 0;
+    let mut y = 0;
+
+    for (_idx, temperature) in map.tile_temperature.iter().enumerate() {
+        let bg;
+        if *temperature < -10.0 {
+            bg = RGB::named(rltk::BLUE1);
+        } else if *temperature < -5.0 {
+            bg = RGB::named(rltk::BLUE1);
+        } else if *temperature < 0.0 {
+            bg = RGB::named(rltk::BLUE2);
+        } else if *temperature < 5.0 {
+            bg = RGB::named(rltk::BLUE3);
+        } else if *temperature < 10.0 {
+            bg = RGB::named(rltk::BLUE4);
+        } else if *temperature < 15.0 {
+            bg = RGB::named(rltk::YELLOW2);
+        } else if *temperature < 20.0 {
+            bg = RGB::named(rltk::YELLOW3);
+        } else if *temperature < 25.0 {
+            bg = RGB::named(rltk::YELLOW4);
+        } else if *temperature < 30.0 {
+            bg = RGB::named(rltk::RED1);
+        } else if *temperature < 35.0 {
+            bg = RGB::named(rltk::RED2);
+        } else {
+            bg = RGB::named(rltk::RED4);
+        }
+        ctx.set_bg(x, y, bg);
+        // Move the coordinates
+        x += 1;
+        if x > MAPWIDTH as i32 - 1 {
+            x = 0;
+            y += 1;
+        }
+    }
+
+    match ctx.key {
+        None => TemperatureMapResult::NoResponse,
+        Some(key) => match key {
+            VirtualKeyCode::Escape => TemperatureMapResult::Cancel,
+            _ => TemperatureMapResult::Cancel,
+        },
     }
 }
