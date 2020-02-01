@@ -117,6 +117,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     //copy the components that can mutate and are not specific to the specie
                     let mate_energy = energy_reserves.get(my_mate).unwrap();
                     let mate_temp_sensi = temp_sensis.get(my_mate).unwrap();
+                    let mate_id = unique_ids.get(my_mate).unwrap();
 
                     //Construct the Mutations struct with the median of all the component of both parent
                     //TODO create comparaison operator for the components
@@ -143,8 +144,10 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     //create birth
                     let form = BirthForm {
                         name: name.clone(),
-                        parents: entity,
+                        parent: entity,
                         parent_id: id.get(),
+                        male_parent: Some(my_mate),
+                        male_parent_id: Some(mate_id.get()),
                         date: date.get_date(),
                         position: position.clone(),
                     };

@@ -73,8 +73,10 @@ impl<'a> System<'a> for SoloReproductionSystem {
 
                 let form = BirthForm {
                     name: name.clone(),
-                    parents: entity,
+                    parent: entity,
                     parent_id: id.get(),
+                    male_parent: None,
+                    male_parent_id: None,
                     date: date.get_date(),
                     position: position.clone(),
                 };

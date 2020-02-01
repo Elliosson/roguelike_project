@@ -15,8 +15,10 @@ pub struct BirthCertificate {
     pub name: Name,
     pub entity: Entity,
     pub id: usize,
-    pub parents: Entity,
+    pub parent: Entity,
     pub parent_id: usize,
+    pub male_parent: Option<Entity>,
+    pub male_parent_id: Option<usize>,
     pub date: Date,
     pub position: Position,
 }
@@ -24,8 +26,10 @@ pub struct BirthCertificate {
 #[derive(Clone)]
 pub struct BirthForm {
     pub name: Name,
-    pub parents: Entity,
+    pub parent: Entity,
     pub parent_id: usize,
+    pub male_parent: Option<Entity>,
+    pub male_parent_id: Option<usize>,
     pub date: Date,
     pub position: Position,
 }
@@ -134,8 +138,10 @@ pub fn give_birth(ecs: &mut World) {
                     .get(entity)
                     .expect("Error: No uniqueId in the new born entity")
                     .get(),
-                parents: form.parents,
+                parent: form.parent,
                 parent_id: form.parent_id,
+                male_parent: form.male_parent,
+                male_parent_id: form.male_parent_id,
                 date: form.date,
                 position: form.position,
             };

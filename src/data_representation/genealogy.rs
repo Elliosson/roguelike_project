@@ -20,6 +20,9 @@ pub fn write_genealogy(ecs: &mut World) -> std::io::Result<()> {
         println!("{} [label=\"{}]", certif.parents.id(), certif.name.name);
         */
         write!(file, "    {} -> {};\n", certif.parent_id, certif.id)?;
+        if let Some(male_id) = certif.male_parent_id {
+            write!(file, "    {} -> {};\n", male_id, certif.id)?;
+        }
         /*
         write!(
             file,

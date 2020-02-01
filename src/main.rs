@@ -509,7 +509,7 @@ fn main() {
     let mut context = Rltk::init_simple8x8(
         WINDOWWIDTH as u32,
         WINDOWHEIGHT as u32,
-        "Ecosystem symulator",
+        "Ecosystem simulator",
         "resources",
     );
     context.with_post_scanlines(true);
