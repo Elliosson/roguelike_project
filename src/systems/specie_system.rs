@@ -1,11 +1,11 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, WorldStatLog},
-    Name, Renderable, Specie, TemperatureSensitive,
+    Name, Position, Renderable, Specie, TemperatureSensitive,
 };
+use cogset::{Euclid, Kmeans};
 use rltk::HSV;
 use specs::prelude::*;
-use std::cmp::Ordering;
 use std::collections::HashMap;
 
 pub struct SpecieSystem {}
@@ -21,6 +21,7 @@ impl<'a> System<'a> for SpecieSystem {
         WriteStorage<'a, TemperatureSensitive>,
         WriteStorage<'a, Renderable>,
         WriteExpect<'a, rltk::RandomNumberGenerator>,
+        ReadStorage<'a, Position>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -33,6 +34,7 @@ impl<'a> System<'a> for SpecieSystem {
             temp_sensis,
             mut renderables,
             mut rng,
+            positions,
         ) = data;
 
         let mut species_hash: HashMap<String, Vec<Entity>> = HashMap::new();
@@ -49,26 +51,37 @@ impl<'a> System<'a> for SpecieSystem {
             }
         }
 
-        let mut new_species: Vec<Vec<(Entity, f32)>> = Vec::new();
+        let mut new_species: Vec<Vec<Entity>> = Vec::new();
 
         //For now just divide the specie acording to the number of member
         for (_name, member_list) in &species_hash {
             if member_list.len() > max_specie_member {
-                println!("Divide the specie");
-                //divide the specie in two species, for knwo just acording to temperature optimum
-                let mut opti_list: Vec<(Entity, f32)> = Vec::new();
-
-                //for the memeber according to their optimum temp
+                //New methode
+                //Try to divide the species acording to their position with the k-mean algorithm
+                let mut data = Vec::new();
                 for ent in member_list.iter() {
-                    opti_list.push((*ent, temp_sensis.get(*ent).unwrap().optimum));
-                    opti_list.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal));
-
-                    //slip
+                    let pos = positions.get(*ent).unwrap();
+                    //prepare vec for Kmeans
+                    let euclid = Euclid([pos.x as f64, pos.y as f64]);
+                    data.push(euclid);
                 }
+                //Do kmean
+                let k = 2;
+                let kmeans = Kmeans::new(&data, k);
+                let clusters = kmeans.clusters();
 
-                let half_list = opti_list.split_off(member_list.len() / 2);
-                new_species.push(opti_list);
-                new_species.push(half_list);
+                //Assing each entity to his new species
+                //retrive all the group
+                for group in clusters {
+                    //list of all the member of the new specie
+                    let mut new_specie: Vec<Entity> = Vec::new();
+                    //retrieve the index of all the element of the group
+                    for idx in group.1 {
+                        new_specie.push(member_list[idx]); //TODO supress the 0, the f32 should be temperature optimum and this is no longer usefull
+                    }
+                    //push in the vec of all the species to create
+                    new_species.push(new_specie);
+                }
             }
         }
 
@@ -88,7 +101,7 @@ impl<'a> System<'a> for SpecieSystem {
                 hue = rng.roll_dice(1, 99) as f32;
             }
             let hue = hue / 100.0;
-            for (entity, _opti) in new_specie {
+            for entity in new_specie {
                 let mut specie = species.get_mut(entity).unwrap();
 
                 //concatenate ne old name with a number
