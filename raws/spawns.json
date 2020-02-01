@@ -410,6 +410,10 @@
                 "optimum": 5,
                 "k": 0.02
             },
+            "hum_sensi": {
+                "optimum": 30,
+                "k": 0.001
+            },
             "specie": {
                 "id": 0,
                 "name": "a"

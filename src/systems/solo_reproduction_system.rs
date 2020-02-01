@@ -1,7 +1,8 @@
 extern crate specs;
 use crate::{
-    gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, Mutations, Name, Position,
-    Renderable, SoloReproduction, Specie, TemperatureSensitive, UniqueId, WantsToDuplicate,
+    gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, HumiditySensitive,
+    Mutations, Name, Position, Renderable, SoloReproduction, Specie, TemperatureSensitive,
+    UniqueId, WantsToDuplicate,
 };
 use specs::prelude::*;
 
@@ -23,6 +24,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
         ReadStorage<'a, TemperatureSensitive>,
         ReadStorage<'a, Specie>,
         ReadStorage<'a, Renderable>,
+        ReadStorage<'a, HumiditySensitive>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -40,6 +42,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
             temp_sensis,
             species,
             renderables,
+            hum_sensis,
         ) = data;
 
         //TODO don't check the mutable componant and them later if the entity have it
@@ -53,6 +56,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
             temp_sensi,
             specie,
             renderable,
+            hum_sensi,
         ) in (
             &entities,
             &solo_reproductions,
@@ -63,6 +67,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
             &temp_sensis,
             &species,
             &renderables,
+            &hum_sensis,
         )
             .join()
         {
@@ -85,6 +90,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
                     solo_reproduction: Some(solo_reprod.clone()),
                     energy_reserve: Some(energy_reserve.clone()),
                     temp_sensi: Some(temp_sensi.clone()),
+                    hum_sensi: Some(hum_sensi.clone()),
                     specie: Some(specie.clone()),
                     renderable: Some(renderable.clone()),
                 };

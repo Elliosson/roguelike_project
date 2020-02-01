@@ -90,8 +90,12 @@ impl State {
         date.run_now(&self.ecs);
         let mut temperature = TemperatureSystem {};
         temperature.run_now(&self.ecs);
+        let mut humidity = HumiditySystem {};
+        humidity.run_now(&self.ecs);
         let mut temperature_sens = TemperatureSensitivitySystem {};
         temperature_sens.run_now(&self.ecs);
+        let mut humidity_sens = HumiditySensitivitySystem {};
+        humidity_sens.run_now(&self.ecs);
         let mut specie = SpecieSystem {};
         specie.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
@@ -565,6 +569,7 @@ fn main() {
     gs.ecs.register::<InUse>();
     gs.ecs.register::<TemperatureSensitive>();
     gs.ecs.register::<Specie>();
+    gs.ecs.register::<HumiditySensitive>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

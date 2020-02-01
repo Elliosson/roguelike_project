@@ -28,3 +28,7 @@ mod specie_system;
 pub use specie_system::SpecieSystem;
 mod gendered_reproduction_system;
 pub use gendered_reproduction_system::GenderedReproductionSystem;
+mod humidity_system;
+pub use humidity_system::HumiditySystem;
+mod humidity_sensitivity_system;
+pub use humidity_sensitivity_system::HumiditySensitivitySystem;

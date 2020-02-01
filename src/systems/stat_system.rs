@@ -1,7 +1,8 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, SpeciesInstantLog, WorldStatLog},
-    Date, EnergyReserve, Name, Renderable, SoloReproduction, Specie, TemperatureSensitive,
+    Date, EnergyReserve, HumiditySensitive, Name, Renderable, SoloReproduction, Specie,
+    TemperatureSensitive,
 };
 use specs::prelude::*;
 use std::collections::BTreeMap;
@@ -22,6 +23,7 @@ impl<'a> System<'a> for StatSystem {
         ReadStorage<'a, TemperatureSensitive>,
         ReadStorage<'a, Renderable>,
         WriteExpect<'a, SpeciesInstantLog>,
+        ReadStorage<'a, HumiditySensitive>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -37,6 +39,7 @@ impl<'a> System<'a> for StatSystem {
             temp_sensis,
             renderables,
             mut species_log,
+            hum_sensis,
         ) = data;
 
         let mut thresholds = Vec::new();
@@ -95,6 +98,7 @@ impl<'a> System<'a> for StatSystem {
             let renderable = renderables.get(member_list[0]).unwrap(); //should not be possible to have 0 members, still ugly
 
             let mut optimum = 0.0;
+            let mut hum_optimum = 0.0;
             let mut max_reserve = 0.0;
             let mut base_consumption = 0.0;
             let mut birth_energy = 0;
@@ -104,10 +108,12 @@ impl<'a> System<'a> for StatSystem {
             //Do the mean of the vamue of each caracteristique for the specie
             for member in member_list.iter() {
                 let temp_sensi = temp_sensis.get(*member).unwrap();
+                let hum_sensi = hum_sensis.get(*member).unwrap();
                 let energy_reserve = energy_reserves.get(*member).unwrap();
                 let solo_reproduction = solo_reproductions.get(*member).unwrap();
 
                 optimum += temp_sensi.optimum;
+                hum_optimum += hum_sensi.optimum;
                 max_reserve += energy_reserve.max_reserve;
                 base_consumption += energy_reserve.base_consumption;
                 birth_energy += solo_reproduction.birth_energy;
@@ -115,6 +121,7 @@ impl<'a> System<'a> for StatSystem {
             }
 
             optimum = optimum / number as f32;
+            hum_optimum = hum_optimum / number as f32;
             max_reserve = max_reserve / number as f32;
             base_consumption = base_consumption / number as f32;
             birth_energy = birth_energy / number as u32;
@@ -130,8 +137,8 @@ impl<'a> System<'a> for StatSystem {
             );
             string_vec.push(buf);
             let buf = format!(
-                "birth eng: {}, b offset: {}",
-                birth_energy, offset_threshold,
+                "birth eng: {}, b offset: {}, hum_opti: {:.1}",
+                birth_energy, offset_threshold, hum_optimum
             ); //TODO add the temperature sensibilité an reprod threshold
             string_vec.push(buf);
             species_log

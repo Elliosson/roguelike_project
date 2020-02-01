@@ -26,6 +26,7 @@ pub struct Map {
     #[serde(skip_deserializing)]
     pub tile_content: Vec<Vec<Entity>>,
     pub tile_temperature: Vec<f32>,
+    pub tile_humidity: Vec<f32>,
 }
 
 impl Map {
@@ -98,6 +99,7 @@ impl Map {
             blocked: vec![false; MAPCOUNT],
             tile_content: vec![Vec::new(); MAPCOUNT],
             tile_temperature: vec![0.0; MAPCOUNT],
+            tile_humidity: vec![0.0; MAPCOUNT],
             depth: 0,
         };
 
@@ -122,6 +124,7 @@ impl Map {
             blocked: vec![false; MAPCOUNT],
             tile_content: vec![Vec::new(); MAPCOUNT],
             tile_temperature: vec![0.0; MAPCOUNT],
+            tile_humidity: vec![0.0; MAPCOUNT],
             depth: new_depth,
         };
 

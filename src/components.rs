@@ -300,11 +300,18 @@ pub struct Aging {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct InUse {}
 
-//optimum of temperature plage of acceptebality
+//optimum of temperature and  plage of acceptebality
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct TemperatureSensitive {
     pub optimum: f32,
-    pub k: f32, //ecrasement de la guassiene ou carré
+    pub k: f32, //ecrasement de la gaussiene ou carré
+}
+
+//optimum of humidity plage and of acceptebality
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct HumiditySensitive {
+    pub optimum: f32,
+    pub k: f32, //ecrasement de la gaussiene ou carré
 }
 
 //mark the specie of the creature

@@ -2,8 +2,8 @@ extern crate specs;
 use super::{
     algo, raws,
     raws::{RawMaster, RAWS},
-    Date, EnergyReserve, Name, Position, Renderable, SerializeMe, SoloReproduction, Specie,
-    TemperatureSensitive, UniqueId,
+    Date, EnergyReserve, HumiditySensitive, Name, Position, Renderable, SerializeMe,
+    SoloReproduction, Specie, TemperatureSensitive, UniqueId,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 
@@ -40,6 +40,7 @@ pub struct Mutations {
     pub solo_reproduction: Option<SoloReproduction>,
     pub energy_reserve: Option<EnergyReserve>,
     pub temp_sensi: Option<TemperatureSensitive>,
+    pub hum_sensi: Option<HumiditySensitive>,
     pub specie: Option<Specie>,
     pub renderable: Option<Renderable>,
 }
@@ -50,6 +51,7 @@ impl Mutations {
             solo_reproduction: None,
             energy_reserve: None,
             temp_sensi: None,
+            hum_sensi: None,
             specie: None,
             renderable: None,
         }
@@ -212,6 +214,10 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
 
     if let Some(temp_sensi) = &mut mutations.temp_sensi {
         temp_sensi.optimum += rng.gen_range(-2, 3) as f32;
+    }
+
+    if let Some(hum_sensi) = &mut mutations.hum_sensi {
+        hum_sensi.optimum += rng.gen_range(-4, 5) as f32;
     }
     mutations
 }

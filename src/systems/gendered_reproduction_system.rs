@@ -1,8 +1,8 @@
 extern crate specs;
 use crate::{
-    gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, Hunger, Map, Mutations,
-    Name, Position, Renderable, SoloReproduction, Specie, TemperatureSensitive, UniqueId, Viewshed,
-    WantsToDuplicate,
+    gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, HumiditySensitive, Hunger,
+    Map, Mutations, Name, Position, Renderable, SoloReproduction, Specie, TemperatureSensitive,
+    UniqueId, Viewshed, WantsToDuplicate,
 };
 use specs::prelude::*;
 
@@ -26,6 +26,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
         ReadStorage<'a, Renderable>,
         ReadStorage<'a, Viewshed>,
         ReadExpect<'a, Map>,
+        ReadStorage<'a, HumiditySensitive>,
     );
 
     //TODO add male and femal
@@ -47,6 +48,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             renderables,
             viewsheds,
             map,
+            hum_sensis,
         ) = data;
 
         //store all "female" entity that have sucessfully reproduce
@@ -65,6 +67,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             name,
             position,
             id,
+            hum_sensi,
         ) in (
             &entities,
             &viewsheds,
@@ -76,6 +79,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             &names,
             &positions,
             &unique_ids,
+            &hum_sensis,
         )
             .join()
         {
@@ -117,6 +121,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     //copy the components that can mutate and are not specific to the specie
                     let mate_energy = energy_reserves.get(my_mate).unwrap();
                     let mate_temp_sensi = temp_sensis.get(my_mate).unwrap();
+                    let mate_hum_sensi = hum_sensis.get(my_mate).unwrap();
                     let mate_id = unique_ids.get(my_mate).unwrap();
 
                     //Construct the Mutations struct with the median of all the component of both parent
@@ -126,6 +131,10 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     let new_temp_sensi = TemperatureSensitive {
                         optimum: (temp_sensi.optimum + mate_temp_sensi.optimum) / 2.0,
                         k: (temp_sensi.k + mate_temp_sensi.k) / 2.0,
+                    };
+                    let new_hum_sensi = HumiditySensitive {
+                        optimum: (hum_sensi.optimum + mate_hum_sensi.optimum) / 2.0,
+                        k: (hum_sensi.k + mate_hum_sensi.k) / 2.0,
                     };
                     let new_energy_res = EnergyReserve {
                         reserve: 0.0, //No heritance
@@ -137,6 +146,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         solo_reproduction: Some(solo_reprod.clone()), //TODO Supress ? For now just inhereite from mother
                         energy_reserve: Some(new_energy_res),
                         temp_sensi: Some(new_temp_sensi),
+                        hum_sensi: Some(new_hum_sensi),
                         specie: Some(specie.clone()),
                         renderable: Some(renderable.clone()),
                     };

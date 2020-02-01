@@ -326,6 +326,11 @@ pub fn spawn_named_prop(
             eb = eb.with(temp_sensi.clone());
         }
 
+        // HumiditySensitivity
+        if let Some(hum_sensi) = &prop_template.hum_sensi {
+            eb = eb.with(hum_sensi.clone());
+        }
+
         // Specie
         if let Some(specie) = &prop_template.specie {
             eb = eb.with(specie.clone());
@@ -435,6 +440,13 @@ pub fn spawn_born(
             eb = eb.with(temp_sensi.clone());
         } else if let Some(temp_sensi) = &prop_template.temp_sensi {
             eb = eb.with(temp_sensi.clone());
+        }
+
+        // Humidity Sensitivity
+        if let Some(hum_sensi) = mutations.hum_sensi {
+            eb = eb.with(hum_sensi.clone());
+        } else if let Some(hum_sensi) = &prop_template.hum_sensi {
+            eb = eb.with(hum_sensi.clone());
         }
 
         // Specie
