@@ -1,5 +1,8 @@
 extern crate specs;
-use crate::{algo::*, ApplyMove, Cow, Leaf, Map, Point, Position, RunState, Viewshed, WantToEat};
+use crate::{
+    algo::*, ApplyMove, Cow, Leaf, Map, Point, Position, RunState, TargetedForEat, Viewshed,
+    WantToEat,
+};
 use specs::prelude::*;
 extern crate rltk;
 use std::collections::HashMap;
@@ -19,6 +22,7 @@ impl<'a> System<'a> for CowAI {
         WriteStorage<'a, Leaf>,
         WriteStorage<'a, WantToEat>,
         WriteStorage<'a, ApplyMove>,
+        WriteStorage<'a, TargetedForEat>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -32,9 +36,12 @@ impl<'a> System<'a> for CowAI {
             leafs,
             mut want_to_eats,
             mut apply_move,
+            mut targeted_eats,
         ) = data;
 
         let mut targets_leaf: HashMap<Entity, Entity> = HashMap::new();
+
+        targeted_eats.clear(); //TODO dirty, create a system specificaly to clear this.
 
         //check if there is a leaf on position of a cow
         for (cow_entity, _cow, pos) in (&entities, &cows, &mut positions).join() {
@@ -61,33 +68,38 @@ impl<'a> System<'a> for CowAI {
                 }
             }
 
-            //chose a leaf, for now it always the first one
-            if !found_leaf.is_empty() {
-                targets_leaf.insert(cow_entity, found_leaf[0]);
-                //TODO Prevent multiple cow on the same target
+            let mut choosen_leaf: Option<Entity> = None;
+            let mut min: f32 = std::f32::MAX;
+            for leaf in found_leaf {
+                let leaf_pos = positions.get(leaf).unwrap();
+                let pos = positions.get(cow_entity).unwrap();
+                let maybe_targeted_eat = targeted_eats.get(leaf);
+
+                //if their is a other creature that want the target, then I only go if I am closer
+                let mut competitor_distance = std::f32::MAX;
+                if let Some(targeted) = maybe_targeted_eat {
+                    competitor_distance = targeted.distance;
+                }
+                let distance = rltk::DistanceAlg::Pythagoras
+                    .distance2d(Point::new(pos.x, pos.y), Point::new(leaf_pos.x, leaf_pos.y));
+                if (distance < min) && (distance < competitor_distance) {
+                    choosen_leaf = Some(leaf);
+                    min = distance;
+                }
+            }
+            if let Some(leaf) = choosen_leaf {
+                targets_leaf.insert(cow_entity, leaf);
+                targeted_eats
+                    .insert(
+                        leaf,
+                        TargetedForEat {
+                            predator: cow_entity,
+                            distance: min,
+                        },
+                    )
+                    .expect("Unable ot insert");
             }
         }
-        //Strangely when a search that go on the minimal distance their are less cow, maybe because they all go on the same leaf?
-        /*
-                    //chose a leaf, for now it always the first one
-                    //TODO Prevent multiple cow on the same target
-                    let mut choosen_leaf: Option<Entity> = None;
-                    let mut min: f32 = std::f32::MAX;
-                    for leaf in found_leaf {
-                        let leaf_pos = positions.get(leaf).unwrap();
-                        let pos = positions.get(cow_entity).unwrap();
-                        let distance = rltk::DistanceAlg::Pythagoras
-                            .distance2d(Point::new(pos.x, pos.y), Point::new(leaf_pos.x, leaf_pos.y));
-                        if distance < min {
-                            choosen_leaf = Some(leaf);
-                            min = distance;
-                        }
-                    }
-                    if let Some(leaf) = choosen_leaf {
-                        targets_leaf.insert(cow_entity, leaf);
-                    }
-                }
-        */
         //println!("Start A*");
         //let now2 = Instant::now();
 

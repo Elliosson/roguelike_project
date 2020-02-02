@@ -346,6 +346,12 @@ pub struct WantsToFlee {
     pub indices: Vec<i32>,
 }
 
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct TargetedForEat {
+    pub predator: Entity,
+    pub distance: f32,
+}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 pub struct SerializeMe;

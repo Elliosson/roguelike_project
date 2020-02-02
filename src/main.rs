@@ -581,6 +581,7 @@ fn main() {
     gs.ecs.register::<TargetReached>();
     gs.ecs.register::<Carnivore>();
     gs.ecs.register::<WantsToFlee>();
+    gs.ecs.register::<TargetedForEat>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
@@ -608,8 +609,8 @@ fn main() {
         spawn_named(&mut gs.ecs, "Cow", 30, 12);
         spawn_named(&mut gs.ecs, "Cow", 30, 13);
         spawn_named(&mut gs.ecs, "Cow", 30, 14);
-        spawn_named(&mut gs.ecs, "Wolve", 20, 10);
-        spawn_named(&mut gs.ecs, "Wolve", 20, 11);
+        //spawn_named(&mut gs.ecs, "Wolve", 20, 10);
+        //spawn_named(&mut gs.ecs, "Wolve", 20, 11);
     }
 
     gs.ecs.insert(map);
