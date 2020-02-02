@@ -32,3 +32,5 @@ mod humidity_system;
 pub use humidity_system::HumiditySystem;
 mod humidity_sensitivity_system;
 pub use humidity_sensitivity_system::HumiditySensitivitySystem;
+mod go_target_system;
+pub use go_target_system::GoTargetSystem;

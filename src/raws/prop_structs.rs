@@ -24,6 +24,8 @@ pub struct Prop {
     pub temp_sensi: Option<TemperatureSensitive>,
     pub hum_sensi: Option<HumiditySensitive>,
     pub specie: Option<Specie>,
+    pub carnivore: Option<Carnivore>,
+    pub speed: Option<Speed>,
 }
 
 #[derive(Deserialize, Debug)]

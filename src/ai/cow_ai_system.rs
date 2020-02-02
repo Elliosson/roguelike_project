@@ -82,7 +82,7 @@ impl<'a> System<'a> for CowAI {
                 map.xy_idx(pos.x, pos.y) as i32,
                 map.xy_idx(target_pos.x, target_pos.y) as i32,
                 &mut *map,
-                100, //Max step for search, TODO thonk of a way to automatically find an acceptable number
+                100, //Max step for search, TODO think of a way to automatically find an acceptable number
             );
 
             //println!("a* time = {}", now.elapsed().as_micros());

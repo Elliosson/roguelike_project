@@ -37,7 +37,7 @@ pub mod raws;
 pub mod saveload_system;
 use movement_system::MovementSystem;
 pub mod ai;
-use ai::CowAI;
+use ai::*;
 mod tiletype;
 mod trigger_system;
 use tiletype::{tile_walkable, TileType};
@@ -104,6 +104,8 @@ impl State {
         mob.run_now(&self.ecs);
         let mut cow = CowAI {};
         cow.run_now(&self.ecs);
+        let mut carnivore_ai = CarnivorousAI {};
+        carnivore_ai.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem {};
@@ -122,6 +124,8 @@ impl State {
         object_spawn.run_now(&self.ecs);
         let mut interaction = InteractionSystem {};
         interaction.run_now(&self.ecs);
+        let mut go_target = GoTargetSystem {};
+        go_target.run_now(&self.ecs);
         let mut movement = MovementSystem {};
         movement.run_now(&self.ecs);
         let mut eating = EatingSystem {};
@@ -570,6 +574,10 @@ fn main() {
     gs.ecs.register::<TemperatureSensitive>();
     gs.ecs.register::<Specie>();
     gs.ecs.register::<HumiditySensitive>();
+    gs.ecs.register::<Speed>();
+    gs.ecs.register::<GoOnTarget>();
+    gs.ecs.register::<TargetReached>();
+    gs.ecs.register::<Carnivore>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
@@ -586,6 +594,7 @@ fn main() {
 
         spawn_named(&mut gs.ecs, "Cow", 3, 3);
         spawn_named(&mut gs.ecs, "Cow", 2, 2);
+        spawn_named(&mut gs.ecs, "Wolve", 10, 10);
     }
 
     gs.ecs.insert(map);

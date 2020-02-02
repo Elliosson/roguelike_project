@@ -314,12 +314,31 @@ pub struct HumiditySensitive {
     pub k: f32, //ecrasement de la gaussiene ou carré
 }
 
+//Componant to set the target, with it pathfind and move will be made at the same time
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct GoOnTarget {
+    pub target: Entity,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Speed {
+    pub move_point: i32,
+}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct TargetReached {
+    pub target: Entity,
+}
+
 //mark the specie of the creature
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Specie {
     pub name: String,
     pub id: i32,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Carnivore {}
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.

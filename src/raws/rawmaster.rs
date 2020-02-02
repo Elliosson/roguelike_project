@@ -336,6 +336,16 @@ pub fn spawn_named_prop(
             eb = eb.with(specie.clone());
         }
 
+        // Carnivore
+        if let Some(carnivore) = &prop_template.carnivore {
+            eb = eb.with(carnivore.clone());
+        }
+
+        // Speed
+        if let Some(speed) = &prop_template.speed {
+            eb = eb.with(speed.clone());
+        }
+
         return Some(eb.build());
     }
     None
@@ -508,6 +518,17 @@ pub fn spawn_born(
         if let Some(aging) = &prop_template.aging {
             eb = eb.with(aging.clone());
         }
+
+        // Carnivore
+        if let Some(carnivore) = &prop_template.carnivore {
+            eb = eb.with(carnivore.clone());
+        }
+
+        // Speed
+        if let Some(speed) = &prop_template.speed {
+            eb = eb.with(speed.clone());
+        }
+
         return Some(eb.build());
     }
     None

@@ -418,6 +418,49 @@
                 "id": 0,
                 "name": "a"
             }
+        },
+        {
+            "name": "Wolve",
+            "renderable": {
+                "glyph": "W",
+                "fg": "#FF0000",
+                "bg": "#000000",
+                "order": 2
+            },
+            "blocks_tile": true,
+            "viewshed": {
+                "range": 8
+            },
+            "energy_reserve": {
+                "reserve": 50,
+                "max_reserve": 300,
+                "base_consumption": 1
+            },
+            "carnivore": {},
+            "solo_reproduction": {
+                "birth_energy": 50,
+                "offset_cost": 50,
+                "offset_threshold": 50
+            },
+            "aging": {
+                "life_expectancy": 100,
+                "age": 0
+            },
+            "temp_sensi": {
+                "optimum": 5,
+                "k": 0.02
+            },
+            "hum_sensi": {
+                "optimum": 30,
+                "k": 0.001
+            },
+            "specie": {
+                "id": 2,
+                "name": "c"
+            },
+            "speed": {
+                "move_point": 200
+            }
         }
     ]
 }
