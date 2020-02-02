@@ -4,3 +4,5 @@ mod cow_ai_system;
 pub use cow_ai_system::CowAI;
 mod carnivorous_ai_system;
 pub use carnivorous_ai_system::CarnivorousAI;
+mod flee_ai_system;
+pub use flee_ai_system::FleeAI;

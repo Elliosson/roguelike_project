@@ -106,6 +106,8 @@ impl State {
         cow.run_now(&self.ecs);
         let mut carnivore_ai = CarnivorousAI {};
         carnivore_ai.run_now(&self.ecs);
+        let mut flee_ai = FleeAI {};
+        flee_ai.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem {};
@@ -578,6 +580,7 @@ fn main() {
     gs.ecs.register::<GoOnTarget>();
     gs.ecs.register::<TargetReached>();
     gs.ecs.register::<Carnivore>();
+    gs.ecs.register::<WantsToFlee>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
@@ -594,7 +597,20 @@ fn main() {
 
         spawn_named(&mut gs.ecs, "Cow", 3, 3);
         spawn_named(&mut gs.ecs, "Cow", 2, 2);
+        spawn_named(&mut gs.ecs, "Cow", 2, 3);
+        spawn_named(&mut gs.ecs, "Cow", 2, 4);
+        spawn_named(&mut gs.ecs, "Cow", 2, 5);
+        spawn_named(&mut gs.ecs, "Cow", 2, 6);
+        spawn_named(&mut gs.ecs, "Cow", 2, 7);
+        spawn_named(&mut gs.ecs, "Cow", 2, 8);
+        spawn_named(&mut gs.ecs, "Cow", 2, 9);
+        spawn_named(&mut gs.ecs, "Cow", 2, 10);
+        spawn_named(&mut gs.ecs, "Cow", 2, 11);
+        spawn_named(&mut gs.ecs, "Cow", 2, 12);
+        spawn_named(&mut gs.ecs, "Cow", 2, 13);
+        spawn_named(&mut gs.ecs, "Cow", 2, 14);
         spawn_named(&mut gs.ecs, "Wolve", 10, 10);
+        spawn_named(&mut gs.ecs, "Wolve", 10, 11);
     }
 
     gs.ecs.insert(map);

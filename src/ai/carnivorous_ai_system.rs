@@ -1,6 +1,7 @@
 extern crate specs;
 use crate::{
     Carnivore, Cow, GoOnTarget, Map, Point, Position, RunState, TargetReached, Viewshed, WantToEat,
+    WantsToFlee,
 };
 use specs::prelude::*;
 extern crate rltk;
@@ -22,6 +23,7 @@ impl<'a> System<'a> for CarnivorousAI {
         WriteStorage<'a, Carnivore>,
         WriteStorage<'a, TargetReached>,
         WriteStorage<'a, GoOnTarget>,
+        WriteStorage<'a, WantsToFlee>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -36,6 +38,7 @@ impl<'a> System<'a> for CarnivorousAI {
             carnivores,
             mut target_reacheds,
             mut go_targets,
+            mut flees,
         ) = data;
 
         //TODO add hunger condition to hunt
@@ -46,6 +49,7 @@ impl<'a> System<'a> for CarnivorousAI {
         for (entity, _carnivore, pos) in (&entities, &carnivores, &mut positions).join() {
             println!("in");
             if let Some(reached) = target_reacheds.get(entity) {
+                println!("send want to eat");
                 //TODO for now it eat directly I must add a fight
                 want_to_eats
                     .insert(
@@ -55,7 +59,9 @@ impl<'a> System<'a> for CarnivorousAI {
                         },
                     )
                     .expect("Unable to insert");
-                //TODO do not search a new target if the entity is already eating
+            //TODO do not search a new target if the entity is already eating
+            } else {
+                println!("no target reached");
             }
         }
         target_reacheds.clear();
@@ -98,6 +104,16 @@ impl<'a> System<'a> for CarnivorousAI {
                             target: choosen_target,
                         },
                     )
+                    .expect("Unable to insert");
+
+                //tell the target to flee //TODO do a real system with done insert and all
+                let pos = positions.get(entity).unwrap();
+                let idx = map.xy_idx(pos.x, pos.y) as i32;
+                let mut flee_list = Vec::new();
+                flee_list.push(idx);
+
+                flees
+                    .insert(choosen_target, WantsToFlee { indices: flee_list })
                     .expect("Unable to insert");
             }
         }

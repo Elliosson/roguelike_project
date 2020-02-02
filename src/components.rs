@@ -323,6 +323,7 @@ pub struct GoOnTarget {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Speed {
     pub move_point: i32,
+    pub point_per_turn: i32,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
@@ -339,6 +340,11 @@ pub struct Specie {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Carnivore {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct WantsToFlee {
+    pub indices: Vec<i32>,
+}
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.

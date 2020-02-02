@@ -429,21 +429,21 @@
             },
             "blocks_tile": true,
             "viewshed": {
-                "range": 8
+                "range": 10
             },
             "energy_reserve": {
                 "reserve": 50,
-                "max_reserve": 300,
+                "max_reserve": 700,
                 "base_consumption": 1
             },
             "carnivore": {},
             "solo_reproduction": {
-                "birth_energy": 50,
+                "birth_energy": 150,
                 "offset_cost": 50,
-                "offset_threshold": 50
+                "offset_threshold": 200
             },
             "aging": {
-                "life_expectancy": 100,
+                "life_expectancy": 600,
                 "age": 0
             },
             "temp_sensi": {
@@ -459,7 +459,8 @@
                 "name": "c"
             },
             "speed": {
-                "move_point": 200
+                "move_point": 100,
+                "point_per_turn": 35
             }
         }
     ]

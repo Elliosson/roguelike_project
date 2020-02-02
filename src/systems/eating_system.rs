@@ -41,7 +41,8 @@ impl<'a> System<'a> for EatingSystem {
             }
             if let Some(_cow) = cows.get_mut(want_to_eat.target) {
                 if en_res.hunger == Hunger::Hungry {
-                    en_res.reserve += 200.0; //TODO add nutriment from cow;
+                    //TODO check this in the ai it's confusing to do it here
+                    en_res.reserve += 100.0; //TODO add nutriment from cow;
 
                     //TODO do something to prevent double eat
                     //kill entity

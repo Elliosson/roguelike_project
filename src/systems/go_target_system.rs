@@ -37,6 +37,10 @@ impl<'a> System<'a> for GoTargetSystem {
             mut speeds,
             mut target_reachs,
         ) = data;
+        //regain move point
+        for (_entity, speed) in (&entities, &mut speeds).join() {
+            speed.move_point += speed.point_per_turn;
+        }
 
         for (entity, go_target, speed) in (&entities, &go_targets, &mut speeds).join() {
             println!("go target");
@@ -45,11 +49,16 @@ impl<'a> System<'a> for GoTargetSystem {
                 let pos = positions.get(entity).expect("No postion");
                 let target_pos = positions.get(go_target.target).expect("No postion");
 
+                //creat a clone of the map with the destination ubvlocked, if not he will never find a way to go on the target
+                let mut path_map = map.clone();
+                let dest_idx = path_map.xy_idx(target_pos.x, target_pos.y);
+                path_map.blocked[dest_idx] = false;
+
                 path = algo::a_star_search(
-                    map.xy_idx(pos.x, pos.y) as i32,
-                    map.xy_idx(target_pos.x - 1, target_pos.y) as i32, //TODO change that, the "-1" is a dirty fix for the imposibility to go on a blicked tile
-                    &mut *map,
-                    100, //Max step for search, TODO thonk of a way to automatically find an acceptable number
+                    path_map.xy_idx(pos.x, pos.y) as i32,
+                    path_map.xy_idx(target_pos.x, target_pos.y) as i32, //TODO change that, the "-1" is a dirty fix for the imposibility to go on a blicked tile
+                    &mut path_map,
+                    200, //Max step for search, TODO thonk of a way to automatically find an acceptable number
                 );
             }
 
@@ -65,6 +74,8 @@ impl<'a> System<'a> for GoTargetSystem {
                     for (vec_idx, dest_idx) in path.steps.iter().enumerate() {
                         //we are in the last iteration
                         if vec_idx >= path.steps.len() - 1 {
+                            println!("on target1");
+                            println!("send target reached");
                             //we are in contact //TODO find a way to clean target_reachs
                             target_reachs
                                 .insert(
@@ -100,6 +111,7 @@ impl<'a> System<'a> for GoTargetSystem {
                         }
                     }
                 } else {
+                    println!("on target2");
                     //we are in contact
                     target_reachs
                         .insert(
