@@ -1,8 +1,8 @@
 extern crate specs;
 use crate::{
     gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, HumiditySensitive, Hunger,
-    Map, Mutations, Name, Position, Renderable, SoloReproduction, Specie, TemperatureSensitive,
-    UniqueId, Viewshed, WantsToDuplicate,
+    Map, Mutations, Name, Position, Renderable, SoloReproduction, Specie, Speed,
+    TemperatureSensitive, UniqueId, Viewshed, WantsToDuplicate,
 };
 use specs::prelude::*;
 
@@ -27,6 +27,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
         ReadStorage<'a, Viewshed>,
         ReadExpect<'a, Map>,
         ReadStorage<'a, HumiditySensitive>,
+        ReadStorage<'a, Speed>,
     );
 
     //TODO add male and femal
@@ -49,6 +50,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             viewsheds,
             map,
             hum_sensis,
+            speeds,
         ) = data;
 
         //store all "female" entity that have sucessfully reproduce
@@ -142,6 +144,13 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         base_consumption: 0.0, //No heritance
                         hunger: Hunger::Full,  //No heritance
                     };
+
+                    //get speed of parents //TODO add father
+                    let mut maybe_speed = None;
+                    if let Some(speed) = speeds.get(entity) {
+                        maybe_speed = Some(speed.clone());
+                    }
+
                     let mutations = Mutations {
                         solo_reproduction: Some(solo_reprod.clone()), //TODO Supress ? For now just inhereite from mother
                         energy_reserve: Some(new_energy_res),
@@ -149,6 +158,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         hum_sensi: Some(new_hum_sensi),
                         specie: Some(specie.clone()),
                         renderable: Some(renderable.clone()),
+                        speed: maybe_speed,
                     };
 
                     //create birth

@@ -46,7 +46,7 @@ impl<'a> System<'a> for CarnivorousAI {
         let mut targets: HashMap<Entity, Entity> = HashMap::new();
 
         //check if we managed to get a target
-        for (entity, _carnivore, pos) in (&entities, &carnivores, &mut positions).join() {
+        for (entity, _carnivore, _pos) in (&entities, &carnivores, &mut positions).join() {
             println!("in");
             if let Some(reached) = target_reacheds.get(entity) {
                 println!("send want to eat");

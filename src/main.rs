@@ -595,22 +595,21 @@ fn main() {
     for room in map.rooms.iter() {
         spawner::spawn_trees(&mut gs.ecs, room);
 
-        spawn_named(&mut gs.ecs, "Cow", 3, 3);
-        spawn_named(&mut gs.ecs, "Cow", 2, 2);
-        spawn_named(&mut gs.ecs, "Cow", 2, 3);
-        spawn_named(&mut gs.ecs, "Cow", 2, 4);
-        spawn_named(&mut gs.ecs, "Cow", 2, 5);
-        spawn_named(&mut gs.ecs, "Cow", 2, 6);
-        spawn_named(&mut gs.ecs, "Cow", 2, 7);
-        spawn_named(&mut gs.ecs, "Cow", 2, 8);
-        spawn_named(&mut gs.ecs, "Cow", 2, 9);
-        spawn_named(&mut gs.ecs, "Cow", 2, 10);
-        spawn_named(&mut gs.ecs, "Cow", 2, 11);
-        spawn_named(&mut gs.ecs, "Cow", 2, 12);
-        spawn_named(&mut gs.ecs, "Cow", 2, 13);
-        spawn_named(&mut gs.ecs, "Cow", 2, 14);
-        spawn_named(&mut gs.ecs, "Wolve", 10, 10);
-        spawn_named(&mut gs.ecs, "Wolve", 10, 11);
+        spawn_named(&mut gs.ecs, "Cow", 30, 2);
+        spawn_named(&mut gs.ecs, "Cow", 30, 3);
+        spawn_named(&mut gs.ecs, "Cow", 30, 4);
+        spawn_named(&mut gs.ecs, "Cow", 30, 5);
+        spawn_named(&mut gs.ecs, "Cow", 30, 6);
+        spawn_named(&mut gs.ecs, "Cow", 30, 7);
+        spawn_named(&mut gs.ecs, "Cow", 30, 8);
+        spawn_named(&mut gs.ecs, "Cow", 30, 9);
+        spawn_named(&mut gs.ecs, "Cow", 30, 10);
+        spawn_named(&mut gs.ecs, "Cow", 30, 11);
+        spawn_named(&mut gs.ecs, "Cow", 30, 12);
+        spawn_named(&mut gs.ecs, "Cow", 30, 13);
+        spawn_named(&mut gs.ecs, "Cow", 30, 14);
+        spawn_named(&mut gs.ecs, "Wolve", 20, 10);
+        spawn_named(&mut gs.ecs, "Wolve", 20, 11);
     }
 
     gs.ecs.insert(map);

@@ -411,7 +411,7 @@
                 "k": 0.02
             },
             "hum_sensi": {
-                "optimum": 30,
+                "optimum": 60,
                 "k": 0.001
             },
             "specie": {
@@ -451,7 +451,7 @@
                 "k": 0.02
             },
             "hum_sensi": {
-                "optimum": 30,
+                "optimum": 60,
                 "k": 0.001
             },
             "specie": {

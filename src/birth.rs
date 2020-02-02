@@ -3,7 +3,7 @@ use super::{
     algo, raws,
     raws::{RawMaster, RAWS},
     Date, EnergyReserve, HumiditySensitive, Name, Position, Renderable, SerializeMe,
-    SoloReproduction, Specie, TemperatureSensitive, UniqueId,
+    SoloReproduction, Specie, Speed, TemperatureSensitive, UniqueId,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 
@@ -43,6 +43,7 @@ pub struct Mutations {
     pub hum_sensi: Option<HumiditySensitive>,
     pub specie: Option<Specie>,
     pub renderable: Option<Renderable>,
+    pub speed: Option<Speed>,
 }
 
 impl Mutations {
@@ -54,6 +55,7 @@ impl Mutations {
             hum_sensi: None,
             specie: None,
             renderable: None,
+            speed: None,
         }
     }
 }
@@ -218,6 +220,10 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
 
     if let Some(hum_sensi) = &mut mutations.hum_sensi {
         hum_sensi.optimum += rng.gen_range(-4, 5) as f32;
+    }
+
+    if let Some(speed) = &mut mutations.speed {
+        speed.point_per_turn += rng.gen_range(-4, 5);
     }
     mutations
 }

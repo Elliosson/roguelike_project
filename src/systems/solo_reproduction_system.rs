@@ -93,6 +93,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
                     hum_sensi: Some(hum_sensi.clone()),
                     specie: Some(specie.clone()),
                     renderable: Some(renderable.clone()),
+                    speed: None, //TODO suport for speed in solo mutation
                 };
 
                 /*println!(
