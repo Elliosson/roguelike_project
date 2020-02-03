@@ -43,7 +43,6 @@ impl RawMaster {
             }
             if self.item_index.insert(item.name.clone(), i).is_some() {}
             used_names.insert(item.name.clone());
-            println!("item name is:  {}", item.name);
         }
         for (i, mob) in self.raws.mobs.iter().enumerate() {
             if used_names.contains(&mob.name) {

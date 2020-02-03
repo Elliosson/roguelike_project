@@ -121,7 +121,7 @@ impl<'a> System<'a> for GoTargetSystem {
                         .expect("unable to insert");
                 }
             } else {
-                println!("path failed");
+                //println!("path failed");
             }
         }
 

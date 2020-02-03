@@ -70,7 +70,7 @@ impl<'a> System<'a> for OmnivoreAI {
 
             //TODO do not search a new target if the entity is already eating
             } else {
-                println!("no target reached");
+                //println!("no target reached");
             }
         }
 
