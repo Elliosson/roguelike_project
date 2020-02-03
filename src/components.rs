@@ -240,9 +240,15 @@ pub enum Hunger {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct EnergyReserve {
     pub reserve: f32,
-    pub max_reserve: f32,
+    pub max_reserve: f32, //TODO max reserve never checked. for now just triger hunger
     pub base_consumption: f32,
     pub hunger: Hunger,
+}
+
+impl EnergyReserve {
+    pub fn get_relative_reserve(&self) -> f32 {
+        self.reserve / self.max_reserve
+    }
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
@@ -324,6 +330,17 @@ pub struct GoOnTarget {
 pub struct Speed {
     pub move_point: i32,
     pub point_per_turn: i32,
+    pub max_point: i32,
+}
+
+impl Speed {
+    pub fn add_move_point(&mut self, new_point: i32) {
+        if (self.move_point + new_point) > self.max_point {
+            self.move_point = self.max_point;
+        } else {
+            self.move_point += new_point;
+        }
+    }
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
@@ -340,7 +357,7 @@ pub struct Specie {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Carnivore {
-    pub digestion: f32,
+    pub digestion: f32, //TODO, limite between 0 and 1 ?
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]

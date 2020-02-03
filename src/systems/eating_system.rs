@@ -35,10 +35,9 @@ impl<'a> System<'a> for EatingSystem {
         let mut eated_leafs: Vec<Entity> = Vec::new();
 
         //resolve eating
-        for (entity, want_to_eat, mut en_res) in
-            (&entities, &want_to_eats, &mut energy_reserves).join()
-        {
+        for (entity, want_to_eat) in (&entities, &want_to_eats).join() {
             if let Some(leaf) = leafs.get_mut(want_to_eat.target) {
+                let mut en_res = energy_reserves.get_mut(entity).unwrap();
                 if en_res.hunger == Hunger::Hungry {
                     let cow = cows.get(entity).unwrap();
                     en_res.reserve += (leaf.nutriments as f32) * cow.digestion; //TODO no control of max res for know
@@ -48,10 +47,20 @@ impl<'a> System<'a> for EatingSystem {
             }
             //For now a specie is only for aniaml, to change probably
             else if let Some(_specie) = species.get(want_to_eat.target) {
+                let target_en_res = energy_reserves.get(want_to_eat.target).unwrap().clone();
+                let en_res = energy_reserves.get(entity).unwrap().clone();
                 if en_res.hunger == Hunger::Hungry {
                     let carnivore = carnivore.get(entity).unwrap();
                     //TODO check this in the ai it's confusing to do it here
-                    en_res.reserve += 100.0 * carnivore.digestion; //TODO add nutriment from the specie;
+                    {
+                        let en_res = energy_reserves.get_mut(entity).unwrap();
+                        en_res.reserve += target_en_res.reserve * carnivore.digestion;
+                    }
+                    {
+                        let target_en_res = energy_reserves.get_mut(want_to_eat.target).unwrap();
+                        target_en_res.reserve = 0.0;
+                    }
+                    //target_en_res.reserve = 0.0;
 
                     //TODO do something to prevent double eat
                     //kill entity

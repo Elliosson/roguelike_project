@@ -102,10 +102,12 @@ impl State {
         vis.run_now(&self.ecs);
         let mut mob = MonsterAI {};
         mob.run_now(&self.ecs);
-        let mut cow = CowAI {};
-        cow.run_now(&self.ecs);
-        let mut carnivore_ai = CarnivorousAI {};
-        carnivore_ai.run_now(&self.ecs);
+        //let mut cow = CowAI {};
+        //cow.run_now(&self.ecs);
+        //let mut carnivore_ai = CarnivorousAI {};
+        //carnivore_ai.run_now(&self.ecs);
+        let mut omnivore_ai = OmnivoreAI {};
+        omnivore_ai.run_now(&self.ecs);
         let mut flee_ai = FleeAI {};
         flee_ai.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};

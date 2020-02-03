@@ -399,6 +399,9 @@
             "cow": {
                 "digestion": 1.0
             },
+            "carnivore": {
+                "digestion": 0.5
+            },
             "solo_reproduction": {
                 "birth_energy": 50,
                 "offset_cost": 50,
@@ -422,8 +425,10 @@
             },
             "speed": {
                 "move_point": 100,
-                "point_per_turn": 100
-            }
+                "point_per_turn": 50,
+                "max_point": 500
+            },
+            "animal": {}
         },
         {
             "name": "Wolve",
@@ -468,8 +473,10 @@
             },
             "speed": {
                 "move_point": 100,
-                "point_per_turn": 35
-            }
+                "point_per_turn": 35,
+                "max_point": 500
+            },
+            "animal": {}
         }
     ]
 }

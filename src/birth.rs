@@ -2,13 +2,14 @@ extern crate specs;
 use super::{
     algo, raws,
     raws::{RawMaster, RAWS},
-    Date, EnergyReserve, HumiditySensitive, Name, Position, Renderable, SerializeMe,
-    SoloReproduction, Specie, Speed, TemperatureSensitive, UniqueId,
+    Carnivore, Cow, Date, EnergyReserve, HumiditySensitive, Name, Position, Renderable,
+    SerializeMe, SoloReproduction, Specie, Speed, TemperatureSensitive, UniqueId,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 
 use rand::Rng;
 use specs::prelude::*;
+use std::cmp::max;
 
 #[derive(Clone)]
 pub struct BirthCertificate {
@@ -44,6 +45,8 @@ pub struct Mutations {
     pub specie: Option<Specie>,
     pub renderable: Option<Renderable>,
     pub speed: Option<Speed>,
+    pub cow: Option<Cow>,
+    pub carnivore: Option<Carnivore>,
 }
 
 impl Mutations {
@@ -56,6 +59,8 @@ impl Mutations {
             specie: None,
             renderable: None,
             speed: None,
+            cow: None,
+            carnivore: None,
         }
     }
 }
@@ -223,7 +228,25 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
     }
 
     if let Some(speed) = &mut mutations.speed {
-        speed.point_per_turn += rng.gen_range(-4, 5);
+        speed.point_per_turn = max(0, speed.point_per_turn + rng.gen_range(-4, 5));
+        speed.move_point = 0;
+    }
+
+    if let Some(cow) = &mut mutations.cow {
+        cow.digestion = f32::min(
+            1.0,
+            f32::max(0.0, cow.digestion + (rng.gen_range(-8, 9) as f32 / 100.0)),
+        );
+    }
+
+    if let Some(carnivore) = &mut mutations.carnivore {
+        carnivore.digestion = f32::min(
+            1.0,
+            f32::max(
+                0.0,
+                carnivore.digestion + (rng.gen_range(-8, 9) as f32 / 100.0),
+            ),
+        );
     }
     mutations
 }
@@ -238,9 +261,21 @@ fn base_comsumption(mutations: Mutations) -> f32 {
     }
 
     if let Some(energy_res) = &mutations.energy_reserve {
-        features_cost += energy_res.max_reserve;
+        features_cost += energy_res.max_reserve / 200.0;
     }
-    let new_consuption: f32 = features_cost / 200.0;
+
+    if let Some(speed) = &mutations.speed {
+        features_cost += speed.point_per_turn as f32 / 100.0;
+    }
+
+    if let Some(cow) = &mutations.cow {
+        features_cost += cow.digestion * 2.0;
+    }
+
+    if let Some(carnivore) = &mutations.carnivore {
+        features_cost += carnivore.digestion * 3.0;
+    }
+    let new_consuption: f32 = features_cost / 3.0;
     new_consuption
 }
 

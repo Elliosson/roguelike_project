@@ -93,7 +93,9 @@ impl<'a> System<'a> for SoloReproductionSystem {
                     hum_sensi: Some(hum_sensi.clone()),
                     specie: Some(specie.clone()),
                     renderable: Some(renderable.clone()),
-                    speed: None, //TODO suport for speed in solo mutation
+                    speed: None,     //TODO suport for speed in solo mutation
+                    cow: None,       //TODO suport for cow in solo mutation
+                    carnivore: None, //TODO suport for carni in solo mutation
                 };
 
                 /*println!(

@@ -36,7 +36,7 @@ impl<'a> System<'a> for CarnivorousAI {
             mut positions,
             mut want_to_eats,
             carnivores,
-            mut target_reacheds,
+            target_reacheds,
             mut go_targets,
             mut flees,
         ) = data;

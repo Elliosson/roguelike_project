@@ -344,6 +344,11 @@ pub fn spawn_named_prop(
             eb = eb.with(speed.clone());
         }
 
+        // Animal
+        if let Some(animal) = &prop_template.animal {
+            eb = eb.with(animal.clone());
+        }
+
         return Some(eb.build());
     }
     None
@@ -464,6 +469,27 @@ pub fn spawn_born(
             eb = eb.with(specie.clone());
         }
 
+        // Carnivore
+        if let Some(carnivore) = mutations.carnivore {
+            eb = eb.with(carnivore.clone());
+        } else if let Some(carnivore) = &prop_template.carnivore {
+            eb = eb.with(carnivore.clone());
+        }
+
+        // Speed
+        if let Some(speed) = mutations.speed {
+            eb = eb.with(speed.clone());
+        } else if let Some(speed) = &prop_template.speed {
+            eb = eb.with(speed.clone());
+        }
+
+        // Cow
+        if let Some(cow) = mutations.cow {
+            eb = eb.with(cow.clone());
+        } else if let Some(cow) = &prop_template.cow {
+            eb = eb.with(cow.clone()); //TODO no default value
+        }
+
         /********************************** */
 
         if let Some(blocks_tile) = prop_template.blocks_tile {
@@ -505,24 +531,14 @@ pub fn spawn_born(
             });
         }
 
-        // Cow
-        if let Some(cow) = &prop_template.cow {
-            eb = eb.with(cow.clone()); //TODO no default value
-        }
-
         // Aging
         if let Some(aging) = &prop_template.aging {
             eb = eb.with(aging.clone());
         }
 
-        // Carnivore
-        if let Some(carnivore) = &prop_template.carnivore {
-            eb = eb.with(carnivore.clone());
-        }
-
-        // Speed
-        if let Some(speed) = &prop_template.speed {
-            eb = eb.with(speed.clone());
+        // Animal
+        if let Some(animal) = &prop_template.animal {
+            eb = eb.with(animal.clone());
         }
 
         return Some(eb.build());

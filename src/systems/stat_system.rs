@@ -1,8 +1,8 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, SpeciesInstantLog, WorldStatLog},
-    Date, EnergyReserve, HumiditySensitive, Name, Renderable, SoloReproduction, Specie,
-    TemperatureSensitive,
+    Carnivore, Cow, Date, EnergyReserve, HumiditySensitive, Name, Renderable, SoloReproduction,
+    Specie, Speed, TemperatureSensitive,
 };
 use specs::prelude::*;
 use std::collections::BTreeMap;
@@ -24,6 +24,9 @@ impl<'a> System<'a> for StatSystem {
         ReadStorage<'a, Renderable>,
         WriteExpect<'a, SpeciesInstantLog>,
         ReadStorage<'a, HumiditySensitive>,
+        ReadStorage<'a, Speed>,
+        ReadStorage<'a, Cow>,
+        ReadStorage<'a, Carnivore>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -40,21 +43,26 @@ impl<'a> System<'a> for StatSystem {
             renderables,
             mut species_log,
             hum_sensis,
+            speeds,
+            cows,
+            carnivores,
         ) = data;
 
         let mut thresholds = Vec::new();
         let mut max_res = Vec::new();
         let mut consumptions = Vec::new();
         let mut birth_energy = Vec::new();
+        let mut move_points_turn = Vec::new();
 
         //General stat
-        for (_entity, energy_res, solo_reprod) in
-            (&entities, &energy_reserves, &solo_reproductions).join()
+        for (_entity, energy_res, solo_reprod, speed) in
+            (&entities, &energy_reserves, &solo_reproductions, &speeds).join()
         {
             thresholds.push(solo_reprod.offset_threshold);
             birth_energy.push(solo_reprod.birth_energy);
             max_res.push(energy_res.max_reserve);
             consumptions.push(energy_res.base_consumption);
+            move_points_turn.push(speed.point_per_turn);
         }
 
         let len = thresholds.iter().len();
@@ -77,6 +85,11 @@ impl<'a> System<'a> for StatSystem {
             let sum: u32 = birth_energy.iter().sum();
             let mean = sum / (len as u32);
             let buf = format!("Mean birth energy: {}", mean);
+            world_logs.entries.push(buf);
+
+            let sum: i32 = move_points_turn.iter().sum();
+            let mean = sum / (len as i32);
+            let buf = format!("Mean move point: {}", mean);
             world_logs.entries.push(buf);
         }
 
@@ -103,6 +116,10 @@ impl<'a> System<'a> for StatSystem {
             let mut base_consumption = 0.0;
             let mut birth_energy = 0;
             let mut offset_threshold = 0;
+            let mut move_point = 0;
+            let mut move_point_turn = 0;
+            let mut cow_digestion = 0.0;
+            let mut carnivore_digestion = 0.0;
             let number = member_list.len();
 
             //Do the mean of the vamue of each caracteristique for the specie
@@ -111,6 +128,9 @@ impl<'a> System<'a> for StatSystem {
                 let hum_sensi = hum_sensis.get(*member).unwrap();
                 let energy_reserve = energy_reserves.get(*member).unwrap();
                 let solo_reproduction = solo_reproductions.get(*member).unwrap();
+                let speed = speeds.get(*member).unwrap();
+                let cow = cows.get(*member).unwrap();
+                let carnivore = carnivores.get(*member).unwrap();
 
                 optimum += temp_sensi.optimum;
                 hum_optimum += hum_sensi.optimum;
@@ -118,6 +138,10 @@ impl<'a> System<'a> for StatSystem {
                 base_consumption += energy_reserve.base_consumption;
                 birth_energy += solo_reproduction.birth_energy;
                 offset_threshold += solo_reproduction.offset_threshold;
+                move_point += speed.move_point;
+                move_point_turn += speed.point_per_turn;
+                cow_digestion += cow.digestion;
+                carnivore_digestion += carnivore.digestion;
             }
 
             optimum = optimum / number as f32;
@@ -126,6 +150,10 @@ impl<'a> System<'a> for StatSystem {
             base_consumption = base_consumption / number as f32;
             birth_energy = birth_energy / number as u32;
             offset_threshold = offset_threshold / number as u32;
+            move_point = move_point / number as i32;
+            move_point_turn = move_point_turn / number as i32;
+            cow_digestion = cow_digestion / number as f32;
+            carnivore_digestion = carnivore_digestion / number as f32;
 
             let mut string_vec = Vec::new();
 
@@ -140,6 +168,13 @@ impl<'a> System<'a> for StatSystem {
                 "birth eng: {}, b offset: {}, hum_opti: {:.1}",
                 birth_energy, offset_threshold, hum_optimum
             ); //TODO add the temperature sensibilité an reprod threshold
+            string_vec.push(buf);
+            let buf = format!(
+                " v_digest: {:.1}, ca_digest: {:.1}",
+                cow_digestion, carnivore_digestion
+            );
+            string_vec.push(buf);
+            let buf = format!("move_point: {}, point turn {}", move_point, move_point_turn);
             string_vec.push(buf);
             species_log
                 .entries

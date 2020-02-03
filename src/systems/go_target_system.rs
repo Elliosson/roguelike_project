@@ -42,11 +42,10 @@ impl<'a> System<'a> for GoTargetSystem {
 
         //regain move point
         for (_entity, speed) in (&entities, &mut speeds).join() {
-            speed.move_point += speed.point_per_turn;
+            speed.add_move_point(speed.point_per_turn);
         }
 
         for (entity, go_target, speed) in (&entities, &go_targets, &mut speeds).join() {
-            println!("go target");
             let mut path;
             {
                 let pos = positions.get(entity).expect("No postion");
@@ -69,7 +68,6 @@ impl<'a> System<'a> for GoTargetSystem {
             //TODO I need to resolve herbivore movement before carnivor movement, but even so it's not perfect
             if path.success {
                 //I am not sure the pathfind can find a way if the target is blocking entity, aparently, no
-                println!("path sucees");
                 let pos = positions.get_mut(entity).expect("No postion");
                 if path.steps.len() > 1 {
                     path.steps.remove(0); //we remove the initial position
@@ -77,8 +75,6 @@ impl<'a> System<'a> for GoTargetSystem {
                     for (vec_idx, dest_idx) in path.steps.iter().enumerate() {
                         //we are in the last iteration
                         if vec_idx >= path.steps.len() - 1 {
-                            println!("on target1");
-                            println!("send target reached");
                             //we are in contact //TODO find a way to clean target_reachs
                             target_reachs
                                 .insert(
@@ -114,7 +110,6 @@ impl<'a> System<'a> for GoTargetSystem {
                         }
                     }
                 } else {
-                    println!("on target2");
                     //we are in contact
                     target_reachs
                         .insert(

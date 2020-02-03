@@ -1,11 +1,11 @@
 extern crate specs;
 use crate::{
-    algo::*, Animal, ApplyMove, Carnivore, Cow, GoOnTarget, Leaf, Map, Point, Position, RunState,
+    Animal, Carnivore, Cow, EnergyReserve, GoOnTarget, Leaf, Map, Point, Position, RunState,
     Specie, TargetReached, TargetedForEat, Viewshed, WantToEat, WantsToFlee,
 };
 use specs::prelude::*;
 extern crate rltk;
-use std::collections::HashMap;
+
 //use std::time::{Duration, Instant};
 
 pub struct OmnivoreAI {}
@@ -21,7 +21,6 @@ impl<'a> System<'a> for OmnivoreAI {
         WriteStorage<'a, Position>,
         WriteStorage<'a, Leaf>,
         WriteStorage<'a, WantToEat>,
-        WriteStorage<'a, ApplyMove>,
         WriteStorage<'a, TargetedForEat>,
         WriteStorage<'a, GoOnTarget>,
         WriteStorage<'a, TargetReached>,
@@ -29,11 +28,12 @@ impl<'a> System<'a> for OmnivoreAI {
         WriteStorage<'a, Animal>,
         WriteStorage<'a, Carnivore>,
         WriteStorage<'a, WantsToFlee>,
+        WriteStorage<'a, EnergyReserve>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (
-            mut map,
+            map,
             _runstate,
             entities,
             viewsheds,
@@ -41,7 +41,6 @@ impl<'a> System<'a> for OmnivoreAI {
             mut positions,
             leafs,
             mut want_to_eats,
-            mut apply_move,
             mut targeted_eats,
             mut go_targets,
             target_reacheds,
@@ -49,6 +48,7 @@ impl<'a> System<'a> for OmnivoreAI {
             animals,
             carnivores,
             mut flees,
+            energy_reserves,
         ) = data;
 
         targeted_eats.clear(); //TODO dirty, create a system specificaly to clear this.
@@ -57,9 +57,7 @@ impl<'a> System<'a> for OmnivoreAI {
         for (entity, _animal, _pos, _carnivore, _cow) in
             (&entities, &animals, &mut positions, &carnivores, &cows).join()
         {
-            println!("in");
             if let Some(reached) = target_reacheds.get(entity) {
-                println!("send want to eat");
                 //TODO for now it eat directly I must add a fight
                 want_to_eats
                     .insert(
@@ -78,8 +76,15 @@ impl<'a> System<'a> for OmnivoreAI {
 
         //Chose the food to go
         //first try to have his favorite food
-        for (entity, viewshed, _animal, carnivore, cow) in
-            (&entities, &viewsheds, &animals, &carnivores, &cows).join()
+        for (entity, viewshed, _animal, carnivore, cow, energy_reserve) in (
+            &entities,
+            &viewsheds,
+            &animals,
+            &carnivores,
+            &cows,
+            &energy_reserves,
+        )
+            .join()
         {
             //search for every possible food in the viewshed, and divide them acording to their categorie
             let mut found_leaf: Vec<Entity> = Vec::new();
@@ -112,7 +117,10 @@ impl<'a> System<'a> for OmnivoreAI {
                     &mut positions,
                     &mut targeted_eats,
                     &mut go_targets,
-                ) {
+                ) && energy_reserve.get_relative_reserve() < carnivore.digestion
+                //TODO also use relative digestion between carnivore and cow
+                {
+                    //if we didn't find food and if of reserve are compored to our capacity of digestion, then eat other food
                     choose_food(
                         found_other_specie,
                         entity,
@@ -128,7 +136,8 @@ impl<'a> System<'a> for OmnivoreAI {
                     &mut positions,
                     &mut targeted_eats,
                     &mut go_targets,
-                ) {
+                ) && energy_reserve.get_relative_reserve() < cow.digestion
+                {
                     choose_food(
                         found_leaf,
                         entity,

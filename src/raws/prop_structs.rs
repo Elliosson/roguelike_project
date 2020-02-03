@@ -26,6 +26,7 @@ pub struct Prop {
     pub specie: Option<Specie>,
     pub carnivore: Option<Carnivore>,
     pub speed: Option<Speed>,
+    pub animal: Option<Animal>,
 }
 
 #[derive(Deserialize, Debug)]

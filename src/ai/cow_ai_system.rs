@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
-    algo::*, ApplyMove, Cow, GoOnTarget, Leaf, Map, Point, Position, RunState, TargetReached,
-    TargetedForEat, Viewshed, WantToEat,
+    Cow, GoOnTarget, Leaf, Map, Point, Position, RunState, TargetReached, TargetedForEat, Viewshed,
+    WantToEat,
 };
 use specs::prelude::*;
 extern crate rltk;
@@ -21,7 +21,6 @@ impl<'a> System<'a> for CowAI {
         WriteStorage<'a, Position>,
         WriteStorage<'a, Leaf>,
         WriteStorage<'a, WantToEat>,
-        WriteStorage<'a, ApplyMove>,
         WriteStorage<'a, TargetedForEat>,
         WriteStorage<'a, GoOnTarget>,
         WriteStorage<'a, TargetReached>,
@@ -29,7 +28,7 @@ impl<'a> System<'a> for CowAI {
 
     fn run(&mut self, data: Self::SystemData) {
         let (
-            mut map,
+            map,
             _runstate,
             entities,
             viewsheds,
@@ -37,7 +36,6 @@ impl<'a> System<'a> for CowAI {
             mut positions,
             leafs,
             mut want_to_eats,
-            mut apply_move,
             mut targeted_eats,
             mut go_targets,
             target_reacheds,

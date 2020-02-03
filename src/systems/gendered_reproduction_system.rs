@@ -1,8 +1,8 @@
 extern crate specs;
 use crate::{
-    gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, HumiditySensitive, Hunger,
-    Map, Mutations, Name, Position, Renderable, SoloReproduction, Specie, Speed,
-    TemperatureSensitive, UniqueId, Viewshed, WantsToDuplicate,
+    gamelog::GameLog, BirthForm, BirthRequetList, Carnivore, Cow, Date, EnergyReserve,
+    HumiditySensitive, Hunger, Map, Mutations, Name, Position, Renderable, SoloReproduction,
+    Specie, Speed, TemperatureSensitive, UniqueId, Viewshed, WantsToDuplicate,
 };
 use specs::prelude::*;
 
@@ -28,6 +28,8 @@ impl<'a> System<'a> for GenderedReproductionSystem {
         ReadExpect<'a, Map>,
         ReadStorage<'a, HumiditySensitive>,
         ReadStorage<'a, Speed>,
+        ReadStorage<'a, Cow>,
+        ReadStorage<'a, Carnivore>,
     );
 
     //TODO add male and femal
@@ -51,6 +53,8 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             map,
             hum_sensis,
             speeds,
+            cows,
+            carnivores,
         ) = data;
 
         //store all "female" entity that have sucessfully reproduce
@@ -151,6 +155,18 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         maybe_speed = Some(speed.clone());
                     }
 
+                    //get speed of parents //TODO add father
+                    let mut maybe_cow = None;
+                    if let Some(cow) = cows.get(entity) {
+                        maybe_cow = Some(cow.clone());
+                    }
+
+                    //get speed of parents //TODO add father
+                    let mut maybe_carnivore = None;
+                    if let Some(carnivore) = carnivores.get(entity) {
+                        maybe_carnivore = Some(carnivore.clone());
+                    }
+
                     let mutations = Mutations {
                         solo_reproduction: Some(solo_reprod.clone()), //TODO Supress ? For now just inhereite from mother
                         energy_reserve: Some(new_energy_res),
@@ -159,6 +175,8 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         specie: Some(specie.clone()),
                         renderable: Some(renderable.clone()),
                         speed: maybe_speed,
+                        cow: maybe_cow,
+                        carnivore: maybe_carnivore,
                     };
 
                     //create birth
