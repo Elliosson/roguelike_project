@@ -305,10 +305,8 @@ pub fn spawn_named_prop(
         }
 
         // Cow
-        if let Some(cow) = prop_template.cow {
-            if cow == true {
-                eb = eb.with(Cow { life: 100 }); //TODO no default value
-            }
+        if let Some(cow) = &prop_template.cow {
+            eb = eb.with(cow.clone()); //TODO no default value
         }
 
         // SoloReproduction
@@ -508,10 +506,8 @@ pub fn spawn_born(
         }
 
         // Cow
-        if let Some(cow) = prop_template.cow {
-            if cow == true {
-                eb = eb.with(Cow { life: 100 }); //TODO no default value
-            }
+        if let Some(cow) = &prop_template.cow {
+            eb = eb.with(cow.clone()); //TODO no default value
         }
 
         // Aging

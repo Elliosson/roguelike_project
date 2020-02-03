@@ -182,7 +182,7 @@ pub struct ToDelete {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Cow {
-    pub life: i32,
+    pub digestion: f32,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
@@ -339,7 +339,9 @@ pub struct Specie {
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Carnivore {}
+pub struct Carnivore {
+    pub digestion: f32,
+}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct WantsToFlee {
@@ -350,7 +352,11 @@ pub struct WantsToFlee {
 pub struct TargetedForEat {
     pub predator: Entity,
     pub distance: f32,
+    pub predator_pos: rltk::Point,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Animal {}
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.

@@ -37,6 +37,9 @@ impl<'a> System<'a> for GoTargetSystem {
             mut speeds,
             mut target_reachs,
         ) = data;
+
+        target_reachs.clear();
+
         //regain move point
         for (_entity, speed) in (&entities, &mut speeds).join() {
             speed.move_point += speed.point_per_turn;

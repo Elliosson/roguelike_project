@@ -18,7 +18,7 @@ pub struct Prop {
     pub tree: Option<bool>,
     pub energy_reserve: Option<RawEnergyReserve>,
     pub viewshed: Option<RawViewshed>,
-    pub cow: Option<bool>,
+    pub cow: Option<Cow>,
     pub solo_reproduction: Option<SoloReproduction>,
     pub aging: Option<Aging>,
     pub temp_sensi: Option<TemperatureSensitive>,

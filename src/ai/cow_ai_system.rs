@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
-    algo::*, ApplyMove, Cow, Leaf, Map, Point, Position, RunState, TargetedForEat, Viewshed,
-    WantToEat,
+    algo::*, ApplyMove, Cow, GoOnTarget, Leaf, Map, Point, Position, RunState, TargetReached,
+    TargetedForEat, Viewshed, WantToEat,
 };
 use specs::prelude::*;
 extern crate rltk;
@@ -23,6 +23,8 @@ impl<'a> System<'a> for CowAI {
         WriteStorage<'a, WantToEat>,
         WriteStorage<'a, ApplyMove>,
         WriteStorage<'a, TargetedForEat>,
+        WriteStorage<'a, GoOnTarget>,
+        WriteStorage<'a, TargetReached>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -37,21 +39,32 @@ impl<'a> System<'a> for CowAI {
             mut want_to_eats,
             mut apply_move,
             mut targeted_eats,
+            mut go_targets,
+            target_reacheds,
         ) = data;
 
         let mut targets_leaf: HashMap<Entity, Entity> = HashMap::new();
 
         targeted_eats.clear(); //TODO dirty, create a system specificaly to clear this.
 
-        //check if there is a leaf on position of a cow
-        for (cow_entity, _cow, pos) in (&entities, &cows, &mut positions).join() {
-            let idx = map.xy_idx(pos.x, pos.y);
-            for thing in map.tile_content[idx].iter() {
-                if let Some(_leaf) = leafs.get(*thing) {
-                    want_to_eats
-                        .insert(cow_entity, WantToEat { target: *thing })
-                        .expect("Unable to insert");
-                }
+        //check if we managed to get a target
+        for (entity, _cow, _pos) in (&entities, &cows, &mut positions).join() {
+            println!("in");
+            if let Some(reached) = target_reacheds.get(entity) {
+                println!("send want to eat");
+                //TODO for now it eat directly I must add a fight
+                want_to_eats
+                    .insert(
+                        entity,
+                        WantToEat {
+                            target: reached.target,
+                        },
+                    )
+                    .expect("Unable to insert");
+
+            //TODO do not search a new target if the entity is already eating
+            } else {
+                println!("no target reached");
             }
         }
 
@@ -70,9 +83,9 @@ impl<'a> System<'a> for CowAI {
 
             let mut choosen_leaf: Option<Entity> = None;
             let mut min: f32 = std::f32::MAX;
+            let pos = positions.get(cow_entity).unwrap();
             for leaf in found_leaf {
                 let leaf_pos = positions.get(leaf).unwrap();
-                let pos = positions.get(cow_entity).unwrap();
                 let maybe_targeted_eat = targeted_eats.get(leaf);
 
                 //if their is a other creature that want the target, then I only go if I am closer
@@ -88,51 +101,21 @@ impl<'a> System<'a> for CowAI {
                 }
             }
             if let Some(leaf) = choosen_leaf {
-                targets_leaf.insert(cow_entity, leaf);
                 targeted_eats
                     .insert(
                         leaf,
                         TargetedForEat {
                             predator: cow_entity,
                             distance: min,
+                            predator_pos: Point::new(pos.x, pos.y),
                         },
                     )
                     .expect("Unable ot insert");
-            }
-        }
-        //println!("Start A*");
-        //let now2 = Instant::now();
-
-        //Creat path to the chosen leaf
-        for (cow_ent, leaf_ent) in &targets_leaf {
-            let pos = positions.get(*cow_ent).expect("No postion");
-            let target_pos = positions.get(*leaf_ent).expect("No postion");
-
-            //let now = Instant::now();
-
-            let path = a_star_search(
-                map.xy_idx(pos.x, pos.y) as i32,
-                map.xy_idx(target_pos.x, target_pos.y) as i32,
-                &mut *map,
-                100, //Max step for search, TODO think of a way to automatically find an acceptable number
-            );
-
-            //println!("a* time = {}", now.elapsed().as_micros());
-
-            //move
-            if path.success && path.steps.len() > 1 {
-                apply_move
-                    .insert(
-                        *cow_ent,
-                        ApplyMove {
-                            dest_idx: path.steps[1],
-                        },
-                    )
+                go_targets
+                    .insert(cow_entity, GoOnTarget { target: leaf })
                     .expect("Unable to insert");
             }
         }
-
-        //println!("Total a* time = {}", now2.elapsed().as_micros());
 
         targets_leaf.clear();
     }

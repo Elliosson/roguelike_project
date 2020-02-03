@@ -59,12 +59,12 @@ impl<'a> System<'a> for CarnivorousAI {
                         },
                     )
                     .expect("Unable to insert");
+
             //TODO do not search a new target if the entity is already eating
             } else {
                 println!("no target reached");
             }
         }
-        target_reacheds.clear();
 
         //Chose target to go, for now it's just Cow
         //TODO supress cow to have all sort of target

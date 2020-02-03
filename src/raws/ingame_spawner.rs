@@ -138,10 +138,8 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
         }
 
         // Cow
-        if let Some(cow) = prop_template.cow {
-            if cow == true {
-                eb = eb.with(Cow { life: 100 }, cows); //TODO no default value
-            }
+        if let Some(cow) = &prop_template.cow {
+            eb = eb.with(cow.clone(), cows); //TODO no default value
         }
 
         // SoloReproduction

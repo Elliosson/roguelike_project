@@ -6,3 +6,5 @@ mod carnivorous_ai_system;
 pub use carnivorous_ai_system::CarnivorousAI;
 mod flee_ai_system;
 pub use flee_ai_system::FleeAI;
+mod omnivore_ai_system;
+pub use omnivore_ai_system::OmnivoreAI;

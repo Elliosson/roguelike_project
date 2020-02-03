@@ -396,7 +396,9 @@
                 "max_reserve": 300,
                 "base_consumption": 1
             },
-            "cow": true,
+            "cow": {
+                "digestion": 1.0
+            },
             "solo_reproduction": {
                 "birth_energy": 50,
                 "offset_cost": 50,
@@ -417,6 +419,10 @@
             "specie": {
                 "id": 0,
                 "name": "a"
+            },
+            "speed": {
+                "move_point": 100,
+                "point_per_turn": 100
             }
         },
         {
@@ -436,7 +442,9 @@
                 "max_reserve": 700,
                 "base_consumption": 1
             },
-            "carnivore": {},
+            "carnivore": {
+                "digestion": 1.0
+            },
             "solo_reproduction": {
                 "birth_energy": 150,
                 "offset_cost": 50,

@@ -103,7 +103,6 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
                         SpawnType::AtPosition { x, y },
                     );
                     if spawn_result.is_some() {
-
                     } else {
                         println!("WARNING: We don't know how to spawn [{}]!", spawn.1);
                     }
@@ -126,7 +125,6 @@ pub fn spawn_named(ecs: &mut World, key: &str, x: i32, y: i32) {
             SpawnType::AtPosition { x, y },
         );
         if spawn_result.is_some() {
-
         } else {
             println!("WARNING: We don't know how to spawn [{}]!", key);
         }
@@ -453,7 +451,7 @@ pub fn _cow(ecs: &mut World, x: i32, y: i32) {
             name: "Cow".to_string(),
         })
         .with(BlocksTile {})
-        .with(Cow { life: 100 })
+        .with(Cow { digestion: 1.0 })
         .with(EnergyReserve {
             reserve: 10.0,
             max_reserve: 200.0,

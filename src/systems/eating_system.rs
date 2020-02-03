@@ -1,5 +1,7 @@
 extern crate specs;
-use crate::{gamelog::GameLog, Cow, EnergyReserve, Hunger, Leaf, ToDelete, WantToEat};
+use crate::{
+    gamelog::GameLog, Carnivore, Cow, EnergyReserve, Hunger, Leaf, Specie, ToDelete, WantToEat,
+};
 use specs::prelude::*;
 
 pub struct EatingSystem {}
@@ -14,35 +16,42 @@ impl<'a> System<'a> for EatingSystem {
         WriteStorage<'a, Leaf>,
         WriteStorage<'a, EnergyReserve>,
         WriteStorage<'a, ToDelete>,
+        WriteStorage<'a, Specie>,
+        WriteStorage<'a, Carnivore>,
     );
     fn run(&mut self, data: Self::SystemData) {
         let (
             entities,
             mut log,
             mut want_to_eats,
-            mut cows,
+            cows,
             mut leafs,
             mut energy_reserves,
             mut to_deletes,
+            species,
+            carnivore,
         ) = data;
 
         let mut eated_leafs: Vec<Entity> = Vec::new();
 
         //resolve eating
-        for (_entity, want_to_eat, mut en_res) in
+        for (entity, want_to_eat, mut en_res) in
             (&entities, &want_to_eats, &mut energy_reserves).join()
         {
             if let Some(leaf) = leafs.get_mut(want_to_eat.target) {
                 if en_res.hunger == Hunger::Hungry {
-                    en_res.reserve += leaf.nutriments as f32; //TODO no control of max res for know
+                    let cow = cows.get(entity).unwrap();
+                    en_res.reserve += (leaf.nutriments as f32) * cow.digestion; //TODO no control of max res for know
                     leaf.nutriments = 0; //TODO maybe do something proper to imediatly suppress the leaf
                     eated_leafs.push(want_to_eat.target);
                 }
             }
-            if let Some(_cow) = cows.get_mut(want_to_eat.target) {
+            //For now a specie is only for aniaml, to change probably
+            else if let Some(_specie) = species.get(want_to_eat.target) {
                 if en_res.hunger == Hunger::Hungry {
+                    let carnivore = carnivore.get(entity).unwrap();
                     //TODO check this in the ai it's confusing to do it here
-                    en_res.reserve += 100.0; //TODO add nutriment from cow;
+                    en_res.reserve += 100.0 * carnivore.digestion; //TODO add nutriment from the specie;
 
                     //TODO do something to prevent double eat
                     //kill entity

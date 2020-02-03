@@ -582,6 +582,7 @@ fn main() {
     gs.ecs.register::<Carnivore>();
     gs.ecs.register::<WantsToFlee>();
     gs.ecs.register::<TargetedForEat>();
+    gs.ecs.register::<Animal>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
