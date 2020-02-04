@@ -375,6 +375,12 @@ pub struct TargetedForEat {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Animal {}
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Male {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Female {}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 pub struct SerializeMe;

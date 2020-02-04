@@ -428,7 +428,8 @@
                 "point_per_turn": 50,
                 "max_point": 500
             },
-            "animal": {}
+            "animal": {},
+            "sexe": "Random"
         },
         {
             "name": "Wolve",
@@ -476,7 +477,8 @@
                 "point_per_turn": 35,
                 "max_point": 500
             },
-            "animal": {}
+            "animal": {},
+            "sexe": "Random"
         }
     ]
 }

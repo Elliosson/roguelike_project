@@ -1,6 +1,6 @@
 extern crate specs;
 
-use super::Raws;
+use super::{Raws, SexeChoice};
 use crate::birth::{BirthForm, Mutations};
 use crate::components::*;
 use crate::random_table::RandomTable;
@@ -348,6 +348,25 @@ pub fn spawn_named_prop(
             eb = eb.with(animal.clone());
         }
 
+        // Sexe
+        if let Some(sexe) = &prop_template.sexe {
+            match sexe {
+                SexeChoice::Male => eb = eb.with(Male {}),
+                SexeChoice::Female => eb = eb.with(Female {}),
+                SexeChoice::Random => {
+                    let mut rng = rltk::RandomNumberGenerator::new();
+                    let num_spawns = rng.roll_dice(1, 2);
+                    if num_spawns == 1 {
+                        eb = eb.with(Male {})
+                    } else if num_spawns == 2 {
+                        eb = eb.with(Female {})
+                    } else {
+                        println!("Error: imposible random number !")
+                    }
+                }
+            }
+        }
+
         return Some(eb.build());
     }
     None
@@ -538,6 +557,26 @@ pub fn spawn_born(
         // Animal
         if let Some(animal) = &prop_template.animal {
             eb = eb.with(animal.clone());
+        }
+
+        // Sexe
+        if let Some(sexe) = &prop_template.sexe {
+            match sexe {
+                SexeChoice::Male => eb = eb.with(Male {}),
+                SexeChoice::Female => eb = eb.with(Female {}),
+                SexeChoice::Random => {
+                    println!("random sexe");
+                    let mut rng = rltk::RandomNumberGenerator::new();
+                    let num_spawns = rng.roll_dice(1, 2);
+                    if num_spawns == 1 {
+                        eb = eb.with(Male {})
+                    } else if num_spawns == 2 {
+                        eb = eb.with(Female {})
+                    } else {
+                        println!("Error: imposible random number !")
+                    }
+                }
+            }
         }
 
         return Some(eb.build());

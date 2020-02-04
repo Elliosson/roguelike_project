@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
-    Animal, Carnivore, Cow, EnergyReserve, GoOnTarget, Leaf, Map, Point, Position, RunState,
-    Specie, TargetReached, TargetedForEat, Viewshed, WantToEat, WantsToFlee,
+    Animal, Carnivore, Cow, EnergyReserve, GoOnTarget, Leaf, Map, MyTurn, Point, Position,
+    RunState, Specie, TargetReached, TargetedForEat, Viewshed, WantToEat, WantsToFlee,
 };
 use specs::prelude::*;
 extern crate rltk;
@@ -29,6 +29,7 @@ impl<'a> System<'a> for OmnivoreAI {
         WriteStorage<'a, Carnivore>,
         WriteStorage<'a, WantsToFlee>,
         WriteStorage<'a, EnergyReserve>,
+        WriteStorage<'a, MyTurn>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -49,13 +50,23 @@ impl<'a> System<'a> for OmnivoreAI {
             carnivores,
             mut flees,
             energy_reserves,
+            mut turns,
         ) = data;
 
         targeted_eats.clear(); //TODO dirty, create a system specificaly to clear this.
 
+        let mut turn_done: Vec<Entity> = Vec::new();
+
         //check if we managed to get a target
-        for (entity, _animal, _pos, _carnivore, _cow) in
-            (&entities, &animals, &mut positions, &carnivores, &cows).join()
+        for (entity, _animal, _pos, _carnivore, _cow, _turn) in (
+            &entities,
+            &animals,
+            &mut positions,
+            &carnivores,
+            &cows,
+            &turns,
+        )
+            .join()
         {
             if let Some(reached) = target_reacheds.get(entity) {
                 //TODO for now it eat directly I must add a fight
@@ -68,21 +79,31 @@ impl<'a> System<'a> for OmnivoreAI {
                     )
                     .expect("Unable to insert");
 
+                //if eat, end turn
+                turn_done.push(entity);
+
             //TODO do not search a new target if the entity is already eating
             } else {
                 //println!("no target reached");
             }
         }
 
+        // Remove turn marker for those that are done
+        for done in turn_done.iter() {
+            turns.remove(*done);
+        }
+        turn_done.clear();
+
         //Chose the food to go
         //first try to have his favorite food
-        for (entity, viewshed, _animal, carnivore, cow, energy_reserve) in (
+        for (entity, viewshed, _animal, carnivore, cow, energy_reserve, _turn) in (
             &entities,
             &viewsheds,
             &animals,
             &carnivores,
             &cows,
             &energy_reserves,
+            &turns,
         )
             .join()
         {
@@ -111,45 +132,60 @@ impl<'a> System<'a> for OmnivoreAI {
             //Choose if the animal prefere to go for vegetable or meat
             //TODO  add hunger conditon before going for the non prefered food
             if cow.digestion > carnivore.digestion {
-                if !choose_food(
+                if choose_food(
                     found_leaf,
                     entity,
                     &mut positions,
                     &mut targeted_eats,
                     &mut go_targets,
-                ) && energy_reserve.get_relative_reserve() < carnivore.digestion
-                //TODO also use relative digestion between carnivore and cow
-                {
+                ) {
+                    //if find food, end turn
+                    turn_done.push(entity);
+                } else {
+                    //TODO also use relative digestion between carnivore and cow
                     //if we didn't find food and if of reserve are compored to our capacity of digestion, then eat other food
-                    choose_food(
-                        found_other_specie,
-                        entity,
-                        &mut positions,
-                        &mut targeted_eats,
-                        &mut go_targets,
-                    );
+                    if energy_reserve.get_relative_reserve() < carnivore.digestion {
+                        if choose_food(
+                            found_other_specie,
+                            entity,
+                            &mut positions,
+                            &mut targeted_eats,
+                            &mut go_targets,
+                        ) {
+                            //if find food, end turn
+                            turn_done.push(entity);
+                        }
+                    }
                 }
             } else {
-                if !choose_food(
+                if choose_food(
                     found_other_specie,
                     entity,
                     &mut positions,
                     &mut targeted_eats,
                     &mut go_targets,
-                ) && energy_reserve.get_relative_reserve() < cow.digestion
-                {
-                    choose_food(
-                        found_leaf,
-                        entity,
-                        &mut positions,
-                        &mut targeted_eats,
-                        &mut go_targets,
-                    );
+                ) {
+                    //if find food, end turn
+                    turn_done.push(entity);
+                } else {
+                    if energy_reserve.get_relative_reserve() < cow.digestion {
+                        if choose_food(
+                            found_leaf,
+                            entity,
+                            &mut positions,
+                            &mut targeted_eats,
+                            &mut go_targets,
+                        ) {
+                            //if find food, end turn
+                            turn_done.push(entity);
+                        }
+                    }
                 }
             }
         }
 
         //check someone want to eat us
+        //TODO make a better flee with real move using speed and go to.
         for (entity, _animal, _pos, _carnivore, _cow) in
             (&entities, &animals, &mut positions, &carnivores, &cows).join()
         {
@@ -161,8 +197,23 @@ impl<'a> System<'a> for OmnivoreAI {
                 flees
                     .insert(entity, WantsToFlee { indices: flee_list })
                     .expect("Unable to insert");
+
+                //if flee, end turn
+                turn_done.push(entity);
             }
         }
+
+        // Remove turn marker for those that are done
+        for done in turn_done.iter() {
+            turns.remove(*done);
+        }
+        turn_done.clear();
+
+        // Remove turn marker for those that are done
+        for done in turn_done.iter() {
+            turns.remove(*done);
+        }
+        turn_done.clear();
     }
 }
 

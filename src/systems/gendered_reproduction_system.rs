@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
-    gamelog::GameLog, BirthForm, BirthRequetList, Carnivore, Cow, Date, EnergyReserve,
-    HumiditySensitive, Hunger, Map, Mutations, Name, Position, Renderable, SoloReproduction,
+    gamelog::GameLog, BirthForm, BirthRequetList, Carnivore, Cow, Date, EnergyReserve, Female,
+    HumiditySensitive, Hunger, Male, Map, Mutations, Name, Position, Renderable, SoloReproduction,
     Specie, Speed, TemperatureSensitive, UniqueId, Viewshed, WantsToDuplicate,
 };
 use specs::prelude::*;
@@ -30,6 +30,8 @@ impl<'a> System<'a> for GenderedReproductionSystem {
         ReadStorage<'a, Speed>,
         ReadStorage<'a, Cow>,
         ReadStorage<'a, Carnivore>,
+        ReadStorage<'a, Male>,
+        ReadStorage<'a, Female>,
     );
 
     //TODO add male and femal
@@ -55,13 +57,14 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             speeds,
             cows,
             carnivores,
+            males,
+            females,
         ) = data;
 
         //store all "female" entity that have sucessfully reproduce
         let mut have_reproduce: Vec<(Entity, f32)> = Vec::new();
 
-        //search a male in the viewshed that can reproduce and are of the same specie
-        //TODO probably supress solo reproduction
+        //For all female search a male in the viewshed that can reproduce and are of the same specie
         for (
             entity,
             viewshed,
@@ -74,6 +77,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             position,
             id,
             hum_sensi,
+            _female,
         ) in (
             &entities,
             &viewsheds,
@@ -86,6 +90,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             &positions,
             &unique_ids,
             &hum_sensis,
+            &females,
         )
             .join()
         {
@@ -101,8 +106,10 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         if maybe_mate.id() != entity.id() {
                             if let Some(mate_specie) = species.get(*maybe_mate) {
                                 if mate_specie.name == specie.name {
-                                    possible_mates.push(*maybe_mate);
-                                    //add in possible mate
+                                    if let Some(_male) = males.get(*maybe_mate) {
+                                        //add in possible mate
+                                        possible_mates.push(*maybe_mate);
+                                    }
                                 }
                             }
                         }

@@ -151,6 +151,8 @@ impl State {
         aging.run_now(&self.ecs);
         let mut named_counter = NamedCounterSystem {};
         named_counter.run_now(&self.ecs);
+        let mut action_point = ActionPointSystem {};
+        action_point.run_now(&self.ecs);
         let mut stat = StatSystem {};
         stat.run_now(&self.ecs);
 
@@ -589,6 +591,8 @@ fn main() {
     gs.ecs.register::<WantsToFlee>();
     gs.ecs.register::<TargetedForEat>();
     gs.ecs.register::<Animal>();
+    gs.ecs.register::<Male>();
+    gs.ecs.register::<Female>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

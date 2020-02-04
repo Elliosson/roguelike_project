@@ -41,10 +41,6 @@ impl<'a> System<'a> for GoTargetSystem {
 
         target_reachs.clear();
 
-        //regain move point
-        for (_entity, speed) in (&entities, &mut speeds).join() {
-            speed.add_move_point(speed.point_per_turn);
-        }
         let now = Instant::now();
 
         for (entity, go_target, speed) in (&entities, &go_targets, &mut speeds).join() {
@@ -63,7 +59,7 @@ impl<'a> System<'a> for GoTargetSystem {
                 let temp_map_blocked = map.blocked[dest_idx];
                 map.blocked[dest_idx] = false;
 
-                println!("first part time = {}", now2.elapsed().as_micros());
+                //println!("first part time = {}", now2.elapsed().as_micros());
 
                 let now3 = Instant::now();
 
@@ -74,10 +70,10 @@ impl<'a> System<'a> for GoTargetSystem {
                     64, //Max step for search, TODO thonk of a way to automatically find an acceptable number
                 );
                 map.blocked[dest_idx] = temp_map_blocked; //TODO remove it's ugly
-                println!("a* search time = {}", now3.elapsed().as_micros());
+                                                          //println!("a* search time = {}", now3.elapsed().as_micros());
             }
 
-            println!("2 part time = {}", now2.elapsed().as_micros());
+            //println!("2 part time = {}", now2.elapsed().as_micros());
 
             //Move for Real
             //TODO I need to resolve herbivore movement before carnivor movement, but even so it's not perfect
@@ -138,9 +134,9 @@ impl<'a> System<'a> for GoTargetSystem {
             } else {
                 //println!("path failed");
             }
-            println!("a* iter time = {}", now2.elapsed().as_micros());
+            //println!("a* iter time = {}", now2.elapsed().as_micros());
         }
-        println!("a* time = {}", now.elapsed().as_micros());
+        //println!("a* time = {}", now.elapsed().as_micros());
 
         go_targets.clear();
     }

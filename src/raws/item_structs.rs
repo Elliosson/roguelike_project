@@ -19,6 +19,13 @@ pub struct Renderable {
 }
 
 #[derive(Deserialize, Debug)]
+pub enum SexeChoice {
+    Male,
+    Female,
+    Random,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct Consumable {
     pub effects: HashMap<String, String>,
 }
