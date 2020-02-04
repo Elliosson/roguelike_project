@@ -1,6 +1,6 @@
 extern crate specs;
 use crate::{
-    Animal, Carnivore, Cow, EnergyReserve, GoOnTarget, Leaf, Map, MyTurn, Point, Position,
+    Animal, Carnivore, Cow, EnergyReserve, GoOnTarget, Hunger, Leaf, Map, MyTurn, Point, Position,
     RunState, Specie, TargetReached, TargetedForEat, Viewshed, WantToEat, WantsToFlee,
 };
 use specs::prelude::*;
@@ -129,55 +129,57 @@ impl<'a> System<'a> for OmnivoreAI {
                 }
             }
 
-            //Choose if the animal prefere to go for vegetable or meat
-            //TODO  add hunger conditon before going for the non prefered food
-            if cow.digestion > carnivore.digestion {
-                if choose_food(
-                    found_leaf,
-                    entity,
-                    &mut positions,
-                    &mut targeted_eats,
-                    &mut go_targets,
-                ) {
-                    //if find food, end turn
-                    turn_done.push(entity);
-                } else {
-                    //TODO also use relative digestion between carnivore and cow
-                    //if we didn't find food and if of reserve are compored to our capacity of digestion, then eat other food
-                    if energy_reserve.get_relative_reserve() < carnivore.digestion {
-                        if choose_food(
-                            found_other_specie,
-                            entity,
-                            &mut positions,
-                            &mut targeted_eats,
-                            &mut go_targets,
-                        ) {
-                            //if find food, end turn
-                            turn_done.push(entity);
+            if energy_reserve.hunger == Hunger::Hungry {
+                //Choose if the animal prefere to go for vegetable or meat
+                //TODO  add hunger conditon before going for the non prefered food
+                if cow.digestion > carnivore.digestion {
+                    if choose_food(
+                        found_leaf,
+                        entity,
+                        &mut positions,
+                        &mut targeted_eats,
+                        &mut go_targets,
+                    ) {
+                        //if find food, end turn
+                        turn_done.push(entity);
+                    } else {
+                        //TODO also use relative digestion between carnivore and cow
+                        //if we didn't find food and if of reserve are compored to our capacity of digestion, then eat other food
+                        if energy_reserve.get_relative_reserve() < carnivore.digestion {
+                            if choose_food(
+                                found_other_specie,
+                                entity,
+                                &mut positions,
+                                &mut targeted_eats,
+                                &mut go_targets,
+                            ) {
+                                //if find food, end turn
+                                turn_done.push(entity);
+                            }
                         }
                     }
-                }
-            } else {
-                if choose_food(
-                    found_other_specie,
-                    entity,
-                    &mut positions,
-                    &mut targeted_eats,
-                    &mut go_targets,
-                ) {
-                    //if find food, end turn
-                    turn_done.push(entity);
                 } else {
-                    if energy_reserve.get_relative_reserve() < cow.digestion {
-                        if choose_food(
-                            found_leaf,
-                            entity,
-                            &mut positions,
-                            &mut targeted_eats,
-                            &mut go_targets,
-                        ) {
-                            //if find food, end turn
-                            turn_done.push(entity);
+                    if choose_food(
+                        found_other_specie,
+                        entity,
+                        &mut positions,
+                        &mut targeted_eats,
+                        &mut go_targets,
+                    ) {
+                        //if find food, end turn
+                        turn_done.push(entity);
+                    } else {
+                        if energy_reserve.get_relative_reserve() < cow.digestion {
+                            if choose_food(
+                                found_leaf,
+                                entity,
+                                &mut positions,
+                                &mut targeted_eats,
+                                &mut go_targets,
+                            ) {
+                                //if find food, end turn
+                                turn_done.push(entity);
+                            }
                         }
                     }
                 }

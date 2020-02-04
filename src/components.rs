@@ -381,6 +381,9 @@ pub struct Male {}
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Female {}
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct InHeat {}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 pub struct SerializeMe;
