@@ -48,6 +48,7 @@ mod birth;
 use birth::{BirthForm, BirthRegistery, BirthRequetList, Mutations};
 mod atomic_funtions;
 mod data_representation;
+use std::time::Instant;
 
 #[macro_use]
 extern crate lazy_static;
@@ -55,7 +56,7 @@ extern crate lazy_static;
 rltk::add_wasm_support!();
 
 pub const WINDOWWIDTH: usize = 200;
-pub const WINDOWHEIGHT: usize = 90;
+pub const WINDOWHEIGHT: usize = 110;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -86,6 +87,8 @@ pub struct State {
 
 impl State {
     fn run_systems(&mut self) {
+        let now = Instant::now();
+
         let mut date = DateSystem {};
         date.run_now(&self.ecs);
         let mut temperature = TemperatureSystem {};
@@ -152,6 +155,7 @@ impl State {
         stat.run_now(&self.ecs);
 
         self.ecs.maintain();
+        println!("systems time = {}", now.elapsed().as_micros());
     }
 }
 

@@ -47,9 +47,7 @@ impl<'a> System<'a> for CarnivorousAI {
 
         //check if we managed to get a target
         for (entity, _carnivore, _pos) in (&entities, &carnivores, &mut positions).join() {
-            println!("in");
             if let Some(reached) = target_reacheds.get(entity) {
-                println!("send want to eat");
                 //TODO for now it eat directly I must add a fight
                 want_to_eats
                     .insert(
@@ -69,7 +67,6 @@ impl<'a> System<'a> for CarnivorousAI {
         //Chose target to go, for now it's just Cow
         //TODO supress cow to have all sort of target
         for (entity, viewshed, _carnivore) in (&entities, &viewsheds, &carnivores).join() {
-            println!("in2");
             //search for every cow in the viewshed
             let mut found_cows: Vec<Entity> = Vec::new();
             for visible_tile in viewshed.visible_tiles.iter() {
@@ -96,7 +93,6 @@ impl<'a> System<'a> for CarnivorousAI {
             }
             if let Some(choosen_target) = choosen_cow {
                 targets.insert(entity, choosen_target);
-                println!("go target");
                 go_targets
                     .insert(
                         entity,

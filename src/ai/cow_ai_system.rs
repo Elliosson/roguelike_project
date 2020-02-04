@@ -47,9 +47,7 @@ impl<'a> System<'a> for CowAI {
 
         //check if we managed to get a target
         for (entity, _cow, _pos) in (&entities, &cows, &mut positions).join() {
-            println!("in");
             if let Some(reached) = target_reacheds.get(entity) {
-                println!("send want to eat");
                 //TODO for now it eat directly I must add a fight
                 want_to_eats
                     .insert(

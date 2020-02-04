@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 
 pub const MAPWIDTH: usize = 150;
-pub const MAPHEIGHT: usize = 83;
+pub const MAPHEIGHT: usize = 103;
 pub const MAPCOUNT: usize = MAPHEIGHT * MAPWIDTH;
 
 #[derive(Default, Serialize, Deserialize, Clone)]

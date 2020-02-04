@@ -440,7 +440,7 @@
             },
             "blocks_tile": true,
             "viewshed": {
-                "range": 10
+                "range": 8
             },
             "energy_reserve": {
                 "reserve": 50,

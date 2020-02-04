@@ -4,6 +4,7 @@ use crate::{
     Viewshed,
 };
 use specs::prelude::*;
+use std::time::Instant;
 
 pub struct GoTargetSystem {}
 
@@ -44,25 +45,39 @@ impl<'a> System<'a> for GoTargetSystem {
         for (_entity, speed) in (&entities, &mut speeds).join() {
             speed.add_move_point(speed.point_per_turn);
         }
+        let now = Instant::now();
 
         for (entity, go_target, speed) in (&entities, &go_targets, &mut speeds).join() {
+            let now2 = Instant::now();
             let mut path;
             {
                 let pos = positions.get(entity).expect("No postion");
                 let target_pos = positions.get(go_target.target).expect("No postion");
 
                 //creat a clone of the map with the destination ubvlocked, if not he will never find a way to go on the target
-                let mut path_map = map.clone();
-                let dest_idx = path_map.xy_idx(target_pos.x, target_pos.y);
-                path_map.blocked[dest_idx] = false;
+                //let mut path_map = map.clone();
+                let dest_idx = map.xy_idx(target_pos.x, target_pos.y);
+                //path_map.blocked[dest_idx] = false;
+                //I can't copy the map because it's too heavy. This is a quick fix to unbloc the destination
+                //TODO I must create a astar that permit to go on a blocked destination
+                let temp_map_blocked = map.blocked[dest_idx];
+                map.blocked[dest_idx] = false;
+
+                println!("first part time = {}", now2.elapsed().as_micros());
+
+                let now3 = Instant::now();
 
                 path = algo::a_star_search(
-                    path_map.xy_idx(pos.x, pos.y) as i32,
-                    path_map.xy_idx(target_pos.x, target_pos.y) as i32, //TODO change that, the "-1" is a dirty fix for the imposibility to go on a blicked tile
-                    &mut path_map,
-                    200, //Max step for search, TODO thonk of a way to automatically find an acceptable number
+                    map.xy_idx(pos.x, pos.y) as i32,
+                    map.xy_idx(target_pos.x, target_pos.y) as i32, //TODO change that, the "-1" is a dirty fix for the imposibility to go on a blicked tile
+                    &mut *map,
+                    64, //Max step for search, TODO thonk of a way to automatically find an acceptable number
                 );
+                map.blocked[dest_idx] = temp_map_blocked; //TODO remove it's ugly
+                println!("a* search time = {}", now3.elapsed().as_micros());
             }
+
+            println!("2 part time = {}", now2.elapsed().as_micros());
 
             //Move for Real
             //TODO I need to resolve herbivore movement before carnivor movement, but even so it's not perfect
@@ -123,7 +138,9 @@ impl<'a> System<'a> for GoTargetSystem {
             } else {
                 //println!("path failed");
             }
+            println!("a* iter time = {}", now2.elapsed().as_micros());
         }
+        println!("a* time = {}", now.elapsed().as_micros());
 
         go_targets.clear();
     }

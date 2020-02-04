@@ -68,7 +68,7 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
     // Scope to keep the borrow checker happy
     {
         let mut rng = ecs.write_resource::<RandomNumberGenerator>();
-        let num_spawns = rng.roll_dice(40, 50);
+        let num_spawns = rng.roll_dice(120, 50);
 
         for _i in 0..num_spawns {
             let mut added = false;

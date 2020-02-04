@@ -269,11 +269,18 @@ fn base_comsumption(mutations: Mutations) -> f32 {
     }
 
     if let Some(cow) = &mutations.cow {
-        features_cost += cow.digestion * 2.0;
+        features_cost += cow.digestion * 4.0;
     }
 
     if let Some(carnivore) = &mutations.carnivore {
-        features_cost += carnivore.digestion * 3.0;
+        features_cost += carnivore.digestion * 4.0;
+    }
+
+    //multiply the 2 to discourage muliple specialisation
+    if let Some(carnivore) = &mutations.carnivore {
+        if let Some(cow) = &mutations.carnivore {
+            features_cost += carnivore.digestion * cow.digestion * 2.0;
+        }
     }
     let new_consuption: f32 = features_cost / 3.0;
     new_consuption

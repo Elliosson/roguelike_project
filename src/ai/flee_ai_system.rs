@@ -1,6 +1,7 @@
 extern crate specs;
 use crate::{algo, ApplyMove, Map, MyTurn, Position, WantsToFlee};
 use specs::prelude::*;
+use std::time::Instant;
 
 pub struct FleeAI {}
 
@@ -17,6 +18,8 @@ impl<'a> System<'a> for FleeAI {
 
     fn run(&mut self, data: Self::SystemData) {
         let (mut turns, mut want_flee, positions, mut map, entities, mut apply_move) = data;
+
+        let now = Instant::now();
 
         let mut turn_done: Vec<Entity> = Vec::new();
         for (entity, pos, flee) in (&entities, &positions, &want_flee).join() {
@@ -40,6 +43,8 @@ impl<'a> System<'a> for FleeAI {
                 }
             }
         }
+
+        println!("djiskra time = {}", now.elapsed().as_micros());
 
         want_flee.clear();
 
