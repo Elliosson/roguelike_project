@@ -26,7 +26,7 @@ impl<'a> System<'a> for VegetableGrowSystem {
             } else {
                 renderable.fg = RGB::named(rltk::YELLOW);
                 //a chance to regrow the leaf
-                let regrow_roll = rng.roll_dice(1, 100);
+                let regrow_roll = rng.roll_dice(1, 40);
                 if regrow_roll == 1 {
                     leafs
                         .insert(entity, Leaf { nutriments: 100 })

@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
-    Cow, GoOnTarget, Leaf, Map, Point, Position, RunState, TargetReached, TargetedForEat, Viewshed,
-    WantToEat,
+    Cow, GoOnTarget, Leaf, Map, Point, Position, RunState, SearchScope, TargetReached,
+    TargetedForEat, Viewshed, WantToEat,
 };
 use specs::prelude::*;
 extern crate rltk;
@@ -108,7 +108,13 @@ impl<'a> System<'a> for CowAI {
                     )
                     .expect("Unable ot insert");
                 go_targets
-                    .insert(cow_entity, GoOnTarget { target: leaf })
+                    .insert(
+                        cow_entity,
+                        GoOnTarget {
+                            target: leaf,
+                            scope: SearchScope::Small,
+                        },
+                    )
                     .expect("Unable to insert");
             }
         }

@@ -1,5 +1,8 @@
 extern crate specs;
-use crate::{gamelog::GameLog, Aging, ToDelete};
+use crate::{
+    gamelog::{GameLog, GeneralLog},
+    Aging, ToDelete,
+};
 use specs::prelude::*;
 
 pub struct AgingSystem {}
@@ -9,12 +12,13 @@ impl<'a> System<'a> for AgingSystem {
     type SystemData = (
         Entities<'a>,
         WriteExpect<'a, GameLog>,
+        WriteExpect<'a, GeneralLog>,
         WriteStorage<'a, Aging>,
         WriteStorage<'a, ToDelete>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, mut log, mut agings, mut to_deletes) = data;
+        let (entities, mut log, mut general_log, mut agings, mut to_deletes) = data;
 
         //For now just kill when the creature reach the life expetancy
         for (entity, aging) in (&entities, &mut agings).join() {
@@ -27,6 +31,9 @@ impl<'a> System<'a> for AgingSystem {
 
                 log.entries
                     .insert(0, format!("A entity is dead of  old age."));
+                general_log
+                    .entries
+                    .push(format!("Entity {} is dead of  old age.", entity.id()));
             }
         }
     }

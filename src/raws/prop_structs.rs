@@ -28,6 +28,7 @@ pub struct Prop {
     pub speed: Option<Speed>,
     pub animal: Option<Animal>,
     pub sexe: Option<super::item_structs::SexeChoice>,
+    pub combat: Option<CombatStats>,
 }
 
 #[derive(Deserialize, Debug)]

@@ -1,5 +1,5 @@
 extern crate specs;
-use crate::gamelog::{GameLog, WorldStatLog};
+use crate::gamelog::{GameLog, GeneralLog, WorldStatLog};
 use specs::prelude::*;
 
 pub struct DateSystem {}
@@ -10,9 +10,10 @@ impl<'a> System<'a> for DateSystem {
         WriteExpect<'a, GameLog>,
         WriteExpect<'a, Date>,
         WriteExpect<'a, WorldStatLog>,
+        WriteExpect<'a, GeneralLog>,
     );
     fn run(&mut self, data: Self::SystemData) {
-        let (_log, mut date, mut world_logs) = data;
+        let (_log, mut date, mut world_logs, mut general_logs) = data;
 
         date.new_day();
 
@@ -21,7 +22,8 @@ impl<'a> System<'a> for DateSystem {
             date.get_day(),
             date.get_year()
         );
-        world_logs.entries.push(buf);
+        world_logs.entries.push(buf.clone());
+        general_logs.entries.push(buf.clone());
     }
 }
 

@@ -1,6 +1,7 @@
 extern crate specs;
 use crate::{
-    EnergyReserve, Female, Hunger, InHeat, Male, MyTurn, Point, Position, SoloReproduction, Specie,
+    EnergyReserve, Female, GoOnTarget, Hunger, InHeat, Male, MyTurn, Point, Position, SearchScope,
+    SoloReproduction, Specie,
 };
 use specs::prelude::*;
 use std::collections::HashMap;
@@ -19,6 +20,7 @@ impl<'a> System<'a> for SearchParterAI {
         WriteStorage<'a, SoloReproduction>, //bad name to change
         WriteStorage<'a, Specie>,
         WriteStorage<'a, Position>,
+        WriteStorage<'a, GoOnTarget>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -32,6 +34,7 @@ impl<'a> System<'a> for SearchParterAI {
             reprods,
             species,
             positions,
+            mut go_targets,
         ) = data;
 
         //reset in_heats
@@ -57,6 +60,7 @@ impl<'a> System<'a> for SearchParterAI {
             .join()
         {
             if energy.reserve > reprod.threshold() as f32 {
+                //println!("female in heat");
                 in_heats
                     .insert(entity, InHeat {})
                     .expect("Unable to insert");
@@ -89,6 +93,8 @@ impl<'a> System<'a> for SearchParterAI {
             if energy.hunger == Hunger::Full {
                 let mut choosen_mate = None;
                 let mut min = std::f32::MAX;
+                //println!("male in ok");
+
                 if let Some(mates) = in_heat_hash.get(&specie.name) {
                     for mate in mates.iter() {
                         let mate_pos = positions.get(*mate).unwrap();
@@ -105,7 +111,16 @@ impl<'a> System<'a> for SearchParterAI {
                 }
                 if let Some(mate) = choosen_mate {
                     //Go on the mate positions
-                    //TODO add a go on target and add a thing in omnivore ai to be sure to not eat the mate! ( for now go on target is only for food !)
+                    //println!("male with female");
+                    go_targets
+                        .insert(
+                            entity,
+                            GoOnTarget {
+                                target: *mate,
+                                scope: SearchScope::Big,
+                            },
+                        )
+                        .expect("Unable to insert");
                     turn_done.push(entity);
                 }
             }

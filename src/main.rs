@@ -56,7 +56,7 @@ extern crate lazy_static;
 rltk::add_wasm_support!();
 
 pub const WINDOWWIDTH: usize = 200;
-pub const WINDOWHEIGHT: usize = 110;
+pub const WINDOWHEIGHT: usize = 90;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -109,10 +109,13 @@ impl State {
         //cow.run_now(&self.ecs);
         //let mut carnivore_ai = CarnivorousAI {};
         //carnivore_ai.run_now(&self.ecs);
+
         let mut omnivore_ai = OmnivoreAI {};
         omnivore_ai.run_now(&self.ecs);
         let mut flee_ai = FleeAI {};
         flee_ai.run_now(&self.ecs);
+        let mut search_partner = SearchParterAI {};
+        search_partner.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem {};
@@ -351,7 +354,8 @@ impl GameState for State {
             }
             RunState::SaveGame => {
                 saveload_system::save_game(&mut self.ecs);
-                data_representation::world_state_log(&mut self.ecs).unwrap(); //TODO it's fuck with the log is i  write it's here, but it's better for performance
+                data_representation::world_state_log(&mut self.ecs).unwrap(); //TODO it's fuck with the log if i  write it's here, but it's better for performance
+                data_representation::general_log(&mut self.ecs).unwrap(); //TODO it's fuck with the log if i  write it's here, but it's better for performance
                 data_representation::write_genealogy(&mut self.ecs).unwrap();
                 newrunstate = RunState::MainMenu {
                     menu_selection: gui::MainMenuSelection::LoadGame,
@@ -593,6 +597,8 @@ fn main() {
     gs.ecs.register::<Animal>();
     gs.ecs.register::<Male>();
     gs.ecs.register::<Female>();
+    gs.ecs.register::<MyChoosenFood>();
+    gs.ecs.register::<InHeat>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
@@ -607,8 +613,8 @@ fn main() {
     for room in map.rooms.iter() {
         spawner::spawn_trees(&mut gs.ecs, room);
 
-        spawn_named(&mut gs.ecs, "Cow", 30, 2);
-        spawn_named(&mut gs.ecs, "Cow", 30, 3);
+        //spawn_named(&mut gs.ecs, "Cow", 5, 2);
+        //spawn_named(&mut gs.ecs, "Cow", 100, 100);
         spawn_named(&mut gs.ecs, "Cow", 30, 4);
         spawn_named(&mut gs.ecs, "Cow", 30, 5);
         spawn_named(&mut gs.ecs, "Cow", 30, 6);
@@ -620,8 +626,32 @@ fn main() {
         spawn_named(&mut gs.ecs, "Cow", 30, 12);
         spawn_named(&mut gs.ecs, "Cow", 30, 13);
         spawn_named(&mut gs.ecs, "Cow", 30, 14);
-        //spawn_named(&mut gs.ecs, "Wolve", 20, 10);
-        //spawn_named(&mut gs.ecs, "Wolve", 20, 11);
+        spawn_named(&mut gs.ecs, "Wolve", 20, 10);
+        spawn_named(&mut gs.ecs, "WolveF", 20, 15);
+
+        spawn_named(&mut gs.ecs, "Cow", 30, 4);
+        spawn_named(&mut gs.ecs, "Cow", 30, 5);
+        spawn_named(&mut gs.ecs, "Cow", 30, 6);
+        spawn_named(&mut gs.ecs, "Cow", 30, 7);
+        spawn_named(&mut gs.ecs, "Cow", 30, 8);
+        spawn_named(&mut gs.ecs, "Cow", 30, 9);
+        spawn_named(&mut gs.ecs, "Cow", 30, 10);
+        spawn_named(&mut gs.ecs, "Cow", 30, 11);
+        spawn_named(&mut gs.ecs, "Cow", 30, 12);
+        spawn_named(&mut gs.ecs, "Cow", 30, 13);
+        spawn_named(&mut gs.ecs, "Cow", 30, 14);
+
+        spawn_named(&mut gs.ecs, "Cow", 30, 4);
+        spawn_named(&mut gs.ecs, "Cow", 30, 5);
+        spawn_named(&mut gs.ecs, "Cow", 30, 6);
+        spawn_named(&mut gs.ecs, "Cow", 30, 7);
+        spawn_named(&mut gs.ecs, "Cow", 30, 8);
+        spawn_named(&mut gs.ecs, "Cow", 30, 9);
+        spawn_named(&mut gs.ecs, "Cow", 30, 10);
+        spawn_named(&mut gs.ecs, "Cow", 30, 11);
+        spawn_named(&mut gs.ecs, "Cow", 30, 12);
+        spawn_named(&mut gs.ecs, "Cow", 30, 13);
+        spawn_named(&mut gs.ecs, "Cow", 30, 14);
     }
 
     gs.ecs.insert(map);
@@ -639,7 +669,10 @@ fn main() {
     gs.ecs.insert(BirthRequetList::new());
     gs.ecs.insert(BirthRegistery::new());
     gs.ecs.insert(gamelog::WorldStatLog {
-        entries: vec!["Rust Roguelike log file".to_string()],
+        entries: vec!["Rust Roguelike World Stat log file".to_string()],
+    });
+    gs.ecs.insert(gamelog::GeneralLog {
+        entries: vec!["Rust Roguelike General log file".to_string()],
     });
     gs.ecs
         .insert(gamelog::SpeciesInstantLog { entries: vec![] });

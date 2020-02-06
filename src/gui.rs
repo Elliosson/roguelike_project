@@ -3,8 +3,9 @@ use rltk::{Console, Point, Rltk, VirtualKeyCode, RGB};
 extern crate specs;
 use super::{
     gamelog::{GameLog, SpeciesInstantLog},
-    CombatStats, Date, Equipped, InBackpack, InteractableObject, Interaction, Map, Name, Player,
-    Position, RunState, State, Viewshed, MAPWIDTH, WINDOWHEIGHT, WINDOWWIDTH,
+    CombatStats, Date, EnergyReserve, Equipped, Female, InBackpack, InteractableObject,
+    Interaction, Male, Map, Name, Player, Position, RunState, SoloReproduction, Specie, State,
+    Viewshed, MAPWIDTH, WINDOWHEIGHT, WINDOWWIDTH,
 };
 use specs::prelude::*;
 
@@ -86,21 +87,51 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     draw_tooltips(ecs, ctx);
 }
 
+fn fetch_carac(ecs: &World, tooltip: &mut Vec<String>, x: i32, y: i32) {
+    let entities = ecs.entities();
+    let names = ecs.read_storage::<Name>();
+    let positions = ecs.read_storage::<Position>();
+    let energies = ecs.read_storage::<EnergyReserve>();
+    let reprods = ecs.read_storage::<SoloReproduction>();
+    let species = ecs.read_storage::<Specie>();
+    let males = ecs.read_storage::<Male>();
+    let females = ecs.read_storage::<Female>();
+
+    for (entity, name, position, energy, reprod, specie) in
+        (&entities, &names, &positions, &energies, &reprods, &species).join()
+    {
+        if position.x == x && position.y == y {
+            tooltip.push(name.name.to_string());
+            tooltip.push(energy.reserve.to_string());
+            tooltip.push(reprod.threshold().to_string());
+            tooltip.push(specie.name.to_string());
+            if let Some(_male) = males.get(entity) {
+                tooltip.push("male".to_string());
+            }
+            if let Some(_female) = females.get(entity) {
+                tooltip.push("female".to_string());
+            }
+        }
+    }
+}
 fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     let map = ecs.fetch::<Map>();
     let names = ecs.read_storage::<Name>();
     let positions = ecs.read_storage::<Position>();
+    let energys = ecs.read_storage::<EnergyReserve>();
 
     let mouse_pos = ctx.mouse_pos();
     if mouse_pos.0 >= map.width || mouse_pos.1 >= map.height {
         return;
     }
     let mut tooltip: Vec<String> = Vec::new();
+    /*
     for (name, position) in (&names, &positions).join() {
         if position.x == mouse_pos.0 && position.y == mouse_pos.1 {
             tooltip.push(name.name.to_string());
         }
-    }
+    }*/
+    fetch_carac(ecs, &mut tooltip, mouse_pos.0, mouse_pos.1);
 
     if !tooltip.is_empty() {
         let mut width: i32 = 0;
@@ -111,7 +142,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
         }
         width += 3;
 
-        if mouse_pos.0 > 40 {
+        if mouse_pos.0 > 10 {
             let arrow_pos = Point::new(mouse_pos.0 - 2, mouse_pos.1);
             let left_x = mouse_pos.0 - width;
             let mut y = mouse_pos.1;

@@ -1,6 +1,7 @@
 extern crate specs;
 use crate::{
-    gamelog::GameLog, Carnivore, Cow, EnergyReserve, Hunger, Leaf, Specie, ToDelete, WantToEat,
+    gamelog::{GameLog, GeneralLog},
+    Animal, Carnivore, Cow, EnergyReserve, Hunger, Leaf, Specie, ToDelete, WantToEat,
 };
 use specs::prelude::*;
 
@@ -18,6 +19,8 @@ impl<'a> System<'a> for EatingSystem {
         WriteStorage<'a, ToDelete>,
         WriteStorage<'a, Specie>,
         WriteStorage<'a, Carnivore>,
+        WriteExpect<'a, GeneralLog>,
+        WriteStorage<'a, Animal>,
     );
     fn run(&mut self, data: Self::SystemData) {
         let (
@@ -30,6 +33,8 @@ impl<'a> System<'a> for EatingSystem {
             mut to_deletes,
             species,
             carnivore,
+            mut general_logs,
+            animals,
         ) = data;
 
         let mut eated_leafs: Vec<Entity> = Vec::new();
@@ -69,6 +74,16 @@ impl<'a> System<'a> for EatingSystem {
                         .expect("Unable to insert");
 
                     log.entries.insert(0, format!("A entity have been eated"));
+
+                    let target_specie = species.get(want_to_eat.target).unwrap();
+                    let killer_specie = species.get(entity).unwrap();
+                    general_logs.entries.push(format!(
+                        "entity {}, specie {} have been eated by the entity {} specie {} ",
+                        want_to_eat.target.id(),
+                        target_specie.name,
+                        entity.id(),
+                        killer_specie.name
+                    ));
                 }
             }
         }

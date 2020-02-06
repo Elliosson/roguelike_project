@@ -1,7 +1,8 @@
 extern crate specs;
 use crate::{
-    Animal, Carnivore, Cow, EnergyReserve, GoOnTarget, Hunger, Leaf, Map, MyTurn, Point, Position,
-    RunState, Specie, TargetReached, TargetedForEat, Viewshed, WantToEat, WantsToFlee,
+    Animal, Carnivore, Cow, EnergyReserve, GoOnTarget, Hunger, Leaf, Map, MyChoosenFood, MyTurn,
+    Point, Position, RunState, SearchScope, Specie, TargetReached, TargetedForEat, Viewshed,
+    WantToEat, WantsToFlee,
 };
 use specs::prelude::*;
 extern crate rltk;
@@ -30,6 +31,7 @@ impl<'a> System<'a> for OmnivoreAI {
         WriteStorage<'a, WantsToFlee>,
         WriteStorage<'a, EnergyReserve>,
         WriteStorage<'a, MyTurn>,
+        WriteStorage<'a, MyChoosenFood>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -51,42 +53,75 @@ impl<'a> System<'a> for OmnivoreAI {
             mut flees,
             energy_reserves,
             mut turns,
+            mut my_choosen_foods,
         ) = data;
 
         targeted_eats.clear(); //TODO dirty, create a system specificaly to clear this.
 
         let mut turn_done: Vec<Entity> = Vec::new();
+        /*
+                //check if we managed to get a target
+                for (entity, _animal, _pos, _carnivore, _cow, _turn) in (
+                    &entities,
+                    &animals,
+                    &mut positions,
+                    &carnivores,
+                    &cows,
+                    &turns,
+                )
+                    .join()
+                {
+                    if let Some(reached) = target_reacheds.get(entity) {
+                        //TODO for now it eat directly I must add a fight
+                        want_to_eats
+                            .insert(
+                                entity,
+                                WantToEat {
+                                    target: reached.target,
+                                },
+                            )
+                            .expect("Unable to insert");
 
-        //check if we managed to get a target
-        for (entity, _animal, _pos, _carnivore, _cow, _turn) in (
+                        //if eat, end turn
+                        turn_done.push(entity);
+
+                    //TODO do not search a new target if the entity is already eating
+                    } else {
+                        //println!("no target reached");
+                    }
+                }
+        */
+        //check if we managed to get on our choosen food
+        for (entity, _animal, pos, _carnivore, _cow, _turn, choosen_food) in (
             &entities,
             &animals,
-            &mut positions,
+            &positions,
             &carnivores,
             &cows,
             &turns,
+            &my_choosen_foods,
         )
             .join()
         {
-            if let Some(reached) = target_reacheds.get(entity) {
+            //Since this stay up at the destruction of entity The entity ccan be destroyed an we need to check
+            if let Some(food_pos) = positions.get(choosen_food.target) {
                 //TODO for now it eat directly I must add a fight
-                want_to_eats
-                    .insert(
-                        entity,
-                        WantToEat {
-                            target: reached.target,
-                        },
-                    )
-                    .expect("Unable to insert");
+                if in_contact(pos, food_pos) {
+                    want_to_eats
+                        .insert(
+                            entity,
+                            WantToEat {
+                                target: choosen_food.target,
+                            },
+                        )
+                        .expect("Unable to insert");
 
-                //if eat, end turn
-                turn_done.push(entity);
-
-            //TODO do not search a new target if the entity is already eating
-            } else {
-                //println!("no target reached");
+                    //if eat, end turn
+                    turn_done.push(entity);
+                }
             }
         }
+        my_choosen_foods.clear();
 
         // Remove turn marker for those that are done
         for done in turn_done.iter() {
@@ -139,6 +174,7 @@ impl<'a> System<'a> for OmnivoreAI {
                         &mut positions,
                         &mut targeted_eats,
                         &mut go_targets,
+                        &mut my_choosen_foods,
                     ) {
                         //if find food, end turn
                         turn_done.push(entity);
@@ -152,6 +188,7 @@ impl<'a> System<'a> for OmnivoreAI {
                                 &mut positions,
                                 &mut targeted_eats,
                                 &mut go_targets,
+                                &mut my_choosen_foods,
                             ) {
                                 //if find food, end turn
                                 turn_done.push(entity);
@@ -165,6 +202,7 @@ impl<'a> System<'a> for OmnivoreAI {
                         &mut positions,
                         &mut targeted_eats,
                         &mut go_targets,
+                        &mut my_choosen_foods,
                     ) {
                         //if find food, end turn
                         turn_done.push(entity);
@@ -176,6 +214,7 @@ impl<'a> System<'a> for OmnivoreAI {
                                 &mut positions,
                                 &mut targeted_eats,
                                 &mut go_targets,
+                                &mut my_choosen_foods,
                             ) {
                                 //if find food, end turn
                                 turn_done.push(entity);
@@ -227,6 +266,7 @@ fn choose_food<'a>(
     positions: &mut WriteStorage<'a, Position>,
     targeted_eats: &mut WriteStorage<'a, TargetedForEat>,
     go_targets: &mut WriteStorage<'a, GoOnTarget>,
+    my_choosen_foods: &mut WriteStorage<'a, MyChoosenFood>,
 ) -> bool {
     let mut ret = false;
     let mut choosen_food: Option<Entity> = None;
@@ -261,9 +301,28 @@ fn choose_food<'a>(
             )
             .expect("Unable ot insert");
         go_targets
-            .insert(entity, GoOnTarget { target: food })
+            .insert(
+                entity,
+                GoOnTarget {
+                    target: food,
+                    scope: SearchScope::Small,
+                },
+            )
+            .expect("Unable to insert");
+        my_choosen_foods
+            .insert(entity, MyChoosenFood { target: food })
             .expect("Unable to insert");
         ret = true;
     }
     return ret;
+}
+
+pub fn in_contact(pos1: &Position, pos2: &Position) -> bool {
+    let mut ret = false;
+    if pos1.x >= pos2.x - 1 && pos1.x <= pos2.x + 1 {
+        if pos1.y >= pos2.y - 1 && pos1.y <= pos2.y + 1 {
+            ret = true;
+        }
+    }
+    ret
 }

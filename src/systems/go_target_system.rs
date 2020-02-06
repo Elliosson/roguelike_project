@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
-    algo, BlocksTile, EntityMoved, GoOnTarget, Map, Position, RunState, Speed, TargetReached,
-    Viewshed,
+    algo, BlocksTile, EntityMoved, GoOnTarget, Map, Position, RunState, SearchScope, Speed,
+    TargetReached, Viewshed,
 };
 use specs::prelude::*;
 use std::time::Instant;
@@ -45,6 +45,11 @@ impl<'a> System<'a> for GoTargetSystem {
 
         for (entity, go_target, speed) in (&entities, &go_targets, &mut speeds).join() {
             let now2 = Instant::now();
+            let max_step;
+            match go_target.scope {
+                SearchScope::Small => max_step = 64,
+                SearchScope::Big => max_step = 1000,
+            }
             let mut path;
             {
                 let pos = positions.get(entity).expect("No postion");
@@ -67,7 +72,7 @@ impl<'a> System<'a> for GoTargetSystem {
                     map.xy_idx(pos.x, pos.y) as i32,
                     map.xy_idx(target_pos.x, target_pos.y) as i32, //TODO change that, the "-1" is a dirty fix for the imposibility to go on a blicked tile
                     &mut *map,
-                    64, //Max step for search, TODO thonk of a way to automatically find an acceptable number
+                    max_step, //Max step for search, TODO thonk of a way to automatically find an acceptable number
                 );
                 map.blocked[dest_idx] = temp_map_blocked; //TODO remove it's ugly
                                                           //println!("a* search time = {}", now3.elapsed().as_micros());
@@ -87,6 +92,7 @@ impl<'a> System<'a> for GoTargetSystem {
                         //we are in the last iteration
                         if vec_idx >= path.steps.len() - 1 {
                             //we are in contact //TODO find a way to clean target_reachs
+                            /*
                             target_reachs
                                 .insert(
                                     entity,
@@ -95,6 +101,7 @@ impl<'a> System<'a> for GoTargetSystem {
                                     },
                                 )
                                 .expect("unable to insert");
+                                */
                             break;
                         }
                         //100 move point per tilde for now

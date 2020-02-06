@@ -99,6 +99,13 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                 //search a male in the viewshed that can reproduce and are of the same specie
                 let mut possible_mates: Vec<Entity> = Vec::new();
 
+                println!(
+                    "energy{}, threshold{}, max {}",
+                    eng_res.reserve,
+                    solo_reprod.threshold(),
+                    eng_res.max_reserve,
+                );
+
                 for visible_tile in viewshed.visible_tiles.iter() {
                     let idx = map.xy_idx(visible_tile.x, visible_tile.y);
                     for maybe_mate in map.tile_content[idx].iter() {

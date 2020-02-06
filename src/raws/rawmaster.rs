@@ -286,6 +286,7 @@ pub fn spawn_named_prop(
 
         // EnergyReserve
         if let Some(energy_reserve) = &prop_template.energy_reserve {
+            println!("reder{}", energy_reserve.reserve);
             eb = eb.with(EnergyReserve {
                 reserve: energy_reserve.reserve,
                 max_reserve: energy_reserve.max_reserve,
@@ -365,6 +366,11 @@ pub fn spawn_named_prop(
                     }
                 }
             }
+        }
+
+        // CombatStat
+        if let Some(combat) = &prop_template.combat {
+            eb = eb.with(combat.clone());
         }
 
         return Some(eb.build());
@@ -559,13 +565,17 @@ pub fn spawn_born(
             eb = eb.with(animal.clone());
         }
 
+        // CombatStat
+        if let Some(combat) = &prop_template.combat {
+            eb = eb.with(combat.clone());
+        }
+
         // Sexe
         if let Some(sexe) = &prop_template.sexe {
             match sexe {
                 SexeChoice::Male => eb = eb.with(Male {}),
                 SexeChoice::Female => eb = eb.with(Female {}),
                 SexeChoice::Random => {
-                    println!("random sexe");
                     let mut rng = rltk::RandomNumberGenerator::new();
                     let num_spawns = rng.roll_dice(1, 2);
                     if num_spawns == 1 {

@@ -43,7 +43,7 @@ pub struct Name {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct BlocksTile {}
 
-#[derive(Component, Debug, ConvertSaveload, Clone)]
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct CombatStats {
     pub max_hp: i32,
     pub hp: i32,
@@ -320,10 +320,19 @@ pub struct HumiditySensitive {
     pub k: f32, //ecrasement de la gaussiene ou carré
 }
 
+//if a a star search must be small or with a lot of iteration
+//TODO faire un truc pour carlculer le chemin selon la distance
+#[derive(PartialEq, Debug, Copy, Clone, Serialize, Deserialize)]
+pub enum SearchScope {
+    Small,
+    Big,
+}
+
 //Componant to set the target, with it pathfind and move will be made at the same time
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct GoOnTarget {
     pub target: Entity,
+    pub scope: SearchScope,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
@@ -383,6 +392,11 @@ pub struct Female {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct InHeat {}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct MyChoosenFood {
+    pub target: Entity,
+}
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.

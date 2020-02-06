@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
-    Carnivore, Cow, GoOnTarget, Map, Point, Position, RunState, TargetReached, Viewshed, WantToEat,
-    WantsToFlee,
+    Carnivore, Cow, GoOnTarget, Map, Point, Position, RunState, SearchScope, TargetReached,
+    Viewshed, WantToEat, WantsToFlee,
 };
 use specs::prelude::*;
 extern crate rltk;
@@ -98,6 +98,7 @@ impl<'a> System<'a> for CarnivorousAI {
                         entity,
                         GoOnTarget {
                             target: choosen_target,
+                            scope: SearchScope::Small,
                         },
                     )
                     .expect("Unable to insert");
