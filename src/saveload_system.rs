@@ -91,7 +91,24 @@ pub fn save_game(ecs: &mut World) {
             Tree,
             EnergyReserve,
             Reproduction,
-            WantsToDuplicate
+            WantsToDuplicate,
+            UniqueId,
+            Aging,
+            InUse,
+            TemperatureSensitive,
+            HumiditySensitive,
+            GoOnTarget,
+            Speed,
+            TargetReached,
+            Specie,
+            Carnivore,
+            WantsToFlee,
+            TargetedForEat,
+            Animal,
+            Male,
+            Female,
+            InHeat,
+            MyChoosenFood
         );
     }
 
@@ -187,7 +204,24 @@ pub fn load_game(ecs: &mut World) {
             Tree,
             EnergyReserve,
             Reproduction,
-            WantsToDuplicate
+            WantsToDuplicate,
+            UniqueId,
+            Aging,
+            InUse,
+            TemperatureSensitive,
+            HumiditySensitive,
+            GoOnTarget,
+            Speed,
+            TargetReached,
+            Specie,
+            Carnivore,
+            WantsToFlee,
+            TargetedForEat,
+            Animal,
+            Male,
+            Female,
+            InHeat,
+            MyChoosenFood
         );
     }
 

@@ -270,6 +270,7 @@ fn base_comsumption(mutations: Mutations) -> f32 {
     }
 
     if let Some(speed) = &mutations.speed {
+        //features_cost += (speed.point_per_turn * speed.point_per_turn) as f32 / 200.0;
         features_cost += speed.point_per_turn as f32 / 100.0;
     }
 
