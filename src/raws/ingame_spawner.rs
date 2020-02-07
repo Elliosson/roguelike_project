@@ -18,7 +18,7 @@ pub type SpwanPropData<'a, 'b> = (
     &'b mut WriteStorage<'a, EnergyReserve>,
     &'b mut WriteStorage<'a, BlocksTile>,
     &'b mut WriteStorage<'a, Viewshed>,
-    &'b mut WriteStorage<'a, Cow>,
+    &'b mut WriteStorage<'a, Herbivore>,
     &'b mut WriteStorage<'a, Reproduction>,
     &'b mut WriteStorage<'a, WantsToDuplicate>,
     &'b mut WriteStorage<'a, SimpleMarker<SerializeMe>>,
@@ -42,7 +42,7 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
         en_res,
         block_tiles,
         viewsheds,
-        cows,
+        herbivores,
         reprods,
         _want_to_duplicate,
         simple_markers,
@@ -137,9 +137,9 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
             );
         }
 
-        // Cow
-        if let Some(cow) = &prop_template.cow {
-            eb = eb.with(cow.clone(), cows); //TODO no default value
+        // Herbivore
+        if let Some(herbivore) = &prop_template.herbivore {
+            eb = eb.with(herbivore.clone(), herbivores); //TODO no default value
         }
 
         // Reproduction

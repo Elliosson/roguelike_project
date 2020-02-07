@@ -1,6 +1,6 @@
 extern crate specs;
 use crate::{
-    Animal, Carnivore, CombatStats, Cow, EnergyReserve, GoOnTarget, Hunger, Leaf, Map,
+    Animal, Carnivore, CombatStats, EnergyReserve, GoOnTarget, Herbivore, Hunger, Leaf, Map,
     MyChoosenFood, MyTurn, Point, Position, RunState, SearchScope, Specie, TargetedForEat,
     Viewshed, WantToEat, WantsToFlee,
 };
@@ -18,7 +18,7 @@ impl<'a> System<'a> for OmnivoreAI {
         ReadExpect<'a, RunState>,
         Entities<'a>,
         WriteStorage<'a, Viewshed>,
-        WriteStorage<'a, Cow>,
+        WriteStorage<'a, Herbivore>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, Leaf>,
         WriteStorage<'a, WantToEat>,
@@ -40,7 +40,7 @@ impl<'a> System<'a> for OmnivoreAI {
             _runstate,
             entities,
             viewsheds,
-            cows,
+            herbivores,
             mut positions,
             leafs,
             mut want_to_eats,
@@ -61,12 +61,12 @@ impl<'a> System<'a> for OmnivoreAI {
         let mut turn_done: Vec<Entity> = Vec::new();
         /*
                 //check if we managed to get a target
-                for (entity, _animal, _pos, _carnivore, _cow, _turn) in (
+                for (entity, _animal, _pos, _carnivore, _herbivore, _turn) in (
                     &entities,
                     &animals,
                     &mut positions,
                     &carnivores,
-                    &cows,
+                    &herbivores,
                     &turns,
                 )
                     .join()
@@ -92,12 +92,12 @@ impl<'a> System<'a> for OmnivoreAI {
                 }
         */
         //check if we managed to get on our choosen food
-        for (entity, _animal, pos, _carnivore, _cow, _turn, choosen_food) in (
+        for (entity, _animal, pos, _carnivore, _herbivore, _turn, choosen_food) in (
             &entities,
             &animals,
             &positions,
             &carnivores,
-            &cows,
+            &herbivores,
             &turns,
             &my_choosen_foods,
         )
@@ -131,12 +131,12 @@ impl<'a> System<'a> for OmnivoreAI {
 
         //Chose the food to go
         //first try to have his favorite food
-        for (entity, viewshed, _animal, carnivore, cow, energy_reserve, _turn) in (
+        for (entity, viewshed, _animal, carnivore, herbivore, energy_reserve, _turn) in (
             &entities,
             &viewsheds,
             &animals,
             &carnivores,
-            &cows,
+            &herbivores,
             &energy_reserves,
             &turns,
         )
@@ -167,7 +167,7 @@ impl<'a> System<'a> for OmnivoreAI {
             if energy_reserve.hunger == Hunger::Hungry {
                 //Choose if the animal prefere to go for vegetable or meat
                 //TODO  add hunger conditon before going for the non prefered food
-                if cow.digestion > carnivore.digestion {
+                if herbivore.digestion > carnivore.digestion {
                     if choose_food(
                         found_leaf,
                         entity,
@@ -180,7 +180,7 @@ impl<'a> System<'a> for OmnivoreAI {
                         //if find food, end turn
                         turn_done.push(entity);
                     } else {
-                        //TODO also use relative digestion between carnivore and cow
+                        //TODO also use relative digestion between carnivore and herbivore
                         //if we didn't find food and if of reserve are compored to our capacity of digestion, then eat other food
                         if energy_reserve.get_relative_reserve() < carnivore.digestion {
                             if choose_food(
@@ -210,7 +210,7 @@ impl<'a> System<'a> for OmnivoreAI {
                         //if find food, end turn
                         turn_done.push(entity);
                     } else {
-                        if energy_reserve.get_relative_reserve() < cow.digestion {
+                        if energy_reserve.get_relative_reserve() < herbivore.digestion {
                             if choose_food(
                                 found_leaf,
                                 entity,
@@ -231,8 +231,14 @@ impl<'a> System<'a> for OmnivoreAI {
 
         //check someone want to eat us
         //TODO make a better flee with real move using speed and go to.
-        for (entity, _animal, _pos, _carnivore, _cow) in
-            (&entities, &animals, &mut positions, &carnivores, &cows).join()
+        for (entity, _animal, _pos, _carnivore, _herbivore) in (
+            &entities,
+            &animals,
+            &mut positions,
+            &carnivores,
+            &herbivores,
+        )
+            .join()
         {
             if let Some(targeted) = targeted_eats.get(entity) {
                 //For now just flee if someone want to eat us

@@ -286,7 +286,6 @@ pub fn spawn_named_prop(
 
         // EnergyReserve
         if let Some(energy_reserve) = &prop_template.energy_reserve {
-            println!("reder{}", energy_reserve.reserve);
             eb = eb.with(EnergyReserve {
                 reserve: energy_reserve.reserve,
                 max_reserve: energy_reserve.max_reserve,
@@ -304,9 +303,9 @@ pub fn spawn_named_prop(
             });
         }
 
-        // Cow
-        if let Some(cow) = &prop_template.cow {
-            eb = eb.with(cow.clone()); //TODO no default value
+        // Herbivore
+        if let Some(herbivore) = &prop_template.herbivore {
+            eb = eb.with(herbivore.clone()); //TODO no default value
         }
 
         // Reproduction
@@ -509,11 +508,11 @@ pub fn spawn_born(
             eb = eb.with(speed.clone());
         }
 
-        // Cow
-        if let Some(cow) = mutations.cow {
-            eb = eb.with(cow.clone());
-        } else if let Some(cow) = &prop_template.cow {
-            eb = eb.with(cow.clone()); //TODO no default value
+        // Herbivore
+        if let Some(herbivore) = mutations.herbivore {
+            eb = eb.with(herbivore.clone());
+        } else if let Some(herbivore) = &prop_template.herbivore {
+            eb = eb.with(herbivore.clone()); //TODO no default value
         }
 
         // CombatStat

@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, SpeciesInstantLog, WorldStatLog},
-    Carnivore, CombatStats, Cow, Date, EnergyReserve, HumiditySensitive, Name, Renderable,
+    Carnivore, CombatStats, Date, EnergyReserve, Herbivore, HumiditySensitive, Name, Renderable,
     Reproduction, Specie, Speed, TemperatureSensitive,
 };
 use specs::prelude::*;
@@ -25,7 +25,7 @@ impl<'a> System<'a> for StatSystem {
         WriteExpect<'a, SpeciesInstantLog>,
         ReadStorage<'a, HumiditySensitive>,
         ReadStorage<'a, Speed>,
-        ReadStorage<'a, Cow>,
+        ReadStorage<'a, Herbivore>,
         ReadStorage<'a, Carnivore>,
         ReadStorage<'a, CombatStats>,
     );
@@ -45,7 +45,7 @@ impl<'a> System<'a> for StatSystem {
             mut species_log,
             hum_sensis,
             speeds,
-            cows,
+            herbivores,
             carnivores,
             combat_stats,
         ) = data;
@@ -120,7 +120,7 @@ impl<'a> System<'a> for StatSystem {
             let mut offset_threshold = 0;
             let mut move_point = 0;
             let mut move_point_turn = 0;
-            let mut cow_digestion = 0.0;
+            let mut herbivore_digestion = 0.0;
             let mut carnivore_digestion = 0.0;
             let mut power = 0.0;
             let number = member_list.len();
@@ -132,7 +132,7 @@ impl<'a> System<'a> for StatSystem {
                 let energy_reserve = energy_reserves.get(*member).unwrap();
                 let reproduction = reproductions.get(*member).unwrap();
                 let speed = speeds.get(*member).unwrap();
-                let cow = cows.get(*member).unwrap();
+                let herbivore = herbivores.get(*member).unwrap();
                 let carnivore = carnivores.get(*member).unwrap();
                 let combat_stat = combat_stats.get(*member).unwrap();
 
@@ -144,7 +144,7 @@ impl<'a> System<'a> for StatSystem {
                 offset_threshold += reproduction.offset_threshold;
                 move_point += speed.move_point;
                 move_point_turn += speed.point_per_turn;
-                cow_digestion += cow.digestion;
+                herbivore_digestion += herbivore.digestion;
                 carnivore_digestion += carnivore.digestion;
                 power += combat_stat.power as f32;
             }
@@ -157,7 +157,7 @@ impl<'a> System<'a> for StatSystem {
             offset_threshold = offset_threshold / number as u32;
             move_point = move_point / number as i32;
             move_point_turn = move_point_turn / number as i32;
-            cow_digestion = cow_digestion / number as f32;
+            herbivore_digestion = herbivore_digestion / number as f32;
             carnivore_digestion = carnivore_digestion / number as f32;
             power = power / number as f32;
 
@@ -177,7 +177,7 @@ impl<'a> System<'a> for StatSystem {
             string_vec.push(buf);
             let buf = format!(
                 " v_digest: {:.1}, ca_digest: {:.1}, pwr: {:.1}",
-                cow_digestion, carnivore_digestion, power
+                herbivore_digestion, carnivore_digestion, power
             );
             string_vec.push(buf);
             let buf = format!("move_point: {}, point turn {}", move_point, move_point_turn);

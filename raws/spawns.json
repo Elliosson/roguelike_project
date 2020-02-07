@@ -396,7 +396,7 @@
                 "max_reserve": 300,
                 "base_consumption": 1
             },
-            "cow": {
+            "herbivore": {
                 "digestion": 1.0
             },
             "carnivore": {
@@ -454,7 +454,7 @@
                 "max_reserve": 800,
                 "base_consumption": 1
             },
-            "cow": {
+            "herbivore": {
                 "digestion": 0.1
             },
             "carnivore": {
@@ -512,7 +512,7 @@
                 "max_reserve": 700,
                 "base_consumption": 1
             },
-            "cow": {
+            "herbivore": {
                 "digestion": 0.1
             },
             "carnivore": {

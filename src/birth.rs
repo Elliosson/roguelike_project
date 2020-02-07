@@ -2,7 +2,7 @@ extern crate specs;
 use super::{
     algo, raws,
     raws::{RawMaster, RAWS},
-    Carnivore, CombatStats, Cow, Date, EnergyReserve, HumiditySensitive, Name, Position,
+    Carnivore, CombatStats, Date, EnergyReserve, Herbivore, HumiditySensitive, Name, Position,
     Renderable, Reproduction, SerializeMe, Specie, Speed, TemperatureSensitive, UniqueId,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
@@ -45,7 +45,7 @@ pub struct Mutations {
     pub specie: Option<Specie>,
     pub renderable: Option<Renderable>,
     pub speed: Option<Speed>,
-    pub cow: Option<Cow>,
+    pub herbivore: Option<Herbivore>,
     pub carnivore: Option<Carnivore>,
     pub combat_stat: Option<CombatStats>,
 }
@@ -60,7 +60,7 @@ impl Mutations {
             specie: None,
             renderable: None,
             speed: None,
-            cow: None,
+            herbivore: None,
             carnivore: None,
             combat_stat: None,
         }
@@ -233,10 +233,13 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
         speed.move_point = 0;
     }
 
-    if let Some(cow) = &mut mutations.cow {
-        cow.digestion = f32::min(
+    if let Some(herbivore) = &mut mutations.herbivore {
+        herbivore.digestion = f32::min(
             1.0,
-            f32::max(0.0, cow.digestion + (rng.gen_range(-8, 9) as f32 / 100.0)),
+            f32::max(
+                0.0,
+                herbivore.digestion + (rng.gen_range(-8, 9) as f32 / 100.0),
+            ),
         );
     }
 
@@ -274,8 +277,8 @@ fn base_comsumption(mutations: Mutations) -> f32 {
         features_cost += speed.point_per_turn as f32 / 100.0;
     }
 
-    if let Some(cow) = &mutations.cow {
-        features_cost += cow.digestion * 4.0;
+    if let Some(herbivore) = &mutations.herbivore {
+        features_cost += herbivore.digestion * 4.0;
     }
 
     if let Some(carnivore) = &mutations.carnivore {
@@ -284,8 +287,8 @@ fn base_comsumption(mutations: Mutations) -> f32 {
 
     //multiply the 2 to discourage muliple specialisation
     if let Some(carnivore) = &mutations.carnivore {
-        if let Some(cow) = &mutations.carnivore {
-            features_cost += carnivore.digestion * cow.digestion * 8.0;
+        if let Some(herbivore) = &mutations.carnivore {
+            features_cost += carnivore.digestion * herbivore.digestion * 8.0;
         }
     }
 

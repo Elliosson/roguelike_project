@@ -3,7 +3,7 @@ use rltk::{RandomNumberGenerator, RGB};
 extern crate specs;
 use super::{
     map::MAPWIDTH, random_table::RandomTable, raws::*, AreaOfEffect, BlocksTile, CombatStats,
-    Confusion, Consumable, Cow, DefenseBonus, EquipmentSlot, Equippable, InflictsDamage,
+    Confusion, Consumable, DefenseBonus, EquipmentSlot, Equippable, Herbivore, InflictsDamage,
     Interactable, InteractableObject, Interaction, Item, Leaf, MeleePowerBonus, Monster, Name,
     Player, Position, ProvidesHealing, Ranged, Rect, Renderable, SerializeMe, Tree, Viewshed,
 };
@@ -451,7 +451,7 @@ pub fn _cow(ecs: &mut World, x: i32, y: i32) {
             name: "Cow".to_string(),
         })
         .with(BlocksTile {})
-        .with(Cow { digestion: 1.0 })
+        .with(Herbivore { digestion: 1.0 })
         .with(EnergyReserve {
             reserve: 10.0,
             max_reserve: 200.0,

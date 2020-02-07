@@ -556,7 +556,7 @@ fn main() {
     gs.ecs.register::<WantsToInteract>();
     gs.ecs.register::<Interaction>();
     gs.ecs.register::<ToDelete>();
-    gs.ecs.register::<Cow>();
+    gs.ecs.register::<Herbivore>();
     gs.ecs.register::<Leaf>();
     gs.ecs.register::<WantToEat>();
     gs.ecs.register::<ApplyMove>();

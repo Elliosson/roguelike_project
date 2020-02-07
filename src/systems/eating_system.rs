@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, GeneralLog},
-    Animal, Carnivore, Cow, EnergyReserve, Hunger, Leaf, Specie, ToDelete, WantToEat,
+    Animal, Carnivore, EnergyReserve, Herbivore, Hunger, Leaf, Specie, ToDelete, WantToEat,
 };
 use specs::prelude::*;
 
@@ -13,7 +13,7 @@ impl<'a> System<'a> for EatingSystem {
         Entities<'a>,
         WriteExpect<'a, GameLog>,
         WriteStorage<'a, WantToEat>,
-        WriteStorage<'a, Cow>,
+        WriteStorage<'a, Herbivore>,
         WriteStorage<'a, Leaf>,
         WriteStorage<'a, EnergyReserve>,
         WriteStorage<'a, ToDelete>,
@@ -27,7 +27,7 @@ impl<'a> System<'a> for EatingSystem {
             entities,
             mut log,
             mut want_to_eats,
-            cows,
+            herbivores,
             mut leafs,
             mut energy_reserves,
             mut to_deletes,
@@ -44,14 +44,14 @@ impl<'a> System<'a> for EatingSystem {
             if let Some(leaf) = leafs.get_mut(want_to_eat.target) {
                 let mut en_res = energy_reserves.get_mut(entity).unwrap();
                 if en_res.hunger == Hunger::Hungry {
-                    let cow = cows.get(entity).unwrap();
-                    en_res.reserve += (leaf.nutriments as f32) * cow.digestion; //TODO no control of max res for know
+                    let herbivore = herbivores.get(entity).unwrap();
+                    en_res.reserve += (leaf.nutriments as f32) * herbivore.digestion; //TODO no control of max res for know
                     leaf.nutriments = 0; //TODO maybe do something proper to imediatly suppress the leaf
                     eated_leafs.push(want_to_eat.target);
                 }
             }
             //For now a specie is only for aniaml, to change probably
-            else if let Some(_specie) = species.get(want_to_eat.target) {
+            else if let Some(_animal) = animals.get(want_to_eat.target) {
                 let target_en_res = energy_reserves.get(want_to_eat.target).unwrap().clone();
                 let en_res = energy_reserves.get(entity).unwrap().clone();
                 if en_res.hunger == Hunger::Hungry {

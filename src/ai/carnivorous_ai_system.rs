@@ -1,6 +1,6 @@
 extern crate specs;
 use crate::{
-    Carnivore, Cow, GoOnTarget, Map, Point, Position, RunState, SearchScope, TargetReached,
+    Carnivore, GoOnTarget, Herbivore, Map, Point, Position, RunState, SearchScope, TargetReached,
     Viewshed, WantToEat, WantsToFlee,
 };
 use specs::prelude::*;
@@ -17,7 +17,7 @@ impl<'a> System<'a> for CarnivorousAI {
         ReadExpect<'a, RunState>,
         Entities<'a>,
         WriteStorage<'a, Viewshed>,
-        WriteStorage<'a, Cow>,
+        WriteStorage<'a, Herbivore>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, WantToEat>,
         WriteStorage<'a, Carnivore>,
@@ -32,7 +32,7 @@ impl<'a> System<'a> for CarnivorousAI {
             _runstate,
             entities,
             viewsheds,
-            cows,
+            herbivores,
             mut positions,
             mut want_to_eats,
             carnivores,
@@ -64,34 +64,36 @@ impl<'a> System<'a> for CarnivorousAI {
             }
         }
 
-        //Chose target to go, for now it's just Cow
-        //TODO supress cow to have all sort of target
+        //Chose target to go, for now it's just Herbivore
+        //TODO supress herbivore to have all sort of target
         for (entity, viewshed, _carnivore) in (&entities, &viewsheds, &carnivores).join() {
-            //search for every cow in the viewshed
-            let mut found_cows: Vec<Entity> = Vec::new();
+            //search for every herbivore in the viewshed
+            let mut found_herbivores: Vec<Entity> = Vec::new();
             for visible_tile in viewshed.visible_tiles.iter() {
                 let idx = map.xy_idx(visible_tile.x, visible_tile.y);
-                for maybe_cow in map.tile_content[idx].iter() {
-                    if let Some(_cow) = cows.get(*maybe_cow) {
-                        found_cows.push(*maybe_cow);
+                for maybe_herbivore in map.tile_content[idx].iter() {
+                    if let Some(_herbivore) = herbivores.get(*maybe_herbivore) {
+                        found_herbivores.push(*maybe_herbivore);
                     }
                 }
             }
 
             //Choose the closer target
-            let mut choosen_cow: Option<Entity> = None;
+            let mut choosen_herbivore: Option<Entity> = None;
             let mut min: f32 = std::f32::MAX;
-            for cow in found_cows {
-                let cow_pos = positions.get(cow).unwrap();
+            for herbivore in found_herbivores {
+                let herbivore_pos = positions.get(herbivore).unwrap();
                 let pos = positions.get(entity).unwrap();
-                let distance = rltk::DistanceAlg::Pythagoras
-                    .distance2d(Point::new(pos.x, pos.y), Point::new(cow_pos.x, cow_pos.y));
+                let distance = rltk::DistanceAlg::Pythagoras.distance2d(
+                    Point::new(pos.x, pos.y),
+                    Point::new(herbivore_pos.x, herbivore_pos.y),
+                );
                 if distance < min {
-                    choosen_cow = Some(cow);
+                    choosen_herbivore = Some(herbivore);
                     min = distance;
                 }
             }
-            if let Some(choosen_target) = choosen_cow {
+            if let Some(choosen_target) = choosen_herbivore {
                 targets.insert(entity, choosen_target);
                 go_targets
                     .insert(

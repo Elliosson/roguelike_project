@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
-    gamelog::GameLog, BirthForm, BirthRequetList, Carnivore, CombatStats, Cow, Date, EnergyReserve,
-    Female, HumiditySensitive, Hunger, Male, Map, Mutations, Name, Position, Renderable,
+    gamelog::GameLog, BirthForm, BirthRequetList, Carnivore, CombatStats, Date, EnergyReserve,
+    Female, Herbivore, HumiditySensitive, Hunger, Male, Map, Mutations, Name, Position, Renderable,
     Reproduction, Specie, Speed, TemperatureSensitive, UniqueId, Viewshed, WantsToDuplicate,
 };
 use specs::prelude::*;
@@ -28,7 +28,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
         ReadExpect<'a, Map>,
         ReadStorage<'a, HumiditySensitive>,
         ReadStorage<'a, Speed>,
-        ReadStorage<'a, Cow>,
+        ReadStorage<'a, Herbivore>,
         ReadStorage<'a, Carnivore>,
         ReadStorage<'a, Male>,
         ReadStorage<'a, Female>,
@@ -56,7 +56,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             map,
             hum_sensis,
             speeds,
-            cows,
+            herbivores,
             carnivores,
             males,
             females,
@@ -175,9 +175,9 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     }
 
                     //get speed of parents //TODO add father
-                    let mut maybe_cow = None;
-                    if let Some(cow) = cows.get(entity) {
-                        maybe_cow = Some(cow.clone());
+                    let mut maybe_herbivore = None;
+                    if let Some(herbivore) = herbivores.get(entity) {
+                        maybe_herbivore = Some(herbivore.clone());
                     }
 
                     //get speed of parents //TODO add father
@@ -194,7 +194,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         specie: Some(specie.clone()),
                         renderable: Some(renderable.clone()),
                         speed: maybe_speed,
-                        cow: maybe_cow,
+                        herbivore: maybe_herbivore,
                         carnivore: maybe_carnivore,
                         combat_stat: Some(new_combat_stat),
                     };

@@ -181,7 +181,7 @@ pub struct DefenseBonus {
 pub struct ToDelete {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Cow {
+pub struct Herbivore {
     pub digestion: f32,
 }
 

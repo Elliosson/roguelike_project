@@ -1,6 +1,6 @@
 extern crate specs;
 use crate::{
-    Cow, GoOnTarget, Leaf, Map, Point, Position, RunState, SearchScope, TargetReached,
+    GoOnTarget, Herbivore, Leaf, Map, Point, Position, RunState, SearchScope, TargetReached,
     TargetedForEat, Viewshed, WantToEat,
 };
 use specs::prelude::*;
@@ -17,7 +17,7 @@ impl<'a> System<'a> for CowAI {
         ReadExpect<'a, RunState>,
         Entities<'a>,
         WriteStorage<'a, Viewshed>,
-        WriteStorage<'a, Cow>,
+        WriteStorage<'a, Herbivore>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, Leaf>,
         WriteStorage<'a, WantToEat>,
