@@ -352,8 +352,10 @@ pub fn spawn_named_prop(
         // Sexe
         if let Some(sexe) = &prop_template.sexe {
             match sexe {
-                SexeChoice::Male => eb = eb.with(Male {}),
-                SexeChoice::Female => eb = eb.with(Female {}),
+                SexeChoice::MaleOnly => eb = eb.with(Male {}),
+                SexeChoice::FemaleOnly => eb = eb.with(Female {}),
+                SexeChoice::MaleStart => eb = eb.with(Male {}),
+                SexeChoice::FemaleStart => eb = eb.with(Female {}),
                 SexeChoice::Random => {
                     let mut rng = rltk::RandomNumberGenerator::new();
                     let num_spawns = rng.roll_dice(1, 2);
@@ -575,9 +577,9 @@ pub fn spawn_born(
         // Sexe
         if let Some(sexe) = &prop_template.sexe {
             match sexe {
-                SexeChoice::Male => eb = eb.with(Male {}),
-                SexeChoice::Female => eb = eb.with(Female {}),
-                SexeChoice::Random => {
+                SexeChoice::MaleOnly => eb = eb.with(Male {}),
+                SexeChoice::FemaleOnly => eb = eb.with(Female {}),
+                SexeChoice::Random | SexeChoice::FemaleStart | SexeChoice::MaleStart => {
                     let mut rng = rltk::RandomNumberGenerator::new();
                     let num_spawns = rng.roll_dice(1, 2);
                     if num_spawns == 1 {

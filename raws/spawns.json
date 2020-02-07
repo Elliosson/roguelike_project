@@ -493,7 +493,7 @@
                 "power": 100
             },
             "animal": {},
-            "sexe": "Random"
+            "sexe": "MaleStart"
         },
         {
             "name": "WolveF",
@@ -551,7 +551,7 @@
                 "power": 100
             },
             "animal": {},
-            "sexe": "Random"
+            "sexe": "FemaleStart"
         }
     ]
 }

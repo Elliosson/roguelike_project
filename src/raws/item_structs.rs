@@ -20,8 +20,10 @@ pub struct Renderable {
 
 #[derive(Deserialize, Debug)]
 pub enum SexeChoice {
-    Male,
-    Female,
+    MaleOnly,
+    FemaleOnly,
+    MaleStart,   //first entity is a male, but the rest is random
+    FemaleStart, //first entity is a female, but the rest is random
     Random,
 }
 
