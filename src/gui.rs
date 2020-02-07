@@ -116,21 +116,13 @@ fn fetch_carac(ecs: &World, tooltip: &mut Vec<String>, x: i32, y: i32) {
 }
 fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     let map = ecs.fetch::<Map>();
-    let names = ecs.read_storage::<Name>();
-    let positions = ecs.read_storage::<Position>();
-    let energys = ecs.read_storage::<EnergyReserve>();
 
     let mouse_pos = ctx.mouse_pos();
     if mouse_pos.0 >= map.width || mouse_pos.1 >= map.height {
         return;
     }
     let mut tooltip: Vec<String> = Vec::new();
-    /*
-    for (name, position) in (&names, &positions).join() {
-        if position.x == mouse_pos.0 && position.y == mouse_pos.1 {
-            tooltip.push(name.name.to_string());
-        }
-    }*/
+
     fetch_carac(ecs, &mut tooltip, mouse_pos.0, mouse_pos.1);
 
     if !tooltip.is_empty() {

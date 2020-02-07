@@ -514,6 +514,13 @@ pub fn spawn_born(
             eb = eb.with(cow.clone()); //TODO no default value
         }
 
+        // CombatStat
+        if let Some(combat) = mutations.combat_stat {
+            eb = eb.with(combat.clone());
+        } else if let Some(combat) = &prop_template.combat {
+            eb = eb.with(combat.clone());
+        }
+
         /********************************** */
 
         if let Some(blocks_tile) = prop_template.blocks_tile {
@@ -563,11 +570,6 @@ pub fn spawn_born(
         // Animal
         if let Some(animal) = &prop_template.animal {
             eb = eb.with(animal.clone());
-        }
-
-        // CombatStat
-        if let Some(combat) = &prop_template.combat {
-            eb = eb.with(combat.clone());
         }
 
         // Sexe

@@ -2,8 +2,8 @@ extern crate specs;
 use super::{
     algo, raws,
     raws::{RawMaster, RAWS},
-    Carnivore, Cow, Date, EnergyReserve, HumiditySensitive, Name, Position, Renderable,
-    SerializeMe, SoloReproduction, Specie, Speed, TemperatureSensitive, UniqueId,
+    Carnivore, CombatStats, Cow, Date, EnergyReserve, HumiditySensitive, Name, Position,
+    Renderable, SerializeMe, SoloReproduction, Specie, Speed, TemperatureSensitive, UniqueId,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 
@@ -47,6 +47,7 @@ pub struct Mutations {
     pub speed: Option<Speed>,
     pub cow: Option<Cow>,
     pub carnivore: Option<Carnivore>,
+    pub combat_stat: Option<CombatStats>,
 }
 
 impl Mutations {
@@ -61,6 +62,7 @@ impl Mutations {
             speed: None,
             cow: None,
             carnivore: None,
+            combat_stat: None,
         }
     }
 }
@@ -248,6 +250,10 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
             ),
         );
     }
+
+    if let Some(combat_stat) = &mut mutations.combat_stat {
+        combat_stat.power = i32::max(0, combat_stat.power + (rng.gen_range(-2, 3)));
+    }
     mutations
 }
 
@@ -281,6 +287,10 @@ fn base_comsumption(mutations: Mutations) -> f32 {
         if let Some(cow) = &mutations.carnivore {
             features_cost += carnivore.digestion * cow.digestion * 8.0;
         }
+    }
+
+    if let Some(combat_stat) = &mutations.combat_stat {
+        features_cost += combat_stat.power as f32 / 100.0;
     }
     let new_consuption: f32 = features_cost / 3.0;
     new_consuption

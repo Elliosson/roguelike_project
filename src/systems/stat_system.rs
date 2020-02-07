@@ -1,8 +1,8 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, SpeciesInstantLog, WorldStatLog},
-    Carnivore, Cow, Date, EnergyReserve, HumiditySensitive, Name, Renderable, SoloReproduction,
-    Specie, Speed, TemperatureSensitive,
+    Carnivore, CombatStats, Cow, Date, EnergyReserve, HumiditySensitive, Name, Renderable,
+    SoloReproduction, Specie, Speed, TemperatureSensitive,
 };
 use specs::prelude::*;
 use std::collections::BTreeMap;
@@ -27,6 +27,7 @@ impl<'a> System<'a> for StatSystem {
         ReadStorage<'a, Speed>,
         ReadStorage<'a, Cow>,
         ReadStorage<'a, Carnivore>,
+        ReadStorage<'a, CombatStats>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -46,6 +47,7 @@ impl<'a> System<'a> for StatSystem {
             speeds,
             cows,
             carnivores,
+            combat_stats,
         ) = data;
 
         let mut thresholds = Vec::new();
@@ -120,6 +122,7 @@ impl<'a> System<'a> for StatSystem {
             let mut move_point_turn = 0;
             let mut cow_digestion = 0.0;
             let mut carnivore_digestion = 0.0;
+            let mut power = 0.0;
             let number = member_list.len();
 
             //Do the mean of the vamue of each caracteristique for the specie
@@ -131,6 +134,7 @@ impl<'a> System<'a> for StatSystem {
                 let speed = speeds.get(*member).unwrap();
                 let cow = cows.get(*member).unwrap();
                 let carnivore = carnivores.get(*member).unwrap();
+                let combat_stat = combat_stats.get(*member).unwrap();
 
                 optimum += temp_sensi.optimum;
                 hum_optimum += hum_sensi.optimum;
@@ -142,6 +146,7 @@ impl<'a> System<'a> for StatSystem {
                 move_point_turn += speed.point_per_turn;
                 cow_digestion += cow.digestion;
                 carnivore_digestion += carnivore.digestion;
+                power += combat_stat.power as f32;
             }
 
             optimum = optimum / number as f32;
@@ -154,6 +159,7 @@ impl<'a> System<'a> for StatSystem {
             move_point_turn = move_point_turn / number as i32;
             cow_digestion = cow_digestion / number as f32;
             carnivore_digestion = carnivore_digestion / number as f32;
+            power = power / number as f32;
 
             let mut string_vec = Vec::new();
 
@@ -170,8 +176,8 @@ impl<'a> System<'a> for StatSystem {
             ); //TODO add the temperature sensibilité an reprod threshold
             string_vec.push(buf);
             let buf = format!(
-                " v_digest: {:.1}, ca_digest: {:.1}",
-                cow_digestion, carnivore_digestion
+                " v_digest: {:.1}, ca_digest: {:.1}, pwr: {:.1}",
+                cow_digestion, carnivore_digestion, power
             );
             string_vec.push(buf);
             let buf = format!("move_point: {}, point turn {}", move_point, move_point_turn);

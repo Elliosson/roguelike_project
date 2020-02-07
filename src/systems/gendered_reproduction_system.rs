@@ -1,8 +1,8 @@
 extern crate specs;
 use crate::{
-    gamelog::GameLog, BirthForm, BirthRequetList, Carnivore, Cow, Date, EnergyReserve, Female,
-    HumiditySensitive, Hunger, Male, Map, Mutations, Name, Position, Renderable, SoloReproduction,
-    Specie, Speed, TemperatureSensitive, UniqueId, Viewshed, WantsToDuplicate,
+    gamelog::GameLog, BirthForm, BirthRequetList, Carnivore, CombatStats, Cow, Date, EnergyReserve,
+    Female, HumiditySensitive, Hunger, Male, Map, Mutations, Name, Position, Renderable,
+    SoloReproduction, Specie, Speed, TemperatureSensitive, UniqueId, Viewshed, WantsToDuplicate,
 };
 use specs::prelude::*;
 
@@ -32,6 +32,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
         ReadStorage<'a, Carnivore>,
         ReadStorage<'a, Male>,
         ReadStorage<'a, Female>,
+        ReadStorage<'a, CombatStats>,
     );
 
     //TODO add male and femal
@@ -59,6 +60,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             carnivores,
             males,
             females,
+            combat_stats,
         ) = data;
 
         //store all "female" entity that have sucessfully reproduce
@@ -78,6 +80,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             id,
             hum_sensi,
             _female,
+            combat_stat,
         ) in (
             &entities,
             &viewsheds,
@@ -91,6 +94,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             &unique_ids,
             &hum_sensis,
             &females,
+            &combat_stats,
         )
             .join()
         {
@@ -98,13 +102,6 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             if eng_res.reserve >= solo_reprod.threshold() as f32 {
                 //search a male in the viewshed that can reproduce and are of the same specie
                 let mut possible_mates: Vec<Entity> = Vec::new();
-
-                println!(
-                    "energy{}, threshold{}, max {}",
-                    eng_res.reserve,
-                    solo_reprod.threshold(),
-                    eng_res.max_reserve,
-                );
 
                 for visible_tile in viewshed.visible_tiles.iter() {
                     let idx = map.xy_idx(visible_tile.x, visible_tile.y);
@@ -143,6 +140,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     let mate_temp_sensi = temp_sensis.get(my_mate).unwrap();
                     let mate_hum_sensi = hum_sensis.get(my_mate).unwrap();
                     let mate_id = unique_ids.get(my_mate).unwrap();
+                    let mate_combat_stat = combat_stats.get(my_mate).unwrap();
 
                     //Construct the Mutations struct with the median of all the component of both parent
                     //TODO create comparaison operator for the components
@@ -161,6 +159,13 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         max_reserve: (eng_res.max_reserve + mate_energy.max_reserve) / 2.0,
                         base_consumption: 0.0, //No heritance
                         hunger: Hunger::Full,  //No heritance
+                    };
+
+                    let new_combat_stat = CombatStats {
+                        hp: 100, //No heritance
+                        power: (combat_stat.power + mate_combat_stat.power) / 2,
+                        max_hp: 100,  //No heritance
+                        defense: 100, //No heritance
                     };
 
                     //get speed of parents //TODO add father
@@ -191,6 +196,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                         speed: maybe_speed,
                         cow: maybe_cow,
                         carnivore: maybe_carnivore,
+                        combat_stat: Some(new_combat_stat),
                     };
 
                     //create birth

@@ -1,8 +1,8 @@
 extern crate specs;
 use crate::{
     Animal, Carnivore, CombatStats, Cow, EnergyReserve, GoOnTarget, Hunger, Leaf, Map,
-    MyChoosenFood, MyTurn, Point, Position, RunState, SearchScope, Specie, TargetReached,
-    TargetedForEat, Viewshed, WantToEat, WantsToFlee,
+    MyChoosenFood, MyTurn, Point, Position, RunState, SearchScope, Specie, TargetedForEat,
+    Viewshed, WantToEat, WantsToFlee,
 };
 use specs::prelude::*;
 extern crate rltk;
@@ -24,7 +24,6 @@ impl<'a> System<'a> for OmnivoreAI {
         WriteStorage<'a, WantToEat>,
         WriteStorage<'a, TargetedForEat>,
         WriteStorage<'a, GoOnTarget>,
-        WriteStorage<'a, TargetReached>,
         WriteStorage<'a, Specie>,
         WriteStorage<'a, Animal>,
         WriteStorage<'a, Carnivore>,
@@ -47,7 +46,6 @@ impl<'a> System<'a> for OmnivoreAI {
             mut want_to_eats,
             mut targeted_eats,
             mut go_targets,
-            target_reacheds,
             species,
             animals,
             carnivores,
@@ -285,7 +283,7 @@ fn choose_food<'a>(
         let maybe_targeted_eat = targeted_eats.get(food);
 
         //If food can fight, only go if I am stronger
-        if AmIStronger(&combat_stats, entity, food) {
+        if am_i_stronger(&combat_stats, entity, food) {
             //if their is a other creature that want the target, then I only go if I am closer
             let mut competitor_distance = std::f32::MAX;
             if let Some(targeted) = maybe_targeted_eat {
@@ -340,7 +338,7 @@ pub fn in_contact(pos1: &Position, pos2: &Position) -> bool {
 
 //check combat stat to se if I am stronger
 //Also return true If the enemy doesn't have combat stat
-pub fn AmIStronger<'a>(
+pub fn am_i_stronger<'a>(
     combat_stats: &WriteStorage<'a, CombatStats>,
     me: Entity,
     enemy: Entity,
