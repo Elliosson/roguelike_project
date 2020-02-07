@@ -2,7 +2,7 @@ extern crate specs;
 use crate::{
     gamelog::{GameLog, SpeciesInstantLog, WorldStatLog},
     Carnivore, CombatStats, Cow, Date, EnergyReserve, HumiditySensitive, Name, Renderable,
-    SoloReproduction, Specie, Speed, TemperatureSensitive,
+    Reproduction, Specie, Speed, TemperatureSensitive,
 };
 use specs::prelude::*;
 use std::collections::BTreeMap;
@@ -16,7 +16,7 @@ impl<'a> System<'a> for StatSystem {
         WriteExpect<'a, GameLog>,
         ReadStorage<'a, Name>,
         ReadStorage<'a, EnergyReserve>,
-        ReadStorage<'a, SoloReproduction>,
+        ReadStorage<'a, Reproduction>,
         ReadExpect<'a, Date>,
         WriteExpect<'a, WorldStatLog>,
         ReadStorage<'a, Specie>,
@@ -36,7 +36,7 @@ impl<'a> System<'a> for StatSystem {
             _log,
             _names,
             energy_reserves,
-            solo_reproductions,
+            reproductions,
             _date,
             mut world_logs,
             species,
@@ -57,11 +57,11 @@ impl<'a> System<'a> for StatSystem {
         let mut move_points_turn = Vec::new();
 
         //General stat
-        for (_entity, energy_res, solo_reprod, speed) in
-            (&entities, &energy_reserves, &solo_reproductions, &speeds).join()
+        for (_entity, energy_res, reprod, speed) in
+            (&entities, &energy_reserves, &reproductions, &speeds).join()
         {
-            thresholds.push(solo_reprod.offset_threshold);
-            birth_energy.push(solo_reprod.birth_energy);
+            thresholds.push(reprod.offset_threshold);
+            birth_energy.push(reprod.birth_energy);
             max_res.push(energy_res.max_reserve);
             consumptions.push(energy_res.base_consumption);
             move_points_turn.push(speed.point_per_turn);
@@ -130,7 +130,7 @@ impl<'a> System<'a> for StatSystem {
                 let temp_sensi = temp_sensis.get(*member).unwrap();
                 let hum_sensi = hum_sensis.get(*member).unwrap();
                 let energy_reserve = energy_reserves.get(*member).unwrap();
-                let solo_reproduction = solo_reproductions.get(*member).unwrap();
+                let reproduction = reproductions.get(*member).unwrap();
                 let speed = speeds.get(*member).unwrap();
                 let cow = cows.get(*member).unwrap();
                 let carnivore = carnivores.get(*member).unwrap();
@@ -140,8 +140,8 @@ impl<'a> System<'a> for StatSystem {
                 hum_optimum += hum_sensi.optimum;
                 max_reserve += energy_reserve.max_reserve;
                 base_consumption += energy_reserve.base_consumption;
-                birth_energy += solo_reproduction.birth_energy;
-                offset_threshold += solo_reproduction.offset_threshold;
+                birth_energy += reproduction.birth_energy;
+                offset_threshold += reproduction.offset_threshold;
                 move_point += speed.move_point;
                 move_point_turn += speed.point_per_turn;
                 cow_digestion += cow.digestion;

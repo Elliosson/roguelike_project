@@ -19,7 +19,7 @@ pub struct Prop {
     pub energy_reserve: Option<RawEnergyReserve>,
     pub viewshed: Option<RawViewshed>,
     pub cow: Option<Cow>,
-    pub solo_reproduction: Option<SoloReproduction>,
+    pub reproduction: Option<Reproduction>,
     pub aging: Option<Aging>,
     pub temp_sensi: Option<TemperatureSensitive>,
     pub hum_sensi: Option<HumiditySensitive>,

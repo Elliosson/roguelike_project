@@ -2,7 +2,7 @@ extern crate specs;
 use crate::{
     gamelog::GameLog, BirthForm, BirthRequetList, Carnivore, CombatStats, Cow, Date, EnergyReserve,
     Female, HumiditySensitive, Hunger, Male, Map, Mutations, Name, Position, Renderable,
-    SoloReproduction, Specie, Speed, TemperatureSensitive, UniqueId, Viewshed, WantsToDuplicate,
+    Reproduction, Specie, Speed, TemperatureSensitive, UniqueId, Viewshed, WantsToDuplicate,
 };
 use specs::prelude::*;
 
@@ -14,7 +14,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
         Entities<'a>,
         WriteExpect<'a, GameLog>,
         WriteStorage<'a, EnergyReserve>,
-        WriteStorage<'a, SoloReproduction>, //TODO remplace by genderedReproduction
+        WriteStorage<'a, Reproduction>, //TODO remplace by genderedReproduction
         ReadStorage<'a, Name>,
         WriteStorage<'a, WantsToDuplicate>,
         WriteExpect<'a, BirthRequetList>,
@@ -42,7 +42,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             entities,
             mut _log,
             mut energy_reserves,
-            solo_reproductions,
+            reproductions,
             names,
             mut _want_to_duplicates,
             mut birth_request_list,
@@ -74,7 +74,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             eng_res,
             temp_sensi,
             renderable,
-            solo_reprod,
+            reprod,
             name,
             position,
             id,
@@ -88,7 +88,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             &energy_reserves,
             &temp_sensis,
             &renderables,
-            &solo_reproductions,
+            &reproductions,
             &names,
             &positions,
             &unique_ids,
@@ -99,7 +99,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
             .join()
         {
             //if the energy reserve are sufisiant to reproduce
-            if eng_res.reserve >= solo_reprod.threshold() as f32 {
+            if eng_res.reserve >= reprod.threshold() as f32 {
                 //search a male in the viewshed that can reproduce and are of the same specie
                 let mut possible_mates: Vec<Entity> = Vec::new();
 
@@ -187,7 +187,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     }
 
                     let mutations = Mutations {
-                        solo_reproduction: Some(solo_reprod.clone()), //TODO Supress ? For now just inhereite from mother
+                        reproduction: Some(reprod.clone()), //TODO Supress ? For now just inhereite from mother
                         energy_reserve: Some(new_energy_res),
                         temp_sensi: Some(new_temp_sensi),
                         hum_sensi: Some(new_hum_sensi),
@@ -213,7 +213,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     birth_request_list.request(form, mutations);
 
                     //vec to consume the energy of the reproduction later
-                    have_reproduce.push((entity, solo_reprod.cost() as f32));
+                    have_reproduce.push((entity, reprod.cost() as f32));
                 }
             }
         }

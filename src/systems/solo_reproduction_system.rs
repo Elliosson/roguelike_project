@@ -1,8 +1,8 @@
 extern crate specs;
 use crate::{
     gamelog::GameLog, BirthForm, BirthRequetList, Date, EnergyReserve, HumiditySensitive,
-    Mutations, Name, Position, Renderable, SoloReproduction, Specie, TemperatureSensitive,
-    UniqueId, WantsToDuplicate,
+    Mutations, Name, Position, Renderable, Reproduction, Specie, TemperatureSensitive, UniqueId,
+    WantsToDuplicate,
 };
 use specs::prelude::*;
 
@@ -14,7 +14,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
         Entities<'a>,
         WriteExpect<'a, GameLog>,
         WriteStorage<'a, EnergyReserve>,
-        WriteStorage<'a, SoloReproduction>,
+        WriteStorage<'a, Reproduction>,
         ReadStorage<'a, Name>,
         WriteStorage<'a, WantsToDuplicate>,
         WriteExpect<'a, BirthRequetList>,
@@ -32,7 +32,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
             entities,
             mut log,
             mut energy_reserves,
-            solo_reproductions,
+            reproductions,
             names,
             mut _want_to_duplicates,
             mut birth_request_list,
@@ -59,7 +59,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
             hum_sensi,
         ) in (
             &entities,
-            &solo_reproductions,
+            &reproductions,
             &mut energy_reserves,
             &names,
             &positions,
@@ -87,7 +87,7 @@ impl<'a> System<'a> for SoloReproductionSystem {
                 };
 
                 let mutations = Mutations {
-                    solo_reproduction: Some(solo_reprod.clone()),
+                    reproduction: Some(solo_reprod.clone()),
                     energy_reserve: Some(energy_reserve.clone()),
                     temp_sensi: Some(temp_sensi.clone()),
                     hum_sensi: Some(hum_sensi.clone()),

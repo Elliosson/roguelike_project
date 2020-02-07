@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::raws::*;
 use crate::specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
-use crate::{components::*, EnergyReserve, Name, SoloReproduction};
+use crate::{components::*, EnergyReserve, Name, Reproduction};
 use specs::prelude::*;
 
 pub struct PropSpawnerSystem {}
@@ -22,7 +22,7 @@ impl<'a> System<'a> for PropSpawnerSystem {
         WriteStorage<'a, BlocksTile>,
         WriteStorage<'a, Viewshed>,
         WriteStorage<'a, Cow>,
-        WriteStorage<'a, SoloReproduction>,
+        WriteStorage<'a, Reproduction>,
         WriteStorage<'a, WantsToDuplicate>,
         WriteStorage<'a, SimpleMarker<SerializeMe>>,
         WriteExpect<'a, SimpleMarkerAllocator<SerializeMe>>,
@@ -43,7 +43,7 @@ impl<'a> System<'a> for PropSpawnerSystem {
             mut block_tiles,
             mut viewsheds,
             mut cows,
-            mut solo_reprods,
+            mut reprods,
             mut want_to_duplicates,
             mut simple_markers,
             mut simple_marker_allocators,
@@ -76,7 +76,7 @@ impl<'a> System<'a> for PropSpawnerSystem {
                     &mut block_tiles,
                     &mut viewsheds,
                     &mut cows,
-                    &mut solo_reprods,
+                    &mut reprods,
                     &mut want_to_duplicates,
                     &mut simple_markers,
                     &mut simple_marker_allocators,

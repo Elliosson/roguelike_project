@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
-    EnergyReserve, Female, GoOnTarget, Hunger, InHeat, Male, MyTurn, Point, Position, SearchScope,
-    SoloReproduction, Specie,
+    EnergyReserve, Female, GoOnTarget, Hunger, InHeat, Male, MyTurn, Point, Position, Reproduction,
+    SearchScope, Specie,
 };
 use specs::prelude::*;
 use std::collections::HashMap;
@@ -17,7 +17,7 @@ impl<'a> System<'a> for SearchParterAI {
         WriteStorage<'a, Male>,
         WriteStorage<'a, Female>,
         WriteStorage<'a, EnergyReserve>,
-        WriteStorage<'a, SoloReproduction>, //bad name to change
+        WriteStorage<'a, Reproduction>, //bad name to change
         WriteStorage<'a, Specie>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, GoOnTarget>,

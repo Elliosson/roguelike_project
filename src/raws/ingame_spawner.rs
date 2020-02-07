@@ -19,7 +19,7 @@ pub type SpwanPropData<'a, 'b> = (
     &'b mut WriteStorage<'a, BlocksTile>,
     &'b mut WriteStorage<'a, Viewshed>,
     &'b mut WriteStorage<'a, Cow>,
-    &'b mut WriteStorage<'a, SoloReproduction>,
+    &'b mut WriteStorage<'a, Reproduction>,
     &'b mut WriteStorage<'a, WantsToDuplicate>,
     &'b mut WriteStorage<'a, SimpleMarker<SerializeMe>>,
     &'b mut WriteExpect<'a, SimpleMarkerAllocator<SerializeMe>>,
@@ -43,7 +43,7 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
         block_tiles,
         viewsheds,
         cows,
-        solo_reprods,
+        reprods,
         _want_to_duplicate,
         simple_markers,
         simple_marker_allocators,
@@ -142,9 +142,9 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
             eb = eb.with(cow.clone(), cows); //TODO no default value
         }
 
-        // SoloReproduction
-        if let Some(solo_reproduction) = &prop_template.solo_reproduction {
-            eb = eb.with(solo_reproduction.clone(), solo_reprods);
+        // Reproduction
+        if let Some(reproduction) = &prop_template.reproduction {
+            eb = eb.with(reproduction.clone(), reprods);
         }
 
         eb.build();

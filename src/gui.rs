@@ -4,7 +4,7 @@ extern crate specs;
 use super::{
     gamelog::{GameLog, SpeciesInstantLog},
     CombatStats, Date, EnergyReserve, Equipped, Female, InBackpack, InteractableObject,
-    Interaction, Male, Map, Name, Player, Position, RunState, SoloReproduction, Specie, State,
+    Interaction, Male, Map, Name, Player, Position, Reproduction, RunState, Specie, State,
     Viewshed, MAPWIDTH, WINDOWHEIGHT, WINDOWWIDTH,
 };
 use specs::prelude::*;
@@ -92,7 +92,7 @@ fn fetch_carac(ecs: &World, tooltip: &mut Vec<String>, x: i32, y: i32) {
     let names = ecs.read_storage::<Name>();
     let positions = ecs.read_storage::<Position>();
     let energies = ecs.read_storage::<EnergyReserve>();
-    let reprods = ecs.read_storage::<SoloReproduction>();
+    let reprods = ecs.read_storage::<Reproduction>();
     let species = ecs.read_storage::<Specie>();
     let males = ecs.read_storage::<Male>();
     let females = ecs.read_storage::<Female>();

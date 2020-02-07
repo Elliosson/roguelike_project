@@ -309,9 +309,9 @@ pub fn spawn_named_prop(
             eb = eb.with(cow.clone()); //TODO no default value
         }
 
-        // SoloReproduction
-        if let Some(solo_reproduction) = &prop_template.solo_reproduction {
-            eb = eb.with(solo_reproduction.clone());
+        // Reproduction
+        if let Some(reproduction) = &prop_template.reproduction {
+            eb = eb.with(reproduction.clone());
         }
 
         // Aging
@@ -467,11 +467,11 @@ pub fn spawn_born(
             });
         }
 
-        // SoloReproduction
-        if let Some(solo_reproduction) = mutations.solo_reproduction {
-            eb = eb.with(solo_reproduction.clone());
-        } else if let Some(solo_reproduction) = &prop_template.solo_reproduction {
-            eb = eb.with(solo_reproduction.clone());
+        // Reproduction
+        if let Some(reproduction) = mutations.reproduction {
+            eb = eb.with(reproduction.clone());
+        } else if let Some(reproduction) = &prop_template.reproduction {
+            eb = eb.with(reproduction.clone());
         }
 
         // Temp Sensitivity

@@ -132,7 +132,7 @@ impl State {
         veg_grow.run_now(&self.ecs);
         let mut energy = EnergySystem {};
         energy.run_now(&self.ecs);
-        //let mut solo_reprod = SoloReproductionSystem {};
+        //let mut solo_reprod = ReproductionSystem {};
         //solo_reprod.run_now(&self.ecs);
         let mut gendered_reprod = GenderedReproductionSystem {};
         gendered_reprod.run_now(&self.ecs);
@@ -567,7 +567,7 @@ fn main() {
     gs.ecs.register::<EntryTrigger>();
     gs.ecs.register::<Tree>();
     gs.ecs.register::<EnergyReserve>();
-    gs.ecs.register::<SoloReproduction>();
+    gs.ecs.register::<Reproduction>();
     gs.ecs.register::<WantsToDuplicate>();
     gs.ecs.register::<UniqueId>();
     gs.ecs.register::<Aging>();

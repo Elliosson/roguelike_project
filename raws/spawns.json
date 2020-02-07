@@ -402,7 +402,7 @@
             "carnivore": {
                 "digestion": 0.1
             },
-            "solo_reproduction": {
+            "reproduction": {
                 "birth_energy": 50,
                 "offset_cost": 50,
                 "offset_threshold": 50
@@ -460,7 +460,7 @@
             "carnivore": {
                 "digestion": 1.0
             },
-            "solo_reproduction": {
+            "reproduction": {
                 "birth_energy": 200,
                 "offset_cost": 50,
                 "offset_threshold": 50
@@ -518,7 +518,7 @@
             "carnivore": {
                 "digestion": 1.0
             },
-            "solo_reproduction": {
+            "reproduction": {
                 "birth_energy": 200,
                 "offset_cost": 50,
                 "offset_threshold": 50

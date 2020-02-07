@@ -3,7 +3,7 @@ use super::{
     algo, raws,
     raws::{RawMaster, RAWS},
     Carnivore, CombatStats, Cow, Date, EnergyReserve, HumiditySensitive, Name, Position,
-    Renderable, SerializeMe, SoloReproduction, Specie, Speed, TemperatureSensitive, UniqueId,
+    Renderable, Reproduction, SerializeMe, Specie, Speed, TemperatureSensitive, UniqueId,
 };
 use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 
@@ -38,7 +38,7 @@ pub struct BirthForm {
 //for now just a few
 #[derive(Clone)]
 pub struct Mutations {
-    pub solo_reproduction: Option<SoloReproduction>,
+    pub reproduction: Option<Reproduction>,
     pub energy_reserve: Option<EnergyReserve>,
     pub temp_sensi: Option<TemperatureSensitive>,
     pub hum_sensi: Option<HumiditySensitive>,
@@ -53,7 +53,7 @@ pub struct Mutations {
 impl Mutations {
     pub fn new() -> Mutations {
         Mutations {
-            solo_reproduction: None,
+            reproduction: None,
             energy_reserve: None,
             temp_sensi: None,
             hum_sensi: None,
@@ -198,14 +198,13 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
     let mut birth_energy = 50.0;
 
     //For now just change the parametere of soloreprod
-    if let Some(solo_reprod) = &mut mutations.solo_reproduction {
-        birth_energy = solo_reprod.birth_energy as f32;
+    if let Some(reprod) = &mut mutations.reproduction {
+        birth_energy = reprod.birth_energy as f32;
 
-        //solo_reprod.cost += rng.gen_range(-1, 2);
-        solo_reprod.offset_threshold =
-            algo::add_or_zero(solo_reprod.offset_threshold, rng.gen_range(-10, 11));
-        solo_reprod.birth_energy =
-            algo::add_or_zero(solo_reprod.birth_energy, rng.gen_range(-10, 11));
+        //reprod.cost += rng.gen_range(-1, 2);
+        reprod.offset_threshold =
+            algo::add_or_zero(reprod.offset_threshold, rng.gen_range(-10, 11));
+        reprod.birth_energy = algo::add_or_zero(reprod.birth_energy, rng.gen_range(-10, 11));
     }
 
     if let Some(energy_res) = &mut mutations.energy_reserve {
@@ -261,9 +260,9 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
 fn base_comsumption(mutations: Mutations) -> f32 {
     let mut features_cost: f32 = 0.0;
 
-    if let Some(_solo_reprod) = &mutations.solo_reproduction {
-        //features_cost += solo_reprod.cost as f32;
-        //features_cost += solo_reprod.threshold as f32;
+    if let Some(_reprod) = &mutations.reproduction {
+        //features_cost += reprod.cost as f32;
+        //features_cost += reprod.threshold as f32;
     }
 
     if let Some(energy_res) = &mutations.energy_reserve {
@@ -305,7 +304,7 @@ mod tests {
     #[test]
     fn change_mutation_test() {
         let mutations = Mutations {
-            solo_reproduction: Some(SoloReproduction {
+            reproduction: Some(Reproduction {
                 threshold: 101,
                 cost: 102,
             }),
@@ -320,7 +319,7 @@ mod tests {
         let new_mut = change_mutation(mutations);
 
         //Pretty hard to test random
-        //assert_ne!(new_mut.solo_reproduction.unwrap().threshold, 101);
+        //assert_ne!(new_mut.reproduction.unwrap().threshold, 101);
     }
     */
 }
