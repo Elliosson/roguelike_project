@@ -16,14 +16,8 @@ mod rect;
 pub use rect::Rect;
 mod visibility_system;
 use visibility_system::VisibilitySystem;
-mod monster_ai_system;
-use monster_ai_system::MonsterAI;
 mod map_indexing_system;
 use map_indexing_system::MapIndexingSystem;
-mod melee_combat_system;
-use melee_combat_system::MeleeCombatSystem;
-mod damage_system;
-use damage_system::DamageSystem;
 mod gamelog;
 mod gui;
 mod spawner;
@@ -39,7 +33,6 @@ use movement_system::MovementSystem;
 pub mod ai;
 use ai::*;
 mod tiletype;
-mod trigger_system;
 use tiletype::{tile_walkable, TileType};
 pub mod systems;
 use systems::*;
@@ -103,8 +96,6 @@ impl State {
         specie.run_now(&self.ecs);
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
-        let mut mob = MonsterAI {};
-        mob.run_now(&self.ecs);
         //let mut cow = CowAI {};
         //cow.run_now(&self.ecs);
         //let mut carnivore_ai = CarnivorousAI {};
@@ -118,10 +109,7 @@ impl State {
         search_partner.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
-        let mut melee = MeleeCombatSystem {};
-        melee.run_now(&self.ecs);
-        let mut damage = DamageSystem {};
-        damage.run_now(&self.ecs);
+
         let mut pickup = ItemCollectionSystem {};
         pickup.run_now(&self.ecs);
         let mut itemuse = ItemUseSystem {};
@@ -378,7 +366,6 @@ impl GameState for State {
             let mut runwriter = self.ecs.write_resource::<RunState>();
             *runwriter = newrunstate;
         }
-        damage_system::delete_the_dead(&mut self.ecs);
         birth::give_birth(&mut self.ecs);
         object_deleter::delete_entity_to_delete(&mut self.ecs);
     }
