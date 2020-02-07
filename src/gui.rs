@@ -134,7 +134,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
         }
         width += 3;
 
-        if mouse_pos.0 > 10 {
+        if mouse_pos.0 > 40 {
             let arrow_pos = Point::new(mouse_pos.0 - 2, mouse_pos.1);
             let left_x = mouse_pos.0 - width;
             let mut y = mouse_pos.1;
@@ -180,7 +180,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
                 let padding = (width - s.len() as i32) - 1;
                 for i in 0..padding {
                     ctx.print_color(
-                        arrow_pos.x + 1 + i,
+                        arrow_pos.x + 1 + width - i,
                         y,
                         RGB::named(rltk::WHITE),
                         RGB::named(rltk::GREY),
