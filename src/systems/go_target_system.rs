@@ -4,7 +4,7 @@ use crate::{
     TargetReached, Viewshed,
 };
 use specs::prelude::*;
-use std::time::Instant;
+//use std::time::Instant;
 
 pub struct GoTargetSystem {}
 
@@ -41,10 +41,10 @@ impl<'a> System<'a> for GoTargetSystem {
 
         target_reachs.clear();
 
-        let _now = Instant::now();
+        //let _now = Instant::now();
 
         for (entity, go_target, speed) in (&entities, &go_targets, &mut speeds).join() {
-            let _now2 = Instant::now();
+            //let _now2 = Instant::now();
             let max_step;
             match go_target.scope {
                 SearchScope::Small => max_step = 64,
@@ -66,7 +66,7 @@ impl<'a> System<'a> for GoTargetSystem {
 
                 //println!("first part time = {}", now2.elapsed().as_micros());
 
-                let _now3 = Instant::now();
+                //let _now3 = Instant::now();
 
                 path = algo::a_star_search(
                     map.xy_idx(pos.x, pos.y) as i32,

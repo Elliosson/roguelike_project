@@ -7,6 +7,12 @@ use crate::gamelog;
 use std::io::Write;
 
 //Wrote a geneological tree in graphViz format
+#[cfg(target_arch = "wasm32")]
+pub fn general_log(ecs: &mut World) -> std::io::Result<()> {
+    Ok(())
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 pub fn general_log(ecs: &mut World) -> std::io::Result<()> {
     let logs = ecs.fetch_mut::<gamelog::GeneralLog>();
     let date = ecs.fetch::<Date>();

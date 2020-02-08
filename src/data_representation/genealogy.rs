@@ -6,6 +6,12 @@ extern crate rltk;
 use std::io::Write;
 
 //Wrote a geneological tree in graphViz format
+#[cfg(target_arch = "wasm32")]
+pub fn write_genealogy(ecs: &mut World) -> std::io::Result<()> {
+    Ok(())
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 pub fn write_genealogy(ecs: &mut World) -> std::io::Result<()> {
     let registery = ecs.fetch::<BirthRegistery>();
 
