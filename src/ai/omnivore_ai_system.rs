@@ -432,8 +432,10 @@ pub fn hunt_gain<'a>(
 
         let chase_time: f32 = distance / (my_speed.speed() - enemy_speed.speed());
         let energy_cost: f32 = chase_time * my_energy.base_consumption;
-        let energy_gain: f32 =
-            enemy_energy.get_eating_gain() - chase_time * enemy_energy.base_consumption;
+        let energy_gain: f32 = f32::max(
+            0.0,
+            enemy_energy.reserve - chase_time * enemy_energy.base_consumption,
+        ) + enemy_energy.body_energy;
         let hunt_benefice = energy_gain - energy_cost;
         if hunt_benefice > 0.0 {
             must_hunt = true;

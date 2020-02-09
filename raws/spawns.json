@@ -409,7 +409,7 @@
                 "offset_threshold": 50
             },
             "aging": {
-                "life_expectancy": 1200,
+                "life_expectancy": 600,
                 "age": 0
             },
             "temp_sensi": {
@@ -427,7 +427,7 @@
             "speed": {
                 "move_point": 100,
                 "point_per_turn": 0,
-                "base_point_per_turn": 38,
+                "base_point_per_turn": 43,
                 "max_point": 100
             },
             "combat": {
@@ -449,7 +449,7 @@
             },
             "blocks_tile": true,
             "viewshed": {
-                "range": 8
+                "range": 12
             },
             "energy_reserve": {
                 "reserve": 300,
@@ -466,7 +466,7 @@
             "reproduction": {
                 "birth_energy": 400,
                 "offset_cost": 100,
-                "offset_threshold": 200
+                "offset_threshold": 400
             },
             "aging": {
                 "life_expectancy": 1200,
@@ -509,7 +509,7 @@
             },
             "blocks_tile": true,
             "viewshed": {
-                "range": 8
+                "range": 12
             },
             "energy_reserve": {
                 "reserve": 300,
@@ -524,9 +524,9 @@
                 "digestion": 1.0
             },
             "reproduction": {
-                "birth_energy": 400,
+                "birth_energy": 250,
                 "offset_cost": 100,
-                "offset_threshold": 200
+                "offset_threshold": 550
             },
             "aging": {
                 "life_expectancy": 1200,

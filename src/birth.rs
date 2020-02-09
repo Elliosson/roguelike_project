@@ -225,7 +225,7 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
     }
 
     if let Some(hum_sensi) = &mut mutations.hum_sensi {
-        hum_sensi.optimum += rng.gen_range(-4, 5) as f32;
+        hum_sensi.optimum += rng.gen_range(-4.0, 4.0);
     }
 
     if let Some(speed) = &mut mutations.speed {

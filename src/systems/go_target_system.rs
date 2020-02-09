@@ -48,7 +48,7 @@ impl<'a> System<'a> for GoTargetSystem {
                 //let _now2 = Instant::now();
                 let max_step;
                 match go_target.scope {
-                    SearchScope::Small => max_step = 64,
+                    SearchScope::Small => max_step = 200,
                     SearchScope::Big => max_step = 1000,
                 }
                 let mut path;

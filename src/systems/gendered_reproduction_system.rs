@@ -214,7 +214,9 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     birth_request_list.request(form, mutations);
 
                     //vec to consume the energy of the reproduction later
-                    have_reproduce.push((entity, reprod.cost() as f32));
+                    have_reproduce.push((entity, reprod.cost() as f32 * 0.7));
+                    //also have the male to consume enerergy because now we have too much in comparaison with female
+                    have_reproduce.push((my_mate, reprod.cost() as f32 * 0.3));
                 }
             }
         }
