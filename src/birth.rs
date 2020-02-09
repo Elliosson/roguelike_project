@@ -9,7 +9,7 @@ use crate::specs::saveload::{MarkedBuilder, SimpleMarker};
 
 use rand::Rng;
 use specs::prelude::*;
-use std::cmp::max;
+use std::cmp::{max, min};
 
 #[derive(Clone)]
 pub struct BirthCertificate {
@@ -229,7 +229,10 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
     }
 
     if let Some(speed) = &mut mutations.speed {
-        speed.base_point_per_turn = max(0, speed.base_point_per_turn + rng.gen_range(-4, 5));
+        speed.base_point_per_turn = min(
+            100,
+            max(0, speed.base_point_per_turn + rng.gen_range(-3, 4)),
+        );
         speed.move_point = 0;
     }
 
@@ -273,7 +276,7 @@ fn base_comsumption(mutations: Mutations) -> f32 {
     }
 
     if let Some(speed) = &mutations.speed {
-        features_cost += (speed.base_point_per_turn * speed.base_point_per_turn) as f32 / 400.0;
+        features_cost += (speed.base_point_per_turn * speed.base_point_per_turn) as f32 / 300.0;
         //features_cost += speed.base_point_per_turn as f32 / 100.0;
     }
 

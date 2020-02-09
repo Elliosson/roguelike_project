@@ -405,7 +405,7 @@
             },
             "reproduction": {
                 "birth_energy": 50,
-                "offset_cost": 100,
+                "offset_cost": 250,
                 "offset_threshold": 50
             },
             "aging": {
@@ -427,7 +427,7 @@
             "speed": {
                 "move_point": 100,
                 "point_per_turn": 0,
-                "base_point_per_turn": 43,
+                "base_point_per_turn": 60,
                 "max_point": 100
             },
             "combat": {
@@ -487,7 +487,7 @@
             "speed": {
                 "move_point": 0,
                 "point_per_turn": 0,
-                "base_point_per_turn": 50,
+                "base_point_per_turn": 70,
                 "max_point": 100
             },
             "combat": {
@@ -547,7 +547,7 @@
             "speed": {
                 "move_point": 50,
                 "point_per_turn": 0,
-                "base_point_per_turn": 50,
+                "base_point_per_turn": 70,
                 "max_point": 100
             },
             "combat": {
@@ -558,6 +558,39 @@
             },
             "animal": {},
             "sexe": "FemaleStart"
+        },
+        {
+            "name": "Cadavre",
+            "renderable": {
+                "glyph": "X",
+                "fg": "#FFFFFF",
+                "bg": "#000000",
+                "order": 2
+            },
+            "blocks_tile": true,
+            "energy_reserve": {
+                "reserve": 0,
+                "body_energy": 0,
+                "max_reserve": 0,
+                "base_consumption": 0
+            },
+            "specie": {
+                "id": 2,
+                "name": "z"
+            },
+            "speed": {
+                "move_point": 0,
+                "point_per_turn": 0,
+                "base_point_per_turn": 0,
+                "max_point": 0
+            },
+            "combat": {
+                "max_hp": 0,
+                "hp": 0,
+                "defense": 0,
+                "power": 0
+            },
+            "animal": {}
         }
     ]
 }
