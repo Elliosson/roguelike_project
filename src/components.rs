@@ -2,6 +2,7 @@ extern crate specs;
 use specs::prelude::*;
 extern crate rltk;
 extern crate specs_derive;
+use super::MOVE_COST;
 use rltk::RGB;
 use serde::{Deserialize, Serialize};
 use specs::error::NoError;
@@ -240,6 +241,7 @@ pub enum Hunger {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct EnergyReserve {
     pub reserve: f32,
+    pub body_energy: f32,
     pub max_reserve: f32, //TODO max reserve never checked. for now just triger hunger
     pub base_consumption: f32,
     pub hunger: Hunger,
@@ -248,6 +250,9 @@ pub struct EnergyReserve {
 impl EnergyReserve {
     pub fn get_relative_reserve(&self) -> f32 {
         self.reserve / self.max_reserve
+    }
+    pub fn get_eating_gain(&self) -> f32 {
+        self.reserve + self.body_energy
     }
 }
 
@@ -339,6 +344,7 @@ pub struct GoOnTarget {
 pub struct Speed {
     pub move_point: i32,
     pub point_per_turn: i32,
+    pub base_point_per_turn: i32,
     pub max_point: i32,
 }
 
@@ -349,6 +355,9 @@ impl Speed {
         } else {
             self.move_point += new_point;
         }
+    }
+    pub fn speed(&self) -> f32 {
+        self.point_per_turn as f32 / MOVE_COST as f32
     }
 }
 

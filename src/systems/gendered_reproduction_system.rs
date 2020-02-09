@@ -156,6 +156,7 @@ impl<'a> System<'a> for GenderedReproductionSystem {
                     };
                     let new_energy_res = EnergyReserve {
                         reserve: 0.0, //No heritance
+                        body_energy: reprod.offset_cost as f32,
                         max_reserve: (eng_res.max_reserve + mate_energy.max_reserve) / 2.0,
                         base_consumption: 0.0, //No heritance
                         hunger: Hunger::Full,  //No heritance

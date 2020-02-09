@@ -393,22 +393,23 @@
             },
             "energy_reserve": {
                 "reserve": 50,
-                "max_reserve": 300,
+                "body_energy": 100,
+                "max_reserve": 1500,
                 "base_consumption": 1
             },
             "herbivore": {
                 "digestion": 1.0
             },
             "carnivore": {
-                "digestion": 0.1
+                "digestion": 0.0
             },
             "reproduction": {
                 "birth_energy": 50,
-                "offset_cost": 50,
+                "offset_cost": 100,
                 "offset_threshold": 50
             },
             "aging": {
-                "life_expectancy": 100,
+                "life_expectancy": 1200,
                 "age": 0
             },
             "temp_sensi": {
@@ -425,7 +426,8 @@
             },
             "speed": {
                 "move_point": 100,
-                "point_per_turn": 30,
+                "point_per_turn": 0,
+                "base_point_per_turn": 38,
                 "max_point": 100
             },
             "combat": {
@@ -451,39 +453,41 @@
             },
             "energy_reserve": {
                 "reserve": 300,
-                "max_reserve": 800,
+                "body_energy": 100,
+                "max_reserve": 2000,
                 "base_consumption": 1
             },
             "herbivore": {
-                "digestion": 0.1
+                "digestion": 0.0
             },
             "carnivore": {
                 "digestion": 1.0
             },
             "reproduction": {
-                "birth_energy": 200,
-                "offset_cost": 50,
-                "offset_threshold": 50
+                "birth_energy": 400,
+                "offset_cost": 100,
+                "offset_threshold": 200
             },
             "aging": {
-                "life_expectancy": 600,
+                "life_expectancy": 1200,
                 "age": 0
             },
             "temp_sensi": {
                 "optimum": 5,
-                "k": 0.02
+                "k": 0.0001
             },
             "hum_sensi": {
                 "optimum": 60,
-                "k": 0.001
+                "k": 0.0001
             },
             "specie": {
                 "id": 2,
                 "name": "c"
             },
             "speed": {
-                "move_point": 50,
-                "point_per_turn": 100,
+                "move_point": 0,
+                "point_per_turn": 0,
+                "base_point_per_turn": 50,
                 "max_point": 100
             },
             "combat": {
@@ -509,31 +513,32 @@
             },
             "energy_reserve": {
                 "reserve": 300,
-                "max_reserve": 700,
+                "body_energy": 100,
+                "max_reserve": 2000,
                 "base_consumption": 1
             },
             "herbivore": {
-                "digestion": 0.1
+                "digestion": 0.0
             },
             "carnivore": {
                 "digestion": 1.0
             },
             "reproduction": {
-                "birth_energy": 200,
-                "offset_cost": 50,
-                "offset_threshold": 50
+                "birth_energy": 400,
+                "offset_cost": 100,
+                "offset_threshold": 200
             },
             "aging": {
-                "life_expectancy": 600,
+                "life_expectancy": 1200,
                 "age": 0
             },
             "temp_sensi": {
                 "optimum": 5,
-                "k": 0.02
+                "k": 0.0001
             },
             "hum_sensi": {
                 "optimum": 60,
-                "k": 0.001
+                "k": 0.0001
             },
             "specie": {
                 "id": 2,
@@ -541,7 +546,8 @@
             },
             "speed": {
                 "move_point": 50,
-                "point_per_turn": 100,
+                "point_per_turn": 0,
+                "base_point_per_turn": 50,
                 "max_point": 100
             },
             "combat": {

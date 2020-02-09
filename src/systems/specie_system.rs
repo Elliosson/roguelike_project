@@ -39,7 +39,7 @@ impl<'a> System<'a> for SpecieSystem {
 
         let mut species_hash: HashMap<String, Vec<Entity>> = HashMap::new();
 
-        let max_specie_member = 100;
+        let max_specie_member = 150;
 
         //create an hash map of all the member of all specie
         for (entity, specie, _temp_sens) in (&entities, &mut species, &temp_sensis).join() {

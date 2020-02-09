@@ -49,7 +49,8 @@ extern crate lazy_static;
 rltk::add_wasm_support!();
 
 pub const WINDOWWIDTH: usize = 200;
-pub const WINDOWHEIGHT: usize = 90;
+pub const WINDOWHEIGHT: usize = 120;
+pub const MOVE_COST: i32 = 100;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -195,6 +196,8 @@ impl GameState for State {
             RunState::PlayerTurn => {
                 self.run_systems();
                 self.ecs.maintain();
+                //self.run_systems();
+                //self.ecs.maintain();
                 newrunstate = RunState::MonsterTurn;
             }
             RunState::MonsterTurn => {
@@ -613,32 +616,78 @@ fn main() {
         spawn_named(&mut gs.ecs, "Cow", 30, 12);
         spawn_named(&mut gs.ecs, "Cow", 30, 13);
         spawn_named(&mut gs.ecs, "Cow", 30, 14);
-        spawn_named(&mut gs.ecs, "Wolve", 20, 10);
-        spawn_named(&mut gs.ecs, "WolveF", 20, 15);
+        spawn_named(&mut gs.ecs, "Wolve", 10, 10);
+        spawn_named(&mut gs.ecs, "WolveF", 10, 15);
 
-        spawn_named(&mut gs.ecs, "Cow", 30, 4);
-        spawn_named(&mut gs.ecs, "Cow", 30, 5);
-        spawn_named(&mut gs.ecs, "Cow", 30, 6);
-        spawn_named(&mut gs.ecs, "Cow", 30, 7);
-        spawn_named(&mut gs.ecs, "Cow", 30, 8);
-        spawn_named(&mut gs.ecs, "Cow", 30, 9);
-        spawn_named(&mut gs.ecs, "Cow", 30, 10);
-        spawn_named(&mut gs.ecs, "Cow", 30, 11);
-        spawn_named(&mut gs.ecs, "Cow", 30, 12);
-        spawn_named(&mut gs.ecs, "Cow", 30, 13);
-        spawn_named(&mut gs.ecs, "Cow", 30, 14);
+        spawn_named(&mut gs.ecs, "Cow", 50, 4);
+        spawn_named(&mut gs.ecs, "Cow", 50, 5);
+        spawn_named(&mut gs.ecs, "Cow", 50, 6);
+        spawn_named(&mut gs.ecs, "Cow", 50, 7);
+        spawn_named(&mut gs.ecs, "Cow", 50, 8);
+        spawn_named(&mut gs.ecs, "Cow", 50, 9);
+        spawn_named(&mut gs.ecs, "Cow", 50, 10);
+        spawn_named(&mut gs.ecs, "Cow", 50, 11);
+        spawn_named(&mut gs.ecs, "Cow", 50, 12);
+        spawn_named(&mut gs.ecs, "Cow", 50, 13);
+        spawn_named(&mut gs.ecs, "Cow", 50, 14);
 
-        spawn_named(&mut gs.ecs, "Cow", 30, 4);
-        spawn_named(&mut gs.ecs, "Cow", 30, 5);
-        spawn_named(&mut gs.ecs, "Cow", 30, 6);
-        spawn_named(&mut gs.ecs, "Cow", 30, 7);
-        spawn_named(&mut gs.ecs, "Cow", 30, 8);
-        spawn_named(&mut gs.ecs, "Cow", 30, 9);
-        spawn_named(&mut gs.ecs, "Cow", 30, 10);
-        spawn_named(&mut gs.ecs, "Cow", 30, 11);
-        spawn_named(&mut gs.ecs, "Cow", 30, 12);
-        spawn_named(&mut gs.ecs, "Cow", 30, 13);
-        spawn_named(&mut gs.ecs, "Cow", 30, 14);
+        spawn_named(&mut gs.ecs, "Cow", 70, 4);
+        spawn_named(&mut gs.ecs, "Cow", 70, 5);
+        spawn_named(&mut gs.ecs, "Cow", 70, 6);
+        spawn_named(&mut gs.ecs, "Cow", 70, 7);
+        spawn_named(&mut gs.ecs, "Cow", 70, 8);
+        spawn_named(&mut gs.ecs, "Cow", 70, 9);
+        spawn_named(&mut gs.ecs, "Cow", 70, 10);
+        spawn_named(&mut gs.ecs, "Cow", 70, 11);
+        spawn_named(&mut gs.ecs, "Cow", 70, 12);
+        spawn_named(&mut gs.ecs, "Cow", 70, 13);
+        spawn_named(&mut gs.ecs, "Cow", 70, 14);
+
+        spawn_named(&mut gs.ecs, "Cow", 40, 4);
+        spawn_named(&mut gs.ecs, "Cow", 40, 5);
+        spawn_named(&mut gs.ecs, "Cow", 40, 6);
+        spawn_named(&mut gs.ecs, "Cow", 40, 7);
+        spawn_named(&mut gs.ecs, "Cow", 40, 8);
+        spawn_named(&mut gs.ecs, "Cow", 40, 9);
+        spawn_named(&mut gs.ecs, "Cow", 40, 10);
+        spawn_named(&mut gs.ecs, "Cow", 40, 11);
+        spawn_named(&mut gs.ecs, "Cow", 40, 12);
+        spawn_named(&mut gs.ecs, "Cow", 40, 13);
+        spawn_named(&mut gs.ecs, "Cow", 40, 14);
+
+        spawn_named(&mut gs.ecs, "Cow", 20, 4);
+        spawn_named(&mut gs.ecs, "Cow", 20, 5);
+        spawn_named(&mut gs.ecs, "Cow", 20, 6);
+        spawn_named(&mut gs.ecs, "Cow", 20, 7);
+        spawn_named(&mut gs.ecs, "Cow", 20, 8);
+        spawn_named(&mut gs.ecs, "Cow", 20, 9);
+        spawn_named(&mut gs.ecs, "Cow", 20, 10);
+        spawn_named(&mut gs.ecs, "Cow", 20, 11);
+        spawn_named(&mut gs.ecs, "Cow", 20, 12);
+        spawn_named(&mut gs.ecs, "Cow", 20, 13);
+        spawn_named(&mut gs.ecs, "Cow", 20, 14);
+
+        spawn_named(&mut gs.ecs, "Cow", 50, 10);
+        spawn_named(&mut gs.ecs, "Cow", 50, 11);
+        spawn_named(&mut gs.ecs, "Cow", 50, 12);
+        spawn_named(&mut gs.ecs, "Cow", 50, 13);
+        spawn_named(&mut gs.ecs, "Cow", 50, 14);
+        spawn_named(&mut gs.ecs, "Cow", 50, 15);
+        spawn_named(&mut gs.ecs, "Cow", 50, 16);
+        spawn_named(&mut gs.ecs, "Cow", 50, 17);
+        spawn_named(&mut gs.ecs, "Cow", 50, 18);
+        spawn_named(&mut gs.ecs, "Cow", 50, 19);
+
+        spawn_named(&mut gs.ecs, "Cow", 50, 30);
+        spawn_named(&mut gs.ecs, "Cow", 50, 31);
+        spawn_named(&mut gs.ecs, "Cow", 50, 32);
+        spawn_named(&mut gs.ecs, "Cow", 50, 33);
+        spawn_named(&mut gs.ecs, "Cow", 50, 34);
+        spawn_named(&mut gs.ecs, "Cow", 50, 35);
+        spawn_named(&mut gs.ecs, "Cow", 50, 36);
+        spawn_named(&mut gs.ecs, "Cow", 50, 37);
+        spawn_named(&mut gs.ecs, "Cow", 50, 38);
+        spawn_named(&mut gs.ecs, "Cow", 50, 39);
     }
 
     gs.ecs.insert(map);

@@ -22,8 +22,8 @@ impl<'a> System<'a> for TemperatureSystem {
         let (_entities, _log, mut _world_logs, mut map, date) = data;
 
         //Pour l'instant
-        //gradiant de temperature constant de 30C entre le nord le sud
-        let latitude_variation = 30.0;
+        //gradiant de temperature constant de 15C entre le nord le sud
+        let latitude_variation = 15.0;
         //temperature entre plus frid et plus chaud
         //1jour de l'anné remp min, temp max au jour 182
         let saisonal_variation = 5.0;

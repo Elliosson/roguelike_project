@@ -3,8 +3,8 @@ use rltk::{Console, Point, Rltk, VirtualKeyCode, RGB};
 extern crate specs;
 use super::{
     gamelog::{GameLog, SpeciesInstantLog},
-    CombatStats, Date, EnergyReserve, Equipped, Female, InBackpack, InteractableObject,
-    Interaction, Male, Map, Name, Player, Position, Reproduction, RunState, Specie, State,
+    Aging, CombatStats, Date, EnergyReserve, Equipped, Female, InBackpack, InteractableObject,
+    Interaction, Male, Map, Name, Player, Position, Reproduction, RunState, Specie, Speed, State,
     Viewshed, MAPWIDTH, WINDOWHEIGHT, WINDOWWIDTH,
 };
 use specs::prelude::*;
@@ -96,15 +96,21 @@ fn fetch_carac(ecs: &World, tooltip: &mut Vec<String>, x: i32, y: i32) {
     let species = ecs.read_storage::<Specie>();
     let males = ecs.read_storage::<Male>();
     let females = ecs.read_storage::<Female>();
+    let speeds = ecs.read_storage::<Speed>();
+    let ages = ecs.read_storage::<Aging>();
 
-    for (entity, name, position, energy, reprod, specie) in
-        (&entities, &names, &positions, &energies, &reprods, &species).join()
+    for (entity, name, position, energy, reprod, specie, speed, age) in (
+        &entities, &names, &positions, &energies, &reprods, &species, &speeds, &ages,
+    )
+        .join()
     {
         if position.x == x && position.y == y {
-            tooltip.push(name.name.to_string());
-            tooltip.push(energy.reserve.to_string());
-            tooltip.push(reprod.threshold().to_string());
-            tooltip.push(specie.name.to_string());
+            tooltip.push(format!("name {}", name.name));
+            tooltip.push(format!("eng {}", energy.reserve));
+            tooltip.push(format!("rprd {}", reprod.threshold()));
+            tooltip.push(format!("spci {}", specie.name));
+            tooltip.push(format!("spd {}", speed.point_per_turn));
+            tooltip.push(format!("age {}", age.age));
             if let Some(_male) = males.get(entity) {
                 tooltip.push("male".to_string());
             }

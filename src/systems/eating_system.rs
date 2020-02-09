@@ -60,10 +60,12 @@ impl<'a> System<'a> for EatingSystem {
                     {
                         let en_res = energy_reserves.get_mut(entity).unwrap();
                         en_res.reserve += target_en_res.reserve * carnivore.digestion;
+                        en_res.reserve += target_en_res.body_energy * carnivore.digestion;
                     }
                     {
                         let target_en_res = energy_reserves.get_mut(want_to_eat.target).unwrap();
                         target_en_res.reserve = 0.0;
+                        target_en_res.body_energy = 0.0;
                     }
                     //target_en_res.reserve = 0.0;
 

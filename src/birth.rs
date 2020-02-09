@@ -229,7 +229,7 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
     }
 
     if let Some(speed) = &mut mutations.speed {
-        speed.point_per_turn = max(0, speed.point_per_turn + rng.gen_range(-4, 5));
+        speed.base_point_per_turn = max(0, speed.base_point_per_turn + rng.gen_range(-4, 5));
         speed.move_point = 0;
     }
 
@@ -238,7 +238,7 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
             1.0,
             f32::max(
                 0.0,
-                herbivore.digestion + (rng.gen_range(-8, 9) as f32 / 100.0),
+                herbivore.digestion + (rng.gen_range(-1, 2) as f32 / 100.0),
             ),
         );
     }
@@ -248,7 +248,7 @@ pub fn change_mutation(mut mutations: Mutations) -> Mutations {
             1.0,
             f32::max(
                 0.0,
-                carnivore.digestion + (rng.gen_range(-8, 9) as f32 / 100.0),
+                carnivore.digestion + (rng.gen_range(-1, 2) as f32 / 100.0),
             ),
         );
     }
@@ -273,8 +273,8 @@ fn base_comsumption(mutations: Mutations) -> f32 {
     }
 
     if let Some(speed) = &mutations.speed {
-        //features_cost += (speed.point_per_turn * speed.point_per_turn) as f32 / 200.0;
-        features_cost += speed.point_per_turn as f32 / 100.0;
+        features_cost += (speed.base_point_per_turn * speed.base_point_per_turn) as f32 / 400.0;
+        //features_cost += speed.base_point_per_turn as f32 / 100.0;
     }
 
     if let Some(herbivore) = &mutations.herbivore {

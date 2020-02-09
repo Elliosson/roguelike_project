@@ -1,8 +1,8 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, SpeciesInstantLog, WorldStatLog},
-    Carnivore, CombatStats, Date, EnergyReserve, Herbivore, HumiditySensitive, Name, Renderable,
-    Reproduction, Specie, Speed, TemperatureSensitive,
+    Aging, Carnivore, CombatStats, Date, EnergyReserve, Herbivore, HumiditySensitive, Name,
+    Renderable, Reproduction, Specie, Speed, TemperatureSensitive,
 };
 use specs::prelude::*;
 use std::collections::BTreeMap;
@@ -28,6 +28,7 @@ impl<'a> System<'a> for StatSystem {
         ReadStorage<'a, Herbivore>,
         ReadStorage<'a, Carnivore>,
         ReadStorage<'a, CombatStats>,
+        ReadStorage<'a, Aging>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -48,6 +49,7 @@ impl<'a> System<'a> for StatSystem {
             herbivores,
             carnivores,
             combat_stats,
+            agings,
         ) = data;
 
         let mut thresholds = Vec::new();
@@ -64,7 +66,7 @@ impl<'a> System<'a> for StatSystem {
             birth_energy.push(reprod.birth_energy);
             max_res.push(energy_res.max_reserve);
             consumptions.push(energy_res.base_consumption);
-            move_points_turn.push(speed.point_per_turn);
+            move_points_turn.push(speed.base_point_per_turn);
         }
 
         let len = thresholds.iter().len();
@@ -123,6 +125,7 @@ impl<'a> System<'a> for StatSystem {
             let mut herbivore_digestion = 0.0;
             let mut carnivore_digestion = 0.0;
             let mut power = 0.0;
+            let mut age = 0.0;
             let number = member_list.len();
 
             //Do the mean of the vamue of each caracteristique for the specie
@@ -135,6 +138,7 @@ impl<'a> System<'a> for StatSystem {
                 let herbivore = herbivores.get(*member).unwrap();
                 let carnivore = carnivores.get(*member).unwrap();
                 let combat_stat = combat_stats.get(*member).unwrap();
+                let aging = agings.get(*member).unwrap();
 
                 optimum += temp_sensi.optimum;
                 hum_optimum += hum_sensi.optimum;
@@ -143,10 +147,11 @@ impl<'a> System<'a> for StatSystem {
                 birth_energy += reproduction.birth_energy;
                 offset_threshold += reproduction.offset_threshold;
                 move_point += speed.move_point;
-                move_point_turn += speed.point_per_turn;
+                move_point_turn += speed.base_point_per_turn;
                 herbivore_digestion += herbivore.digestion;
                 carnivore_digestion += carnivore.digestion;
                 power += combat_stat.power as f32;
+                age += aging.age as f32;
             }
 
             optimum = optimum / number as f32;
@@ -160,6 +165,7 @@ impl<'a> System<'a> for StatSystem {
             herbivore_digestion = herbivore_digestion / number as f32;
             carnivore_digestion = carnivore_digestion / number as f32;
             power = power / number as f32;
+            age = age / number as f32;
 
             let mut string_vec = Vec::new();
 
@@ -180,7 +186,10 @@ impl<'a> System<'a> for StatSystem {
                 herbivore_digestion, carnivore_digestion, power
             );
             string_vec.push(buf);
-            let buf = format!("move_point: {}, point turn {}", move_point, move_point_turn);
+            let buf = format!(
+                "move_point: {}, point turn {}, age {:.1}",
+                move_point, move_point_turn, age
+            );
             string_vec.push(buf);
             species_log
                 .entries

@@ -288,6 +288,7 @@ pub fn spawn_named_prop(
         if let Some(energy_reserve) = &prop_template.energy_reserve {
             eb = eb.with(EnergyReserve {
                 reserve: energy_reserve.reserve,
+                body_energy: energy_reserve.body_energy,
                 max_reserve: energy_reserve.max_reserve,
                 base_consumption: energy_reserve.base_consumption,
                 hunger: Hunger::Full,
@@ -461,6 +462,7 @@ pub fn spawn_born(
             eb = eb.with(EnergyReserve {
                 reserve: energy_reserve.reserve,
                 max_reserve: energy_reserve.max_reserve,
+                body_energy: energy_reserve.body_energy,
                 base_consumption: energy_reserve.base_consumption,
                 hunger: Hunger::Full,
             });

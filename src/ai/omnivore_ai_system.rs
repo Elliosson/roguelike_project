@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
     Animal, Carnivore, CombatStats, EnergyReserve, GoOnTarget, Herbivore, Hunger, Leaf, Map,
-    MyChoosenFood, MyTurn, Point, Position, RunState, SearchScope, Specie, TargetedForEat,
+    MyChoosenFood, MyTurn, Point, Position, RunState, SearchScope, Specie, Speed, TargetedForEat,
     Viewshed, WantToEat, WantsToFlee,
 };
 use specs::prelude::*;
@@ -32,6 +32,7 @@ impl<'a> System<'a> for OmnivoreAI {
         WriteStorage<'a, MyTurn>,
         WriteStorage<'a, MyChoosenFood>,
         WriteStorage<'a, CombatStats>,
+        WriteStorage<'a, Speed>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -54,6 +55,7 @@ impl<'a> System<'a> for OmnivoreAI {
             mut turns,
             mut my_choosen_foods,
             mut combat_stats,
+            speeds,
         ) = data;
 
         targeted_eats.clear(); //TODO dirty, create a system specificaly to clear this.
@@ -176,6 +178,9 @@ impl<'a> System<'a> for OmnivoreAI {
                         &mut go_targets,
                         &mut my_choosen_foods,
                         &mut combat_stats,
+                        &speeds,
+                        &energy_reserves,
+                        &animals,
                     ) {
                         //if find food, end turn
                         turn_done.push(entity);
@@ -191,6 +196,9 @@ impl<'a> System<'a> for OmnivoreAI {
                                 &mut go_targets,
                                 &mut my_choosen_foods,
                                 &mut combat_stats,
+                                &speeds,
+                                &energy_reserves,
+                                &animals,
                             ) {
                                 //if find food, end turn
                                 turn_done.push(entity);
@@ -206,6 +214,9 @@ impl<'a> System<'a> for OmnivoreAI {
                         &mut go_targets,
                         &mut my_choosen_foods,
                         &mut combat_stats,
+                        &speeds,
+                        &energy_reserves,
+                        &animals,
                     ) {
                         //if find food, end turn
                         turn_done.push(entity);
@@ -219,6 +230,9 @@ impl<'a> System<'a> for OmnivoreAI {
                                 &mut go_targets,
                                 &mut my_choosen_foods,
                                 &mut combat_stats,
+                                &speeds,
+                                &energy_reserves,
+                                &animals,
                             ) {
                                 //if find food, end turn
                                 turn_done.push(entity);
@@ -278,6 +292,9 @@ fn choose_food<'a>(
     go_targets: &mut WriteStorage<'a, GoOnTarget>,
     my_choosen_foods: &mut WriteStorage<'a, MyChoosenFood>,
     combat_stats: &mut WriteStorage<'a, CombatStats>,
+    speeds: &WriteStorage<'a, Speed>,
+    energies: &WriteStorage<'a, EnergyReserve>,
+    animals: &WriteStorage<'a, Animal>,
 ) -> bool {
     let mut ret = false;
     let mut choosen_food: Option<Entity> = None;
@@ -288,16 +305,23 @@ fn choose_food<'a>(
         let food_pos = positions.get(food).unwrap();
         let maybe_targeted_eat = targeted_eats.get(food);
 
-        //If food can fight, only go if I am stronger
-        if am_i_stronger(&combat_stats, entity, food) {
-            //if their is a other creature that want the target, then I only go if I am closer
-            let mut competitor_distance = std::f32::MAX;
-            if let Some(targeted) = maybe_targeted_eat {
-                competitor_distance = targeted.distance;
-            }
-            let distance = rltk::DistanceAlg::Pythagoras
-                .distance2d(Point::new(pos.x, pos.y), Point::new(food_pos.x, food_pos.y));
-            if (distance < min) && (distance < competitor_distance) {
+        //if their is a other creature that want the target, then I only go if I am closer
+        let mut competitor_distance = std::f32::MAX;
+        if let Some(targeted) = maybe_targeted_eat {
+            competitor_distance = targeted.distance;
+        }
+        let distance = rltk::DistanceAlg::Pythagoras
+            .distance2d(Point::new(pos.x, pos.y), Point::new(food_pos.x, food_pos.y));
+        if (distance < min) && (distance < competitor_distance) {
+            //If food can fight, only go if I am stronger
+            if let Some(_animal) = animals.get(food) {
+                if am_i_stronger(&combat_stats, entity, food)
+                    && hunt_gain(&speeds, &energies, &positions, entity, food)
+                {
+                    choosen_food = Some(food);
+                    min = distance;
+                }
+            } else {
                 choosen_food = Some(food);
                 min = distance;
             }
@@ -362,4 +386,62 @@ pub fn am_i_stronger<'a>(
         ret = true
     }
     ret
+}
+
+//check combat stat to se if I am stronger
+//Also return true If the enemy doesn't have combat stat
+pub fn am_i_faster<'a>(speeds: &WriteStorage<'a, Speed>, me: Entity, enemy: Entity) -> bool {
+    let my_speed = speeds.get(me).unwrap();
+    let ret;
+
+    if let Some(enemy_speed) = speeds.get(enemy) {
+        let relative_speed = my_speed.point_per_turn as f32 / enemy_speed.point_per_turn as f32;
+        if relative_speed > 1.0 {
+            ret = true;
+        } else {
+            ret = false;
+        }
+    } else {
+        ret = true
+    }
+    ret
+}
+
+//TODO not very accurate because not take in count digestion
+// TODO also not take in coutn that the body_energy is not consume in the hunt
+pub fn hunt_gain<'a>(
+    speeds: &WriteStorage<'a, Speed>,
+    energies: &WriteStorage<'a, EnergyReserve>,
+    positions: &WriteStorage<'a, Position>,
+    me: Entity,
+    enemy: Entity,
+) -> bool {
+    let my_speed = speeds.get(me).unwrap();
+    let my_energy = energies.get(me).unwrap();
+    let enemy_speed = speeds.get(enemy).unwrap();
+    let enemy_energy = energies.get(enemy).unwrap();
+    let my_pos = positions.get(me).unwrap();
+    let enemy_pos = positions.get(enemy).unwrap();
+    let must_hunt;
+
+    if my_speed.speed() > enemy_speed.speed() {
+        let distance = rltk::DistanceAlg::Pythagoras.distance2d(
+            Point::new(my_pos.x, my_pos.y),
+            Point::new(enemy_pos.x, enemy_pos.y),
+        );
+
+        let chase_time: f32 = distance / (my_speed.speed() - enemy_speed.speed());
+        let energy_cost: f32 = chase_time * my_energy.base_consumption;
+        let energy_gain: f32 =
+            enemy_energy.get_eating_gain() - chase_time * enemy_energy.base_consumption;
+        let hunt_benefice = energy_gain - energy_cost;
+        if hunt_benefice > 0.0 {
+            must_hunt = true;
+        } else {
+            must_hunt = false;
+        }
+    } else {
+        must_hunt = false;
+    }
+    must_hunt
 }

@@ -112,6 +112,7 @@ pub fn spawn_named_prop_ingame(data: SpwanPropData, key: &str, pos: SpawnType) {
                 EnergyReserve {
                     reserve: energy_reserve.reserve,
                     max_reserve: energy_reserve.max_reserve,
+                    body_energy: energy_reserve.body_energy,
                     base_consumption: energy_reserve.base_consumption,
                     hunger: Hunger::Full,
                 },

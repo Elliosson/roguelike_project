@@ -68,7 +68,7 @@ pub fn spawn_trees(ecs: &mut World, room: &Rect) {
     // Scope to keep the borrow checker happy
     {
         let mut rng = ecs.write_resource::<RandomNumberGenerator>();
-        let num_spawns = rng.roll_dice(50, 50);
+        let num_spawns = rng.roll_dice(60, 50);
 
         for _i in 0..num_spawns {
             let mut added = false;
@@ -455,6 +455,7 @@ pub fn _cow(ecs: &mut World, x: i32, y: i32) {
         .with(EnergyReserve {
             reserve: 10.0,
             max_reserve: 200.0,
+            body_energy: 100.0,
             base_consumption: 1.0,
             hunger: Hunger::Full,
         })

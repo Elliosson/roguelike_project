@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, GeneralLog},
-    Aging, ToDelete,
+    Aging, Speed, ToDelete,
 };
 use specs::prelude::*;
 
@@ -15,10 +15,11 @@ impl<'a> System<'a> for AgingSystem {
         WriteExpect<'a, GeneralLog>,
         WriteStorage<'a, Aging>,
         WriteStorage<'a, ToDelete>,
+        WriteStorage<'a, Speed>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, mut log, mut general_log, mut agings, mut to_deletes) = data;
+        let (entities, mut log, mut general_log, mut agings, mut to_deletes, mut speeds) = data;
 
         //For now just kill when the creature reach the life expetancy
         for (entity, aging) in (&entities, &mut agings).join() {
@@ -34,6 +35,21 @@ impl<'a> System<'a> for AgingSystem {
                 general_log
                     .entries
                     .push(format!("Entity {} is dead of  old age.", entity.id()));
+            }
+        }
+
+        //while aging the speed diminish (less move point per turn)
+        for (_entity, aging, speed) in (&entities, &agings, &mut speeds).join() {
+            /*if aging.age < aging.life_expectancy / 10 {
+                let aging_factor: f32 = (aging.age) as f32 / (aging.life_expectancy as f32 / 10.0);
+                speed.point_per_turn = (speed.base_point_per_turn as f32 * aging_factor) as i32;
+            } else */
+            if aging.age > aging.life_expectancy / 2 {
+                let aging_factor: f32 = (aging.life_expectancy - aging.age) as f32
+                    / (aging.life_expectancy as f32 / 2.0);
+                speed.point_per_turn = (speed.base_point_per_turn as f32 * aging_factor) as i32;
+            } else {
+                speed.point_per_turn = speed.base_point_per_turn;
             }
         }
     }

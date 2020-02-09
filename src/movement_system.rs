@@ -1,5 +1,7 @@
 extern crate specs;
-use super::{ApplyMove, BlocksTile, EntityMoved, Map, Position, RunState, Viewshed};
+use super::{
+    ApplyMove, BlocksTile, EntityMoved, Map, Position, RunState, Speed, Viewshed, MOVE_COST,
+};
 use specs::prelude::*;
 
 pub struct MovementSystem {}
@@ -16,6 +18,7 @@ impl<'a> System<'a> for MovementSystem {
         WriteStorage<'a, Viewshed>,
         ReadExpect<'a, Entity>,
         WriteExpect<'a, RunState>,
+        WriteStorage<'a, Speed>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -29,25 +32,32 @@ impl<'a> System<'a> for MovementSystem {
             mut viewsheds,
             _player_entity,
             mut _runstate,
+            mut speeds,
         ) = data;
 
         // Apply broad movement
-        for (entity, movement, mut pos) in (&entities, &apply_move, &mut position).join() {
-            let start_idx = map.xy_idx(pos.x, pos.y);
-            let dest_idx = movement.dest_idx as usize;
-            let is_blocking = blockers.get(entity);
-            if is_blocking.is_some() {
-                map.blocked[start_idx] = false;
-                map.blocked[dest_idx] = true;
+        for (entity, movement, mut pos, speed) in
+            (&entities, &apply_move, &mut position, &mut speeds).join()
+        {
+            if speed.move_point >= MOVE_COST {
+                let start_idx = map.xy_idx(pos.x, pos.y);
+                let dest_idx = movement.dest_idx as usize;
+                let is_blocking = blockers.get(entity);
+                if is_blocking.is_some() {
+                    map.blocked[start_idx] = false;
+                    map.blocked[dest_idx] = true;
+                }
+                pos.x = movement.dest_idx % map.width;
+                pos.y = movement.dest_idx / map.width;
+                if let Some(vs) = viewsheds.get_mut(entity) {
+                    vs.dirty = true;
+                }
+                moved
+                    .insert(entity, EntityMoved {})
+                    .expect("Unable to insert");
+
+                speed.move_point -= MOVE_COST;
             }
-            pos.x = movement.dest_idx % map.width;
-            pos.y = movement.dest_idx / map.width;
-            if let Some(vs) = viewsheds.get_mut(entity) {
-                vs.dirty = true;
-            }
-            moved
-                .insert(entity, EntityMoved {})
-                .expect("Unable to insert");
         }
         apply_move.clear();
     }
