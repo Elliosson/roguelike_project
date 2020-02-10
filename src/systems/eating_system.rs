@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, GeneralLog},
-    Animal, Carnivore, EnergyReserve, Herbivore, Hunger, Leaf, Specie, ToDelete, WantToEat,
+    Animal, Carnivore, EnergyReserve, Herbivore, Hunger, Leaf, Meat, Specie, ToDelete, WantToEat,
 };
 use specs::prelude::*;
 
@@ -21,6 +21,7 @@ impl<'a> System<'a> for EatingSystem {
         WriteStorage<'a, Carnivore>,
         WriteExpect<'a, GeneralLog>,
         WriteStorage<'a, Animal>,
+        WriteStorage<'a, Meat>,
     );
     fn run(&mut self, data: Self::SystemData) {
         let (
@@ -35,6 +36,7 @@ impl<'a> System<'a> for EatingSystem {
             carnivore,
             mut general_logs,
             animals,
+            mut meats,
         ) = data;
 
         let mut eated_leafs: Vec<Entity> = Vec::new();
@@ -49,9 +51,7 @@ impl<'a> System<'a> for EatingSystem {
                     leaf.nutriments = 0; //TODO maybe do something proper to imediatly suppress the leaf
                     eated_leafs.push(want_to_eat.target);
                 }
-            }
-            //For now a specie is only for aniaml, to change probably
-            else if let Some(_animal) = animals.get(want_to_eat.target) {
+            } else if let Some(_animal) = animals.get(want_to_eat.target) {
                 let target_en_res = energy_reserves.get(want_to_eat.target).unwrap().clone();
                 let en_res = energy_reserves.get(entity).unwrap().clone();
                 if en_res.hunger == Hunger::Hungry {
@@ -86,6 +86,26 @@ impl<'a> System<'a> for EatingSystem {
                         entity.id(),
                         killer_specie.name
                     ));
+                }
+            } else if let Some(meat) = meats.get_mut(want_to_eat.target) {
+                let en_res = energy_reserves.get(entity).unwrap().clone();
+                if en_res.hunger == Hunger::Hungry {
+                    let carnivore = carnivore.get(entity).unwrap();
+                    //TODO check this in the ai it's confusing to do it here
+                    {
+                        let en_res = energy_reserves.get_mut(entity).unwrap();
+                        en_res.reserve += meat.nutriments * carnivore.digestion;
+                    }
+
+                    meat.nutriments = 0.0;
+
+                    //TODO do something to prevent double eat
+                    //delete entity
+                    to_deletes
+                        .insert(want_to_eat.target, ToDelete {})
+                        .expect("Unable to insert");
+
+                    log.entries.insert(0, format!("A meat have been eated"));
                 }
             }
         }

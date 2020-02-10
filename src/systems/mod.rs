@@ -36,3 +36,5 @@ mod go_target_system;
 pub use go_target_system::GoTargetSystem;
 mod action_point_systeme;
 pub use action_point_systeme::ActionPointSystem;
+mod death_system;
+pub use death_system::DeathSystem;

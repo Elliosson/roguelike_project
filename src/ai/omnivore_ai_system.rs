@@ -1,6 +1,6 @@
 extern crate specs;
 use crate::{
-    Animal, Carnivore, CombatStats, EnergyReserve, GoOnTarget, Herbivore, Hunger, Leaf, Map,
+    Animal, Carnivore, CombatStats, EnergyReserve, GoOnTarget, Herbivore, Hunger, Leaf, Map, Meat,
     MyChoosenFood, MyTurn, Point, Position, RunState, SearchScope, Specie, Speed, TargetedForEat,
     Viewshed, WantToEat, WantsToFlee,
 };
@@ -33,6 +33,7 @@ impl<'a> System<'a> for OmnivoreAI {
         WriteStorage<'a, MyChoosenFood>,
         WriteStorage<'a, CombatStats>,
         WriteStorage<'a, Speed>,
+        WriteStorage<'a, Meat>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -56,6 +57,7 @@ impl<'a> System<'a> for OmnivoreAI {
             mut my_choosen_foods,
             mut combat_stats,
             speeds,
+            mut meats,
         ) = data;
 
         targeted_eats.clear(); //TODO dirty, create a system specificaly to clear this.

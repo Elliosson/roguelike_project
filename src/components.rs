@@ -407,6 +407,22 @@ pub struct MyChoosenFood {
     pub target: Entity,
 }
 
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub enum DeathCause {
+    Natural,
+    Killed { killer: Entity },
+}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct Dead {
+    pub cause: DeathCause,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Meat {
+    pub nutriments: f32,
+}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 pub struct SerializeMe;

@@ -589,6 +589,8 @@ fn main() {
     gs.ecs.register::<Female>();
     gs.ecs.register::<MyChoosenFood>();
     gs.ecs.register::<InHeat>();
+    gs.ecs.register::<Meat>();
+    gs.ecs.register::<Dead>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
