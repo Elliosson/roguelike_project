@@ -1,7 +1,7 @@
 extern crate specs;
 use crate::{
     gamelog::{GameLog, GeneralLog},
-    EnergyReserve, Hunger, ToDelete,
+    Dead, DeathCause, EnergyReserve, Hunger, ToDelete,
 };
 use specs::prelude::*;
 
@@ -15,10 +15,12 @@ impl<'a> System<'a> for EnergySystem {
         WriteExpect<'a, GeneralLog>,
         WriteStorage<'a, EnergyReserve>,
         WriteStorage<'a, ToDelete>,
+        WriteStorage<'a, Dead>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, mut log, mut general_log, mut energy_reserves, mut to_deletes) = data;
+        let (entities, mut log, mut general_log, mut energy_reserves, mut to_deletes, mut deads) =
+            data;
 
         for (entity, mut en_res) in (&entities, &mut energy_reserves).join() {
             //consumption of energy
@@ -26,9 +28,15 @@ impl<'a> System<'a> for EnergySystem {
 
             if en_res.reserve <= 0.0 {
                 //kill entity
-                to_deletes
-                    .insert(entity, ToDelete {})
-                    .expect("Unable to insert");
+
+                deads
+                    .insert(
+                        entity,
+                        Dead {
+                            cause: DeathCause::Natural,
+                        },
+                    )
+                    .expect("Unable to inset");
 
                 log.entries
                     .insert(0, format!("A entity is dead of starvation."));

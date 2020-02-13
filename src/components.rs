@@ -7,6 +7,7 @@ use rltk::RGB;
 use serde::{Deserialize, Serialize};
 use specs::error::NoError;
 use specs::saveload::{ConvertSaveload, Marker};
+use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 #[derive(Component, ConvertSaveload, Clone)]
@@ -421,6 +422,19 @@ pub struct Dead {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Meat {
     pub nutriments: f32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub enum FoodType {
+    Meat,
+    Animal,
+    Vegetable,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct FoodPreference {
+    //associate a level of hunger with a food type
+    pub choices: BTreeMap<i32, FoodType>,
 }
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an

@@ -10,3 +10,7 @@ mod omnivore_ai_system;
 pub use omnivore_ai_system::OmnivoreAI;
 mod seach_parter_ai;
 pub use seach_parter_ai::SearchParterAI;
+mod targeting_ai;
+pub use targeting_ai::TargetingAI;
+mod eating_ai;
+pub use eating_ai::EatingKillingAI;

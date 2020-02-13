@@ -1,17 +1,17 @@
 extern crate specs;
 use crate::{
-    Animal, Carnivore, CombatStats, EnergyReserve, GoOnTarget, Herbivore, Hunger, Leaf, Map, Meat,
-    MyChoosenFood, MyTurn, Point, Position, RunState, SearchScope, Specie, Speed, TargetedForEat,
-    Viewshed, WantToEat, WantsToFlee,
+    Animal, Carnivore, CombatStats, EnergyReserve, FoodPreference, FoodType, GoOnTarget, Herbivore,
+    Leaf, Map, Meat, MyChoosenFood, MyTurn, Point, Position, RunState, SearchScope, Specie, Speed,
+    TargetedForEat, Viewshed, WantsToFlee,
 };
 use specs::prelude::*;
 extern crate rltk;
 
 //use std::time::{Duration, Instant};
 
-pub struct OmnivoreAI {}
+pub struct TargetingAI {}
 
-impl<'a> System<'a> for OmnivoreAI {
+impl<'a> System<'a> for TargetingAI {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         WriteExpect<'a, Map>,
@@ -21,7 +21,6 @@ impl<'a> System<'a> for OmnivoreAI {
         WriteStorage<'a, Herbivore>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, Leaf>,
-        WriteStorage<'a, WantToEat>,
         WriteStorage<'a, TargetedForEat>,
         WriteStorage<'a, GoOnTarget>,
         WriteStorage<'a, Specie>,
@@ -34,6 +33,7 @@ impl<'a> System<'a> for OmnivoreAI {
         WriteStorage<'a, CombatStats>,
         WriteStorage<'a, Speed>,
         WriteStorage<'a, Meat>,
+        WriteStorage<'a, FoodPreference>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -45,7 +45,6 @@ impl<'a> System<'a> for OmnivoreAI {
             herbivores,
             mut positions,
             leafs,
-            mut want_to_eats,
             mut targeted_eats,
             mut go_targets,
             species,
@@ -57,123 +56,80 @@ impl<'a> System<'a> for OmnivoreAI {
             mut my_choosen_foods,
             mut combat_stats,
             speeds,
-            _meats,
+            meats,
+            food_prefs,
         ) = data;
 
         targeted_eats.clear(); //TODO dirty, create a system specificaly to clear this.
 
         let mut turn_done: Vec<Entity> = Vec::new();
-        /*
-                //check if we managed to get a target
-                for (entity, _animal, _pos, _carnivore, _herbivore, _turn) in (
-                    &entities,
-                    &animals,
-                    &mut positions,
-                    &carnivores,
-                    &herbivores,
-                    &turns,
-                )
-                    .join()
-                {
-                    if let Some(reached) = target_reacheds.get(entity) {
-                        //TODO for now it eat directly I must add a fight
-                        want_to_eats
-                            .insert(
-                                entity,
-                                WantToEat {
-                                    target: reached.target,
-                                },
-                            )
-                            .expect("Unable to insert");
-
-                        //if eat, end turn
-                        turn_done.push(entity);
-
-                    //TODO do not search a new target if the entity is already eating
-                    } else {
-                        //println!("no target reached");
-                    }
-                }
-        */
-        //check if we managed to get on our choosen food
-        for (entity, _animal, pos, _carnivore, _herbivore, _turn, choosen_food) in (
-            &entities,
-            &animals,
-            &positions,
-            &carnivores,
-            &herbivores,
-            &turns,
-            &my_choosen_foods,
-        )
-            .join()
-        {
-            //Since this stay up at the destruction of entity The entity ccan be destroyed an we need to check
-            if let Some(food_pos) = positions.get(choosen_food.target) {
-                //TODO for now it eat directly I must add a fight
-                if in_contact(pos, food_pos) {
-                    want_to_eats
-                        .insert(
-                            entity,
-                            WantToEat {
-                                target: choosen_food.target,
-                            },
-                        )
-                        .expect("Unable to insert");
-
-                    //if eat, end turn
-                    turn_done.push(entity);
-                }
-            }
-        }
-        my_choosen_foods.clear();
-
-        // Remove turn marker for those that are done
-        for done in turn_done.iter() {
-            turns.remove(*done);
-        }
-        turn_done.clear();
 
         //Chose the food to go
         //first try to have his favorite food
-        for (entity, viewshed, _animal, carnivore, herbivore, energy_reserve, _turn) in (
-            &entities,
-            &viewsheds,
-            &animals,
-            &carnivores,
-            &herbivores,
-            &energy_reserves,
-            &turns,
-        )
-            .join()
+        for (entity, viewshed, _animal, _carnivore, _herbivore, energy_reserve, _turn, food_pref) in
+            (
+                &entities,
+                &viewsheds,
+                &animals,
+                &carnivores,
+                &herbivores,
+                &energy_reserves,
+                &turns,
+                &food_prefs,
+            )
+                .join()
         {
-            //search for every possible food in the viewshed, and divide them acording to their categorie
-            let mut found_leaf: Vec<Entity> = Vec::new();
-            let mut found_other_specie: Vec<Entity> = Vec::new();
-            let mut found_same_specie: Vec<Entity> = Vec::new();
-            let my_specie = species.get(entity).unwrap();
+            //search for every possible food in the viewshed, and store them
+            let mut viewed_food: Vec<Entity> = Vec::new();
 
             for visible_tile in viewshed.visible_tiles.iter() {
                 let idx = map.xy_idx(visible_tile.x, visible_tile.y);
                 for maybe_food in map.tile_content[idx].iter() {
-                    if let Some(_leaf) = leafs.get(*maybe_food) {
-                        found_leaf.push(*maybe_food);
-                    }
-                    if let Some(specie) = species.get(*maybe_food) {
-                        if specie.name == my_specie.name {
-                            found_same_specie.push(*maybe_food);
-                        } else {
-                            found_other_specie.push(*maybe_food);
-                        }
-                    }
+                    viewed_food.push(*maybe_food);
                 }
             }
 
-            if energy_reserve.hunger == Hunger::Hungry {
-                //Choose if the animal prefere to go for vegetable or meat
-                //TODO  add hunger conditon before going for the non prefered food
-                if herbivore.digestion > carnivore.digestion {
+            //search all type of food from the favorite to the less favorite
+            for (seuil, food_type) in food_pref.choices.iter().rev() {
+                if energy_reserve.reserve < *seuil as f32 {
+                    let found_foods = match food_type {
+                        FoodType::Meat => {
+                            let fil = filter_component_distance(
+                                &viewed_food,
+                                entity,
+                                &mut positions,
+                                &meats,
+                            );
+                            fil
+                            //&meats
+                        }
+                        FoodType::Animal => {
+                            let filtered = filter_component_distance(
+                                &viewed_food,
+                                entity,
+                                &mut positions,
+                                &animals,
+                            );
+                            let filtered = not_my_specie(filtered, entity, &species);
+                            filtered
+
+                            //not_my_specie(filtered, entity, &species)
+                            //&animals
+                        }
+                        FoodType::Vegetable => {
+                            let fil = filter_component_distance(
+                                &viewed_food,
+                                entity,
+                                &mut positions,
+                                &leafs,
+                            );
+                            fil
+                        }
+                    };
+                    //search to go on this type of food
+                    //and actually say to go
                     if choose_food(
-                        found_leaf,
+                        found_foods,
                         entity,
                         &mut positions,
                         &mut targeted_eats,
@@ -186,60 +142,7 @@ impl<'a> System<'a> for OmnivoreAI {
                     ) {
                         //if find food, end turn
                         turn_done.push(entity);
-                    } else {
-                        //TODO also use relative digestion between carnivore and herbivore
-                        //if we didn't find food and if of reserve are compored to our capacity of digestion, then eat other food
-                        if energy_reserve.get_relative_reserve() < carnivore.digestion {
-                            if choose_food(
-                                found_other_specie,
-                                entity,
-                                &mut positions,
-                                &mut targeted_eats,
-                                &mut go_targets,
-                                &mut my_choosen_foods,
-                                &mut combat_stats,
-                                &speeds,
-                                &energy_reserves,
-                                &animals,
-                            ) {
-                                //if find food, end turn
-                                turn_done.push(entity);
-                            }
-                        }
-                    }
-                } else {
-                    if choose_food(
-                        found_other_specie,
-                        entity,
-                        &mut positions,
-                        &mut targeted_eats,
-                        &mut go_targets,
-                        &mut my_choosen_foods,
-                        &mut combat_stats,
-                        &speeds,
-                        &energy_reserves,
-                        &animals,
-                    ) {
-                        //if find food, end turn
-                        turn_done.push(entity);
-                    } else {
-                        if energy_reserve.get_relative_reserve() < herbivore.digestion {
-                            if choose_food(
-                                found_leaf,
-                                entity,
-                                &mut positions,
-                                &mut targeted_eats,
-                                &mut go_targets,
-                                &mut my_choosen_foods,
-                                &mut combat_stats,
-                                &speeds,
-                                &energy_reserves,
-                                &animals,
-                            ) {
-                                //if find food, end turn
-                                turn_done.push(entity);
-                            }
-                        }
+                        break;
                     }
                 }
             }
@@ -283,11 +186,58 @@ impl<'a> System<'a> for OmnivoreAI {
         turn_done.clear();
     }
 }
+//il the list return all the entity with the good component sorted by distance
+pub fn filter_component_distance<'a, W: Component>(
+    entity_list: &Vec<Entity>,
+    entity: Entity,
+    positions: &mut WriteStorage<'a, Position>,
+    searched_component: &WriteStorage<'a, W>,
+) -> Vec<(f32, Entity)> {
+    let pos = positions.get(entity).unwrap();
+
+    let mut filtered_entities = Vec::new();
+
+    for comp_entity in entity_list.iter() {
+        if let Some(_component) = searched_component.get(*comp_entity) {
+            if let Some(com_pos) = positions.get(*comp_entity) {
+                let distance = rltk::DistanceAlg::Pythagoras
+                    .distance2d(Point::new(pos.x, pos.y), Point::new(com_pos.x, com_pos.y));
+
+                filtered_entities.push((distance, *comp_entity));
+            }
+        }
+    }
+    //sort
+    filtered_entities.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+
+    filtered_entities
+}
+fn not_my_specie<'a>(
+    entity_list: Vec<(f32, Entity)>,
+    entity: Entity,
+    species: &WriteStorage<'a, Specie>,
+) -> Vec<(f32, Entity)> {
+    let mut ret = Vec::new();
+    let my_specie = species.get(entity).unwrap();
+    for (_dist, member) in entity_list {
+        if let Some(specie) = species.get(member) {
+            if specie.name == my_specie.name {
+                //exclude of the list
+            } else {
+                ret.push((_dist, member));
+            }
+        } else {
+            ret.push((_dist, member));
+        }
+    }
+    ret
+}
 
 //In a list of possible food, choose the closest that is not taken by someone closer to the food
 //return true if a food have been choosen
 fn choose_food<'a>(
-    found_foods: Vec<Entity>,
+    //sorted list of food and distance
+    found_foods: Vec<(f32, Entity)>,
     entity: Entity,
     positions: &mut WriteStorage<'a, Position>,
     targeted_eats: &mut WriteStorage<'a, TargetedForEat>,
@@ -303,30 +253,34 @@ fn choose_food<'a>(
     let mut min: f32 = std::f32::MAX;
     let pos = positions.get(entity).unwrap();
 
-    for food in found_foods {
-        let food_pos = positions.get(food).unwrap();
-        let maybe_targeted_eat = targeted_eats.get(food);
+    for (distance, food) in found_foods.iter() {
+        let maybe_targeted_eat = targeted_eats.get(*food);
 
         //if their is a other creature that want the target, then I only go if I am closer
         let mut competitor_distance = std::f32::MAX;
+        let mut choose_made = false;
         if let Some(targeted) = maybe_targeted_eat {
             competitor_distance = targeted.distance;
         }
-        let distance = rltk::DistanceAlg::Pythagoras
-            .distance2d(Point::new(pos.x, pos.y), Point::new(food_pos.x, food_pos.y));
-        if (distance < min) && (distance < competitor_distance) {
+
+        if *distance < competitor_distance {
             //If food can fight, only go if I am stronger
-            if let Some(_animal) = animals.get(food) {
-                if am_i_stronger(&combat_stats, entity, food)
-                    && hunt_gain(&speeds, &energies, &positions, entity, food)
+            if let Some(_animal) = animals.get(*food) {
+                if am_i_stronger(&combat_stats, entity, *food)
+                    && hunt_gain(&speeds, &energies, &positions, entity, *food)
                 {
-                    choosen_food = Some(food);
-                    min = distance;
+                    choose_made = true;
                 }
             } else {
-                choosen_food = Some(food);
-                min = distance;
+                choose_made = true;
             }
+        }
+
+        if choose_made {
+            choosen_food = Some(*food);
+            min = *distance;
+            //we found the food
+            break;
         }
     }
     if let Some(food) = choosen_food {
@@ -356,16 +310,6 @@ fn choose_food<'a>(
         ret = true;
     }
     return ret;
-}
-
-pub fn in_contact(pos1: &Position, pos2: &Position) -> bool {
-    let mut ret = false;
-    if pos1.x >= pos2.x - 1 && pos1.x <= pos2.x + 1 {
-        if pos1.y >= pos2.y - 1 && pos1.y <= pos2.y + 1 {
-            ret = true;
-        }
-    }
-    ret
 }
 
 //check combat stat to se if I am stronger

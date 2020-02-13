@@ -85,6 +85,8 @@ impl State {
 
         let mut date = DateSystem {};
         date.run_now(&self.ecs);
+        let mut food_pref = FoodPreferenceSystem {};
+        food_pref.run_now(&self.ecs);
         let mut temperature = TemperatureSystem {};
         temperature.run_now(&self.ecs);
         let mut humidity = HumiditySystem {};
@@ -101,9 +103,14 @@ impl State {
         //cow.run_now(&self.ecs);
         //let mut carnivore_ai = CarnivorousAI {};
         //carnivore_ai.run_now(&self.ecs);
+        let mut eating_killing_ai = EatingKillingAI {};
+        eating_killing_ai.run_now(&self.ecs);
 
-        let mut omnivore_ai = OmnivoreAI {};
-        omnivore_ai.run_now(&self.ecs);
+        let mut targeting_ai = TargetingAI {};
+        targeting_ai.run_now(&self.ecs);
+
+        //let mut omnivore_ai = OmnivoreAI {};
+        //omnivore_ai.run_now(&self.ecs);
         let mut flee_ai = FleeAI {};
         flee_ai.run_now(&self.ecs);
         let mut search_partner = SearchParterAI {};
@@ -135,6 +142,8 @@ impl State {
         energy.run_now(&self.ecs);
         //let mut solo_reprod = ReproductionSystem {};
         //solo_reprod.run_now(&self.ecs);
+        let mut death_system = DeathSystem {};
+        death_system.run_now(&self.ecs);
         let mut gendered_reprod = GenderedReproductionSystem {};
         gendered_reprod.run_now(&self.ecs);
         let mut prop_spawmer = PropSpawnerSystem {};
@@ -591,6 +600,7 @@ fn main() {
     gs.ecs.register::<InHeat>();
     gs.ecs.register::<Meat>();
     gs.ecs.register::<Dead>();
+    gs.ecs.register::<FoodPreference>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
@@ -620,7 +630,7 @@ fn main() {
         spawn_named(&mut gs.ecs, "Cow", 30, 14);
         spawn_named(&mut gs.ecs, "Wolve", 10, 10);
         spawn_named(&mut gs.ecs, "WolveF", 10, 15);
-
+        /*
         spawn_named(&mut gs.ecs, "Cow", 50, 4);
         spawn_named(&mut gs.ecs, "Cow", 50, 5);
         spawn_named(&mut gs.ecs, "Cow", 50, 6);
@@ -689,7 +699,7 @@ fn main() {
         spawn_named(&mut gs.ecs, "Cow", 50, 36);
         spawn_named(&mut gs.ecs, "Cow", 50, 37);
         spawn_named(&mut gs.ecs, "Cow", 50, 38);
-        spawn_named(&mut gs.ecs, "Cow", 50, 39);
+        spawn_named(&mut gs.ecs, "Cow", 50, 39);*/
     }
 
     gs.ecs.insert(map);

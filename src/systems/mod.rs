@@ -38,3 +38,5 @@ mod action_point_systeme;
 pub use action_point_systeme::ActionPointSystem;
 mod death_system;
 pub use death_system::DeathSystem;
+mod food_preference_system;
+pub use food_preference_system::FoodPreferenceSystem;

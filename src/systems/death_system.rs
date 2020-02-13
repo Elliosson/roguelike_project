@@ -2,8 +2,8 @@ extern crate specs;
 use crate::specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 use crate::{
     gamelog::{GameLog, GeneralLog},
-    Dead, DeathCause, EnergyReserve, Hunger, Meat, MyChoosenFood, Point, Position, Renderable,
-    SerializeMe, Specie, TargetedForEat, ToDelete,
+    Dead, DeathCause, EnergyReserve, Meat, MyChoosenFood, Point, Position, Renderable, SerializeMe,
+    Specie, TargetedForEat, ToDelete,
 };
 use rltk::RGB;
 use specs::prelude::*;
@@ -16,7 +16,6 @@ impl<'a> System<'a> for DeathSystem {
         Entities<'a>,
         WriteExpect<'a, GameLog>,
         WriteExpect<'a, GeneralLog>,
-        WriteStorage<'a, EnergyReserve>,
         WriteStorage<'a, ToDelete>,
         WriteStorage<'a, Dead>,
         WriteStorage<'a, Meat>,
@@ -33,9 +32,8 @@ impl<'a> System<'a> for DeathSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (
             entities,
-            mut log,
+            _log,
             mut general_logs,
-            mut energy_reserves,
             mut to_deletes,
             mut deads,
             mut meats,
@@ -44,7 +42,7 @@ impl<'a> System<'a> for DeathSystem {
             energies,
             mut targeted_eats,
             mut my_choosen_foods,
-            mut species,
+            species,
             mut simple_markers,
             mut simple_marker_allocators,
         ) = data;
@@ -115,7 +113,7 @@ impl<'a> System<'a> for DeathSystem {
                     ));
                 }
                 DeathCause::Natural => {
-                    meat_entity = eb.build();
+                    eb.build();
                 }
             }
 
