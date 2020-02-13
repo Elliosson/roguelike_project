@@ -107,7 +107,10 @@ pub fn save_game(ecs: &mut World) {
             Male,
             Female,
             InHeat,
-            MyChoosenFood
+            MyChoosenFood,
+            Dead,
+            Meat,
+            FoodPreference
         );
     }
 
@@ -219,7 +222,10 @@ pub fn load_game(ecs: &mut World) {
             Male,
             Female,
             InHeat,
-            MyChoosenFood
+            MyChoosenFood,
+            Dead,
+            Meat,
+            FoodPreference
         );
     }
 

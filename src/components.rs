@@ -408,7 +408,7 @@ pub struct MyChoosenFood {
     pub target: Entity,
 }
 
-#[derive(Component, Debug, ConvertSaveload, Clone)]
+#[derive(Debug, ConvertSaveload, Clone)]
 pub enum DeathCause {
     Natural,
     Killed { killer: Entity },
@@ -424,7 +424,7 @@ pub struct Meat {
     pub nutriments: f32,
 }
 
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum FoodType {
     Meat,
     Animal,
