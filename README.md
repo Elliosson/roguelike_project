@@ -23,6 +23,8 @@ cd roguelike_project
 
 cargo run --release
 
+Try it on http://www.elliosson.com/
+
 
 
 
