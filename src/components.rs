@@ -437,6 +437,12 @@ pub struct FoodPreference {
     pub choices: BTreeMap<i32, FoodType>,
 }
 
+// new interation, just the name and the system make everithing
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct InteractionListV2 {
+    pub names: Vec<String>,
+}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 pub struct SerializeMe;
